@@ -1,8 +1,8 @@
 package Test
 
 import (
-	"CRM_System/Backend/internal/db/repository"
-	"CRM_System/Backend/internal/routes"
+	"CRM_System/internal/db/repository"
+	"CRM_System/internal/routes"
 	"fmt"
 	"log"
 )
