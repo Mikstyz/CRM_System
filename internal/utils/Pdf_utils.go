@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"CRM_System/Backend/internal/modeles"
+	"CRM_System/internal/modeles"
 	"bytes"
 	"fmt"
 	"log"

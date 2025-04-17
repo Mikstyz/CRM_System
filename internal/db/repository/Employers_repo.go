@@ -1,8 +1,8 @@
 package repository
 
 import (
-	db "CRM_System/Backend/internal/db"
-	"CRM_System/Backend/internal/modeles"
+	db "CRM_System/internal/db"
+	"CRM_System/internal/modeles"
 	"fmt"
 
 	_ "modernc.org/sqlite"

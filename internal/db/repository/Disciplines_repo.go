@@ -1,7 +1,7 @@
 package repository
 
 import (
-	db "CRM_System/Backend/internal/db"
+	db "CRM_System/internal/db"
 	"log"
 )
 

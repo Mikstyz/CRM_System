@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"CRM_System/Backend/internal/db"
-	"CRM_System/Backend/internal/modeles"
+	"CRM_System/internal/db"
+	"CRM_System/internal/modeles"
 	"database/sql"
 	"errors"
 	"fmt"
