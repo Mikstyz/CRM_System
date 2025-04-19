@@ -1,13 +1,67 @@
 {
-  "name": "frontend",
+  "name": "crm-ks54-blank-employer",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "lint": "prettier --write . && eslint \"src/**/*.{js,jsx,ts,tsx,css}\"",
+    "lint:css": "stylelint \"src/**/*.css\"",
+    "type-check": "tsc --noEmit",
+    "dev": "vite --host",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.6.0",
+    "@tailwindcss/vite": "^4.0.9",
+    "@tanstack/react-table": "^8.21.2",
+    "axios": "^1.8.1",
+    "classnames": "^2.5.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.2.0",
+    "react-router-dom": "^7.2.0",
+    "react-window": "^1.8.11",
+    "redux-persist": "^6.0.0",
+    "tailwindcss": "^4.0.9",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
-    "vite": "^3.0.7"
-  }
+    "@babel/preset-react": "^7.26.3",
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/react-window": "^1.8.8",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "prettier": "3.5.2",
+    "stylelint": "^16.14.1",
+    "stylelint-config-standard": "^37.0.0",
+    "stylelint-order": "^6.0.4",
+    "stylelint-prettier": "^5.0.3",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0",
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leo-Volkov/CRM_KS54_blank_employer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Leo-Volkov/CRM_KS54_blank_employer/issues"
+  },
+  "homepage": "https://github.com/Leo-Volkov/CRM_KS54_blank_employer#readme"
 }

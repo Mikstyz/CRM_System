@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    /* Основные настройки */
+    "target": "ESNext",                       // Таргетируемся на современный JS
+    "lib": ["DOM", "DOM.Iterable", "ESNext"], // Браузерные и последние JS фичи
+    "module": "ESNext",                       // Используем ESNext-модули
+    "moduleResolution": "Node",               // Правила резолва для Node
+    "jsx": "react-jsx",                       // Включаем JSX для React 18
+
+    /* Работа со strict-режимами */
+    "strict": true,                           // Включаем все строгие проверки
+    "forceConsistentCasingInFileNames": true, // Следим за регистром в путях
+    "skipLibCheck": true,                     // Пропускаем проверку типов в .d.ts
+
+    /* Дополнительные настройки */
+    "allowSyntheticDefaultImports": true,     // Разрешает импорт по умолчанию
+    "esModuleInterop": true,                  // Совместимость с CommonJS
+    "resolveJsonModule": true,                // Разрешает импорт JSON
+    "isolatedModules": true,                  // Подготовка к компиляции без исходников
+    "noEmit": true,                           // Не генерировать итоговые .js
+    "allowImportingTsExtensions": true,       // позволяет импортировать файлы с расширениями .ts, .tsx напрямую
+
+    /* Подключаем типы Vite (vite/client) */
+    "types": ["vite/client"],
+
+    /* Настройка алиасов */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+    }
+  },
+  "include": [
+    "src",            // Включаем все файлы в src
+    "vite-env.d.ts"   // Обязательно для корректной работы Vite типов
+  ],
+  "exclude": [
+    "node_modules"    // Исключаем папку node_modules
+  ]
+}

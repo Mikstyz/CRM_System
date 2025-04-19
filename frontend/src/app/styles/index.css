@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Фон хедера (шапки) */
+  --color-header-bg: var(--color-gray-700);
+
+  /* Основная «акцентная» кнопка */
+  --color-accent-btn-100: #fbbf24;
+  --color-accent-btn-hover: #f59e0b;
+  --color-accent-btn-edit: #ff9500;
+  --color-accent-btn-edit-hover: #ff9500;
+  --color-accent-btn-delete: #ff0000;
+  --color-accent-btn-delete-hover: #be123c;
+  --color-accent-btn-acceptance: #40ff00;
+  --color-accent-btn-acceptance-hover: #00ff00;
+  --color-accent-btn-download: #208100;
+  --color-accent-btn-download-hover: #00ff00;
+
+  /* Общий фон страницы */
+  --color-page-bg: var(--color-gray-100);
+
+  /* Базовый текст */
+  --color-default-text: #333333;
+
+  /* Для таблиц (заголовок/ячеек) */
+  --color-table-header-bg: #d1d5db;
+  --color-table-row-bg: #ffffff;
+  --color-table-row-hover: #f9fafb;
+  --color-table-border: #e5e7eb;
+}
