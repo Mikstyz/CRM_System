@@ -9,14 +9,20 @@ import { useDeferredValue, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { shallowEqual } from "react-redux";
 import { Filters, filterSchema, FiltersRaw } from "./schema";
+import { ButtonPush } from "@/shared/ui/ButtonPush";
+import { addGroup } from "@/entities/group/store/groupSlice";
 
-export function FilterGroup() {
+export function FilterGroup({groupsLength}: {groupsLength: number}) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s) => s.groupFilters);
+  const { course, specialty, graduates, groupNumber } = useAppSelector(
+    (state) => state.groupFilters,
+  );
 
   const {
     register,
     watch,
+    setError,
     formState: { errors },
   } = useForm<FiltersRaw>({
     resolver: zodResolver(filterSchema),
@@ -38,7 +44,6 @@ export function FilterGroup() {
   }, 150);
   useEffect(() => {
     if (parsed.success) {
-      // пустые строки → null   (упрощаем логику selector’а)
       const cleaned = Object.fromEntries(
         Object.entries(parsed.data).map(([k, v]) =>
           v === "" || v === undefined ? [k, null] : [k, v],
@@ -49,6 +54,7 @@ export function FilterGroup() {
   }, [parsed, pushFilters]);
 
   return (
+    <>
     <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
       <h2 className="font-semibold mb-2">Фильтрация</h2>
 
@@ -67,7 +73,7 @@ export function FilterGroup() {
             ),
           }}
           error={errors.course?.message}
-        />
+          />
 
         {/* Специальность */}
         <InputFilterGroup
@@ -80,12 +86,12 @@ export function FilterGroup() {
               "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
               errors.specialty ? "border-red-500" : "border-gray-300",
               !errors.specialty && watch("specialty")
-                ? "focus:border-green-500"
-                : "",
+              ? "focus:border-green-500"
+              : "",
             ),
           }}
           error={errors.specialty?.message}
-        />
+          />
 
         {/* Выпускники */}
         <InputFilterGroup
@@ -98,12 +104,12 @@ export function FilterGroup() {
               "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
               errors.graduates ? "border-red-500" : "border-gray-300",
               !errors.graduates && watch("graduates")
-                ? "focus:border-green-500"
-                : "",
+              ? "focus:border-green-500"
+              : "",
             ),
           }}
           error={errors.graduates?.message}
-        />
+          />
 
         {/* Номер группы */}
         <InputFilterGroup
@@ -116,13 +122,58 @@ export function FilterGroup() {
               "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
               errors.groupNumber ? "border-red-500" : "border-gray-300",
               !errors.groupNumber && watch("groupNumber")
-                ? "focus:border-green-500"
-                : "",
+              ? "focus:border-green-500"
+              : "",
             ),
           }}
           error={errors.groupNumber?.message}
-        />
+          />
       </form>
-    </aside>
+      </aside>
+      { groupsLength <= 0 && <ButtonPush
+            onClick={() => {
+              if (course && specialty && graduates && groupNumber) {
+                dispatch(
+                  addGroup({
+                    id: crypto.randomUUID(),
+                    name: `${course}${specialty}${graduates}-${groupNumber}`,
+                    isExpanded: false,
+                    disciplines: {
+                      1: [],
+                      2: [],
+                    },
+                  }),
+                )
+              } else {
+                if (!course) {
+                  setError("course", {
+                    type: "custom",
+                    message: "Выберите курс",
+                  });
+                }
+                if (!specialty) {
+                  setError("specialty", {
+                    type: "custom",
+                    message: "Выберите специальность",
+                  });
+                }
+                if (!graduates) {
+                  setError("graduates", {
+                    type: "custom",
+                    message: "Выберите выпускников",
+                  });
+                }
+                if (!groupNumber) {
+                  setError("groupNumber", {
+                    type: "custom",
+                    message: "Выберите номер группы",
+                  });
+                }
+              }
+            }}
+            >
+            Добавить группу
+          </ButtonPush>}
+            </>
   );
 }

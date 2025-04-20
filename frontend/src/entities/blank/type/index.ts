@@ -4,10 +4,11 @@ import { Id } from "@/shared/types";
 export interface BlankState {
   isOpen: boolean;
   groupId: Id | null;
-  studentId: Id | null;
+  studentId: Id | null; // 🆕
+  studentName: string; // удобно для префилла
   semester: number;
-  company?: string | null;
-  startDate: string; // YYYY‑MM‑DD
+  company: string | null;
+  startDate: string;
   position: string;
-  studentsData: Student[];
+  studentsData: Student[]; // как было
 }

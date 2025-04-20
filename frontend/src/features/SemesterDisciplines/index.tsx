@@ -22,7 +22,7 @@ export const SemesterDisciplines = ({
 
   return (
     <details className="border rounded-xl">
-      <summary className="cursor-pointer select-none py-1 px-3 bg-slate-100">
+      <summary className="cursor-pointer select-none py-1 px-3 bg-slate-100 rounded-xl">
         {semester}‑й семестр
       </summary>
 

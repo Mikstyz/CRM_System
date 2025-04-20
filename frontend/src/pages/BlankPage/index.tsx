@@ -6,14 +6,9 @@ import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
-import {
-  selectBlank,
-} from "@/entities/blank/store/blankSlice";
+import { selectBlank, setStudent } from "@/entities/blank/store/blankSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
 import { useEffect } from "react";
-import { Student } from "@/entities/student/types";
-
-
 
 export function BlankPage({
   groupId,
@@ -23,8 +18,15 @@ export function BlankPage({
   groupName: string;
 }) {
   const dispatch = useAppDispatch();
-  const { studentId, semester, company, startDate, position, studentsData } =
-    useAppSelector(selectBlank);
+  const {
+    studentId,
+    studentName,
+    semester,
+    company,
+    startDate,
+    position,
+    studentsData,
+  } = useAppSelector(selectBlank);
 
   /* ---------- 1. схема Zod ---------- */
   const schema = z.object({
@@ -55,37 +57,40 @@ export function BlankPage({
 
   /* ---------- 3. обработчик ---------- */
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    // const row: = {
-    //   id: crypto.randomUUID(),
-    //   studentId: Number(data.student.match(/\d+$/)?.[0]) || Date.now(), // fake id
-    //   semester: data.semester,
-    //   company: data.company ?? null,
-    //   startDate: data.startDate,
-    //   position: data.position,
-    // };
+    if (!studentId) {
+      alert("Выберите студента!");
+      return;
+    }
+
+    console.log({
+      groupId,
+      studentId, // ← настоящий id
+      student: data.student,
+      semester: data.semester,
+      company: data.company ?? null,
+      startDate: data.startDate,
+      position: data.position,
+    });
     alert("Строка добавлена!");
   };
 
   useEffect(() => {
-    setValue(
-      "student",
-      studentsData.find(({ id }) => id === studentId)?.fullName ?? "",
-    );
+    setValue("student", studentName); // берём прямо из slice
     setValue("semester", semester);
     setValue("company", company ?? "");
     setValue("startDate", startDate);
     setValue("position", position);
-  }, [setValue, studentId, semester, company, startDate, position]);
+  }, [setValue, studentName, semester, company, startDate, position]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 w-full">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
           Группа:
           <EditableTitle
             initialValue={groupName}
             onSave={() => {}}
-            className="ml-1"
+            className="ml-1 inline-block text-2xl font-bold"
           />
         </h1>
         <LinkDocument href="#">Открыть XLSX студентов</LinkDocument>
@@ -109,12 +114,15 @@ export function BlankPage({
         </label>
 
         <VirtualizedSearch
-          data={studentsData as []}
-          placeholder="Введите фамилию..."
+          data={studentsData}
+          placeholder="Введите ФИО..."
           maxDropdownHeight={200}
-          onSelect={(s) =>
-            setValue("student", s.fullName, { shouldValidate: true })
-          }
+          onSelect={(s) => {
+            // 1) пишем ФИО в форму
+            setValue("student", s.fullName, { shouldValidate: true });
+            // 2) сохраняем id + ФИО в blankSlice
+            dispatch(setStudent({ id: s.id, fullName: s.fullName }));
+          }}
         />
       </div>
       {errors.student && (

@@ -38,7 +38,7 @@ export function EditableTitle({
   return (
     <input
       type="text"
-      className={`w-full font-bold border-none outline-none focus:ring-0 ${className}`}
+      className={`font-bold border-none outline-none focus:ring-0 ${className}`}
       value={value}
       onChange={handleChange}
       onBlur={handleBlurOrEnter}

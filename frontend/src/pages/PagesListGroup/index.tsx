@@ -31,7 +31,6 @@ import {
   deleteGroup as delGroupAction,
   addDiscipline,
   deleteDiscipline,
-  addGroup,
 } from "@/entities/group/store/groupSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
 import { initialGroups } from "@/app/test/mock.test";
@@ -40,16 +39,11 @@ import { Id } from "@/shared/types";
 import { selectFilteredGroups } from "@/entities/group/selectors";
 import { Group } from "@/entities/group/types";
 import { closeBlank, selectBlank } from "@/entities/blank/store/blankSlice";
-import { ButtonPush } from "@/shared/ui/ButtonPush";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
   const { isOpen, groupId } = useAppSelector(selectBlank);
   const groups = useAppSelector(selectFilteredGroups);
-  const { course, specialty, graduates, groupNumber } = useAppSelector(
-    (state) => state.groupFilters,
-  );
-
 
   const currentGroupName = groups.find((g) => g.id === groupId)?.name ?? "";
 
@@ -65,9 +59,9 @@ export function PagesListGroup() {
       </header>
 
       <main className="p-4 space-y-4">
-        <FilterGroup />
+        <FilterGroup groupsLength={groups.length} />
 
-        {groups.length > 0 ? (
+        {groups.length > 0 && (
           groups.map((group: Group) => (
             <GroupCard
               key={group.id}
@@ -93,24 +87,6 @@ export function PagesListGroup() {
               onDeleteGroup={() => dispatch(delGroupAction(group.id))}
             />
           ))
-        ) : (
-          <ButtonPush
-            onClick={() =>
-              dispatch(
-                addGroup({
-                  id: crypto.randomUUID(),
-                  name: `${course}${specialty}${graduates}-${groupNumber}`,
-                  isExpanded: false,
-                  disciplines: {
-                    1: [],
-                    2: [],
-                  },
-                }),
-              )
-            }
-          >
-            Добавить группу
-          </ButtonPush>
         )}
       </main>
 

@@ -8,15 +8,16 @@ import {
 } from "react";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import classNames from "classnames";
+import { Id } from "@/shared/types";
 
 // Тип для элемента списка
 interface Student {
-  id: number;
+  id: Id;
   fullName: string;
 }
 
 interface VirtualizedSearchProps {
-  data: Student[] // Исходный список студентов
+  data: Student[]; // Исходный список студентов
   placeholder?: string; // Подсказка в input
   maxDropdownHeight?: number; // Высота выпадающего списка
   onSelect?: (value: Student) => void; // Колбэк при выборе элемента
@@ -99,6 +100,10 @@ export function VirtualizedSearch({
   // Обработчик ввода в поисковое поле
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+    onSelect?.({
+      id: String(Date.now()),
+      fullName: e.target.value,
+    });
     setIsOpen(true);
   };
 
