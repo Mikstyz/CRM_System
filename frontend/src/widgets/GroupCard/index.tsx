@@ -1,69 +1,98 @@
-import { Group } from '../../entities/group/lib/types'
-import { DisciplineItem } from '../DisciplineItem'
-import { LinkDocument } from '@/shared/ui/LinkDocument'
-import { PanelGroupCard } from '@/features/PanelGroupCard'
-import { FixedSizeList, ListChildComponentProps } from 'react-window'
-import { EditableTitle } from '@/shared/ui/EditableTitle'
+import { DisciplineItem } from "../DisciplineItem";
+import { PanelGroupCard } from "@/features/PanelGroupCard";
+import { ListChildComponentProps } from "react-window";
+import { EditableTitle } from "@/shared/ui/EditableTitle";
+import { memo, useCallback } from "react";
+import { Semester } from "@/entities/discipline/types";
+import { SemesterDisciplines } from "@/features/SemesterDisciplines";
+import { Id } from "@/shared/types";
+import { openBlank } from "@/entities/blank/store/blankSlice";
+import { duplicateGroup } from "@/entities/group/store/groupSlice";
+import { useAppDispatch } from "@/shared/lib/hooks/redux";
 
-interface GroupCardProps {
-  group: Group
-  onToggleExpand: () => void
-  onAddDiscipline: () => void
-  onDeleteGroup: () => void
-  onDeleteDiscipline: (discId: string) => void
+interface DisciplineItemProps {
+  discipline: any;
+  onDelete: () => void;
+}
+
+const Row = memo(
+  ({ data, index, style }: ListChildComponentProps<DisciplineItemProps[]>) => {
+    const { discipline, onDelete } = data[index];
+    return (
+      <div style={style}>
+        <DisciplineItem discipline={discipline} onDelete={onDelete} />
+      </div>
+    );
+  },
+);
+Row.displayName = "Row";
+
+interface Props {
+  group: {
+    id: string | number;
+    name: string;
+    isExpanded: boolean;
+    disciplines: Record<number, any[]>;
+  };
+  onToggleExpand: () => void;
+  onAddDiscipline: (semester: Semester) => void;
+  onDeleteGroup: () => void;
+  onDeleteDiscipline: (semester: Semester, id: Id) => void;
 }
 
 export function GroupCard({
-  group,
+  group: { id, name, isExpanded, disciplines },
   onToggleExpand,
   onAddDiscipline,
   onDeleteGroup,
   onDeleteDiscipline,
-}: GroupCardProps) {
-  const { name, isExpanded, disciplines } = group
+}: Props) {
+  const dispatch = useAppDispatch();
+  const handleTitleSave = useCallback(
+    (value: string) => console.log(`Group[${id}] → ${value}`),
+    [id],
+  );
 
-  const handleTitleSave = (newValue: string) => {
-    console.log('Сохранённое название GroupCard:', newValue)
-  }
-
-  const Row = ({ index, style }: ListChildComponentProps) => {
-    const disc = disciplines[index]
-    return (
-      <div style={style}>
-        <DisciplineItem key={disc.id} discipline={disc} onDelete={() => onDeleteDiscipline(disc.id)} />
-      </div>
-    )
-  }
   return (
-    <div className="border-2 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-lg font-semibold">
-          Группа:{' '}
-          <span className="ml-1">
-            <EditableTitle initialValue={name} onSave={handleTitleSave} className="w-min" />
-          </span>
-        </div>
-        <PanelGroupCard onToggleExpand={onToggleExpand} onDeleteGroup={onDeleteGroup} isExpanded={isExpanded} />
-      </div>
+    <section className="border-2 rounded-xl p-4">
+      <header className="flex items-center justify-between mb-2">
+        <h2 className="text-lg font-semibold">
+          Группа:{" "}
+          <EditableTitle
+            initialValue={name}
+            onSave={handleTitleSave}
+            className="ml-1 w-min"
+          />
+        </h2>
+
+        <PanelGroupCard
+          onToggleExpand={onToggleExpand}
+          onDeleteGroup={onDeleteGroup}
+          onDuplicateGroup={() => dispatch(duplicateGroup(id.toString()))}
+          onOpenBlank={() => dispatch(openBlank(id.toString()))}
+          isExpanded={isExpanded}
+        />
+      </header>
 
       {isExpanded && (
-        <div className="border-t pt-4 mt-2">
-          <div className="flex items-center justify-between mb-2">
-            <button
-              onClick={onAddDiscipline}
-              className="bg-green-400 hover:bg-green-500 text-white font-bold py-1 px-4 rounded"
-            >
-              +
-            </button>
-            <LinkDocument href="#">Открыть xlsx дисциплин</LinkDocument>
-          </div>
+        <div className="border-t pt-4 mt-2 space-y-4">
+          {/* 1‑й семестр */}
+          <SemesterDisciplines
+            semester={1}
+            items={disciplines[1]}
+            onAdd={() => onAddDiscipline(1 as Semester)}
+            onDelete={(id) => onDeleteDiscipline(1 as Semester, id)}
+          />
 
-          {/* Список дисциплин */}
-          <FixedSizeList height={300} itemCount={disciplines.length} itemSize={55} width="100%">
-            {Row}
-          </FixedSizeList>
+          {/* 2‑й семестр */}
+          <SemesterDisciplines
+            semester={2}
+            items={disciplines[2]}
+            onAdd={() => onAddDiscipline(2 as Semester)}
+            onDelete={(id) => onDeleteDiscipline(2 as Semester, id)}
+          />
         </div>
       )}
-    </div>
-  )
+    </section>
+  );
 }

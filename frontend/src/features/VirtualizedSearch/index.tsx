@@ -1,18 +1,25 @@
-import React, { useState, useEffect, useRef, ChangeEvent, KeyboardEvent, useCallback } from 'react'
-import { FixedSizeList, ListChildComponentProps } from 'react-window'
-import classNames from 'classnames'
+import {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+} from "react";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
+import classNames from "classnames";
 
 // Тип для элемента списка
 interface Student {
-  id: number
-  fullName: string
+  id: number;
+  fullName: string;
 }
 
 interface VirtualizedSearchProps {
   data: Student[] // Исходный список студентов
-  placeholder?: string // Подсказка в input
-  maxDropdownHeight?: number // Высота выпадающего списка
-  onSelect?: (value: Student) => void // Колбэк при выборе элемента
+  placeholder?: string; // Подсказка в input
+  maxDropdownHeight?: number; // Высота выпадающего списка
+  onSelect?: (value: Student) => void; // Колбэк при выборе элемента
 }
 
 /**
@@ -24,76 +31,83 @@ interface VirtualizedSearchProps {
  */
 export function VirtualizedSearch({
   data,
-  placeholder = 'Поиск...',
+  placeholder = "Поиск...",
   maxDropdownHeight = 300,
   onSelect,
 }: VirtualizedSearchProps) {
-  const [query, setQuery] = useState('')
-  const [filteredData, setFilteredData] = useState<Student[]>(data)
-  const [isOpen, setIsOpen] = useState(false)
+  const [query, setQuery] = useState("");
+  const [filteredData, setFilteredData] = useState<Student[]>(data);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   // Фильтруем результаты при изменении запроса
   useEffect(() => {
     if (!query) {
-      setFilteredData(data)
+      setFilteredData(data);
     } else {
-      const lowerQuery = query.toLowerCase()
-      setFilteredData(data.filter((item) => item.fullName.toLowerCase().includes(lowerQuery)))
+      const lowerQuery = query.toLowerCase();
+      setFilteredData(
+        data.filter((item) => item.fullName.toLowerCase().includes(lowerQuery)),
+      );
     }
-  }, [query, data])
+  }, [query, data]);
 
   // Закрываем список при клике вне
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
+    };
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Обработчик выбора элемента
   const handleSelect = useCallback(
     (student: Student) => {
-      setQuery(student.fullName)
-      setIsOpen(false)
-      onSelect?.(student)
+      setQuery(student.fullName);
+      setIsOpen(false);
+      onSelect?.(student);
     },
     [onSelect],
-  )
+  );
 
   // Рендер одного элемента списка для react-window
   const Row = ({ index, style }: ListChildComponentProps) => {
-    const student = filteredData[index]
+    const student = filteredData[index];
     return (
       <div
         style={style}
-        className={classNames('px-4 py-2 cursor-pointer hover:bg-gray-100 border-b')}
+        className={classNames(
+          "px-4 py-2 cursor-pointer hover:bg-gray-100 border-b overflow-hidden whitespace-nowrap text-ellipsis",
+        )}
         onClick={() => handleSelect(student)}
       >
         {student.fullName}
       </div>
-    )
-  }
+    );
+  };
 
   // Обработчик ввода в поисковое поле
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value)
-    setIsOpen(true)
-  }
+    setQuery(e.target.value);
+    setIsOpen(true);
+  };
 
   // При нажатии Enter выбираем первый элемент (при желании)
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && filteredData[0]) {
-      handleSelect(filteredData[0])
+    if (e.key === "Enter" && filteredData[0]) {
+      handleSelect(filteredData[0]);
     }
-  }
+  };
 
   return (
     <div ref={containerRef} className="inline-block relative">
@@ -123,26 +137,26 @@ export function VirtualizedSearch({
         <div
           className="
             absolute
-            right-[-75%]
+            right-0
             mt-1
             border
             bg-white
             rounded
             shadow-lg
-            w-64
+            w-full
             z-10
           "
         >
           <FixedSizeList
             height={Math.min(filteredData.length * 40, maxDropdownHeight)}
             itemCount={filteredData.length}
-            itemSize={40} // высота одной строки
-            width={'100%'}
+            itemSize={40}
+            width={"100%"}
           >
             {Row}
           </FixedSizeList>
         </div>
       )}
     </div>
-  )
+  );
 }

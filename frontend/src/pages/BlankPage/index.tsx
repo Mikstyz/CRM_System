@@ -1,144 +1,179 @@
-import { VirtualizedSearch } from '@/features/VirtualizedSearch'
-import { EditableTitle } from '@/shared/ui/EditableTitle'
-import { LinkDocument } from '@/shared/ui/LinkDocument'
-import { useState } from 'react'
+import { VirtualizedSearch } from "@/features/VirtualizedSearch";
+import { EditableTitle } from "@/shared/ui/EditableTitle";
+import { LinkDocument } from "@/shared/ui/LinkDocument";
 
-const studentsData = [
-  { id: 1, fullName: 'Иванов Иван Иванович' },
-  { id: 2, fullName: 'Иванов Пётр Геннадьевич' },
-  { id: 3, fullName: 'Сидоров Семён Степанович' },
-  { id: 4, fullName: 'Петров Петр Петрович' },
-  { id: 5, fullName: 'Иванов Иван Иванович' },
-  { id: 6, fullName: 'Иванов Пётр Геннадьевич' },
-  { id: 7, fullName: 'Сидоров Семён Степанович' },
-  { id: 8, fullName: 'Петров Петр Петрович' },
-  { id: 9, fullName: 'Иванов Иван Иванович' },
-  { id: 10, fullName: 'Иванов Пётр Геннадьевич' },
-  { id: 11, fullName: 'Сидоров Семён Степанович' },
-  { id: 12, fullName: 'Петров Петр Петрович' },
-  { id: 13, fullName: 'Иванов Иван Иванович' },
-  // ... большой список
-]
+import { z } from "zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
+import {
+  selectBlank,
+} from "@/entities/blank/store/blankSlice";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
+import { useEffect } from "react";
+import { Student } from "@/entities/student/types";
 
-interface BlankPageProps {
-  groupName: string // например, "1ИСП9 - 45"
-  // Можете передавать любые другие пропсы, если нужно
-}
 
-export function BlankPage({ groupName }: BlankPageProps) {
-  // Локальное состояние формы (для примера используем useState)
-  // В реальном проекте можно использовать React Hook Form, Redux Toolkit etc.
-  const [semester, setSemester] = useState('1') // «Семестр (1/2)»
-  const [students, setStudents] = useState('Иванов Иван Иванович')
-  const [company, setCompany] = useState('ООО “Купишуз”')
-  const [startDate, setStartDate] = useState('25.05.2023')
-  const [position, setPosition] = useState('Оператор WMS')
-  const handleSelectStudent = (student: { id: number; fullName: string }) => {
-    console.log('Выбран студент:', student)
-    setStudents(student.fullName)
-  }
-  // Обработчики
-  const handleSave = () => {
-    // Логика сохранения: например, отправка данных на сервер или в Go-функцию.
-    console.log('Данные формы:', {
-      semester,
-      students,
-      company,
-      startDate,
-      position,
-    })
-    alert('Сохранено!')
-  }
 
-  const handleDownloadBlank = () => {
-    // Логика скачивания бланка (может быть генерация XLSX/PDF на бэкенде)
-    console.log('Скачать бланк...')
-    alert('Загружаем бланк...')
-  }
-  const handleTitleSave = (newValue: string) => {
-    console.log('Сохранённое название BlankPage:', newValue)
-  }
+export function BlankPage({
+  groupId,
+  groupName,
+}: {
+  groupId: string | null;
+  groupName: string;
+}) {
+  const dispatch = useAppDispatch();
+  const { studentId, semester, company, startDate, position, studentsData } =
+    useAppSelector(selectBlank);
+
+  /* ---------- 1. схема Zod ---------- */
+  const schema = z.object({
+    semester: z.coerce.number().min(1).max(2, "От 1 до 2"),
+    student: z.string().min(1, "Обязательное поле"),
+    company: z.string().optional(),
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY‑MM‑DD"),
+    position: z.string().min(2),
+  });
+  type FormValues = z.infer<typeof schema>;
+
+  /* ---------- 2. useForm ---------- */
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema), // generic выводится автоматически
+    defaultValues: {
+      semester: 1,
+      student: "",
+      company: "",
+      startDate: new Date().toISOString().slice(0, 10),
+      position: "",
+    },
+  });
+
+  /* ---------- 3. обработчик ---------- */
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    // const row: = {
+    //   id: crypto.randomUUID(),
+    //   studentId: Number(data.student.match(/\d+$/)?.[0]) || Date.now(), // fake id
+    //   semester: data.semester,
+    //   company: data.company ?? null,
+    //   startDate: data.startDate,
+    //   position: data.position,
+    // };
+    alert("Строка добавлена!");
+  };
+
+  useEffect(() => {
+    setValue(
+      "student",
+      studentsData.find(({ id }) => id === studentId)?.fullName ?? "",
+    );
+    setValue("semester", semester);
+    setValue("company", company ?? "");
+    setValue("startDate", startDate);
+    setValue("position", position);
+  }, [setValue, studentId, semester, company, startDate, position]);
 
   return (
-    <div className="p-4">
-      {/* Заголовок с названием группы */}
-      <div className="flex w-full">
-        <h1 className="inline-block text-2xl font-bold mb-6">
-          Группа:{' '}
-          <span className="ml-1">
-            <EditableTitle initialValue={groupName} onSave={handleTitleSave} className="w-min" />
-          </span>
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">
+          Группа:
+          <EditableTitle
+            initialValue={groupName}
+            onSave={() => {}}
+            className="ml-1"
+          />
         </h1>
-        <LinkDocument href="#">Открыть xlsx студентов</LinkDocument>
+        <LinkDocument href="#">Открыть XLSX студентов</LinkDocument>
       </div>
 
-      {/* Семестр и студенты */}
-      <div className="mb-4 flex items-center gap-4">
-        <label className="flex items-center gap-2">
-          <span className="font-semibold">Семестр (1/2):</span>
+      <div className="flex gap-4">
+        <label className="flex flex-col w-24">
+          <span className="font-semibold">Семестр</span>
           <input
-            type="text"
-            className="border p-1 rounded w-16"
-            value={semester}
-            onChange={(e) => setSemester(e.target.value)}
+            type="number"
+            min={MIN_SEMESTER}
+            max={MAX_SEMESTER}
+            {...register("semester", { valueAsNumber: true })}
+            className="border rounded p-1"
           />
+          {errors.semester && (
+            <span className="text-red-500 text-xs">
+              {errors.semester.message}
+            </span>
+          )}
         </label>
+
         <VirtualizedSearch
-          data={studentsData}
+          data={studentsData as []}
           placeholder="Введите фамилию..."
           maxDropdownHeight={200}
-          onSelect={handleSelectStudent}
+          onSelect={(s) =>
+            setValue("student", s.fullName, { shouldValidate: true })
+          }
         />
       </div>
+      {errors.student && (
+        <span className="text-red-500 text-xs">{errors.student.message}</span>
+      )}
 
-      {/* Предприятие */}
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Предприятие</label>
+      <label className="block max-w-sm">
+        <span className="font-semibold">Предприятие</span>
         <input
           type="text"
-          className="border p-1 rounded w-full max-w-sm"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
+          {...register("company")}
+          className="border rounded p-1 w-full"
+          placeholder="ООО «Рога и копыта»"
         />
-      </div>
+      </label>
 
-      {/* Дата начала работы */}
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">Дата начала работы</label>
+      <label className="block max-w-sm">
+        <span className="font-semibold">Дата начала</span>
+        <input
+          type="date"
+          {...register("startDate")}
+          className="border rounded p-1 w-full"
+        />
+        {errors.startDate && (
+          <span className="text-red-500 text-xs">
+            {errors.startDate.message}
+          </span>
+        )}
+      </label>
+
+      <label className="block max-w-sm">
+        <span className="font-semibold">Должность</span>
         <input
           type="text"
-          className="border p-1 rounded w-full max-w-sm"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          {...register("position")}
+          className="border rounded p-1 w-full"
         />
-      </div>
+        {errors.position && (
+          <span className="text-red-500 text-xs">
+            {errors.position.message}
+          </span>
+        )}
+      </label>
 
-      {/* Должность */}
-      <div className="mb-6">
-        <label className="block font-semibold mb-1">Должность</label>
-        <input
-          type="text"
-          className="border p-1 rounded w-full max-w-sm"
-          value={position}
-          onChange={(e) => setPosition(e.target.value)}
-        />
-      </div>
-
-      {/* Кнопки "Сохранить" и "Скачать бланк" */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 pt-2">
         <button
-          className="bg-orange-400 hover:bg-orange-500 text-white font-semibold px-4 py-2 rounded"
-          onClick={handleSave}
+          type="submit"
+          className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded"
         >
           Сохранить
         </button>
         <button
+          type="button"
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded"
-          onClick={handleDownloadBlank}
+          onClick={() => console.log("download")}
         >
           Скачать бланк
         </button>
       </div>
-    </div>
-  )
+    </form>
+  );
 }

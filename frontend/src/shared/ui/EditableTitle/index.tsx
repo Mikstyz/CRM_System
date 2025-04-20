@@ -1,9 +1,9 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { useState, ChangeEvent } from "react";
 
 interface EditableTitleProps {
-  initialValue?: string
-  onSave?: (newValue: string) => void
-  className?: string
+  initialValue?: string;
+  onSave?: (newValue: string) => void;
+  className?: string;
 }
 
 /**
@@ -11,25 +11,29 @@ interface EditableTitleProps {
  * @param initialValue Стартовое значение заголовка.
  * @param onSave Колбэк, вызывается при потере фокуса или на Enter.
  */
-export function EditableTitle({ initialValue = '', onSave, className = '' }: EditableTitleProps) {
-  const [value, setValue] = useState(initialValue)
+export function EditableTitle({
+  initialValue = "",
+  onSave,
+  className = "",
+}: EditableTitleProps) {
+  const [value, setValue] = useState(initialValue);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value)
-  }
+    setValue(event.target.value);
+  };
 
   const handleBlurOrEnter = () => {
     if (onSave) {
-      onSave(value)
+      onSave(value);
     }
-  }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       // Снимаем фокус, чтобы сработал onBlur
-      ;(event.target as HTMLInputElement).blur()
+      (event.target as HTMLInputElement).blur();
     }
-  }
+  };
 
   return (
     <input
@@ -40,5 +44,5 @@ export function EditableTitle({ initialValue = '', onSave, className = '' }: Edi
       onBlur={handleBlurOrEnter}
       onKeyDown={handleKeyDown}
     />
-  )
+  );
 }

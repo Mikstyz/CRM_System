@@ -1,20 +1,20 @@
-import { ReactNode } from 'react'
+import { ReactNode } from "react";
 
 interface ButtonPushProps {
-  type?: 'button' | 'submit'
-  onClick: () => void
-  children: ReactNode
-  disabled?: boolean
-  isLoading?: boolean
-  className?: string
+  type?: "button" | "submit";
+  onClick: () => void;
+  children: ReactNode;
+  disabled?: boolean;
+  isLoading?: boolean;
+  className?: string;
 }
 export function ButtonPush({
-  type = 'button',
+  type = "button",
   onClick,
   children,
   disabled = false,
   isLoading = false,
-  className = '',
+  className = "",
   ...props
 }: ButtonPushProps) {
   return (
@@ -25,7 +25,7 @@ export function ButtonPush({
       disabled={disabled || isLoading}
       {...props}
     >
-      {isLoading ? 'Загрузка...' : children}
+      {isLoading ? "Загрузка..." : children}
     </button>
-  )
+  );
 }

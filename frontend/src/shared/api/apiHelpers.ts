@@ -1,6 +1,6 @@
-import { AxiosError, AxiosResponse } from 'axios'
-import { BaseApiProps, BaseApiTrunksProps } from '@/shared/types/typeAPI.ts'
-import { makeRequest } from './helpers/makeRequest'
+import { AxiosError, AxiosResponse } from "axios";
+import { BaseApiProps, BaseApiTrunksProps } from "@/shared/types/typeAPI.ts";
+import { makeRequest } from "./helpers/makeRequest";
 
 /**
  * @template TResponse - Тип данных ожидаемого ответа.
@@ -16,10 +16,12 @@ export async function executeApiRTK<TResponse = any, TRequest = any>(
   props: BaseApiTrunksProps<TRequest>,
 ): Promise<AxiosResponse<TResponse>> {
   try {
-    return await makeRequest<TResponse, TRequest>(props)
+    return await makeRequest<TResponse, TRequest>(props);
   } catch (error: unknown) {
-    const axiosError = error as AxiosError
-    return props.rejectWithValue(axiosError?.response?.data || props.errorMessage)
+    const axiosError = error as AxiosError;
+    return props.rejectWithValue(
+      axiosError?.response?.data || props.errorMessage,
+    );
   }
 }
 
@@ -30,9 +32,9 @@ export async function executeApiRequest<TResponse = any, TRequest = any>(
   props: BaseApiProps<TRequest>,
 ): Promise<AxiosResponse<TResponse>> {
   try {
-    return await makeRequest<TResponse, TRequest>(props)
+    return await makeRequest<TResponse, TRequest>(props);
   } catch (error: unknown) {
-    const axiosError = error as AxiosError
-    throw new Error(String(axiosError.response?.data || props.errorMessage))
+    const axiosError = error as AxiosError;
+    throw new Error(String(axiosError.response?.data || props.errorMessage));
   }
 }

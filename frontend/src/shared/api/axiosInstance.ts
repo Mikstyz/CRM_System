@@ -1,16 +1,16 @@
 /**
  * Этот файл содержит конфигурацию Axios для взаимодействия с API.
  */
-import axios from 'axios'
-import { API_ENDPOINTS } from './constEndpoints'
+import axios from "axios";
+import { API_ENDPOINTS } from "./constEndpoints";
 
 export const axiosInstance = axios.create({
   baseURL: API_ENDPOINTS.common.baseUrl, // Базовый URL для всех запросов
   timeout: 10000, // Тайм-аут запросов
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-})
+});
 
 /**
  * Перехватчик запросов
@@ -20,12 +20,12 @@ export const axiosInstance = axios.create({
  */
 axiosInstance.interceptors.request.use(
   (config) => {
-    return config
+    return config;
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(error);
   },
-)
+);
 
 /**
  * Перехватчик ответов
@@ -39,17 +39,17 @@ axiosInstance.interceptors.request.use(
  */
 axiosInstance.interceptors.response.use(
   (response) => {
-    return response
+    return response;
   },
   (error) => {
-    console.log('Error server:', error)
+    console.log("Error server:", error);
     if (error.response) {
-      console.error('Ошибка сервера: ', error.response)
+      console.error("Ошибка сервера: ", error.response);
     } else if (error.request) {
-      console.error('Нет ответа от сервера: ', error.request)
+      console.error("Нет ответа от сервера: ", error.request);
     } else {
-      console.error('Ошибка конфигурации запроса: ', error.message)
+      console.error("Ошибка конфигурации запроса: ", error.message);
     }
-    return error.response
+    return error.response;
   },
-)
+);

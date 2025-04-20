@@ -1,15 +1,15 @@
-import { EditableTitle } from '@/shared/ui/EditableTitle'
-import { Discipline } from '../../entities/discipline/lib/types'
+import { EditableTitle } from "@/shared/ui/EditableTitle";
+import { Discipline } from "../../entities/discipline/types";
 
 interface DisciplineItemProps {
-  discipline: Discipline
-  onDelete: () => void
+  discipline: Discipline;
+  onDelete: () => void;
 }
 
 export function DisciplineItem({ discipline, onDelete }: DisciplineItemProps) {
   const handleTitleSave = (newValue: string) => {
-    console.log('Сохранённое название DisciplineItem:', newValue)
-  }
+    console.log("Сохранённое название DisciplineItem:", newValue);
+  };
   return (
     <div className="border rounded-lg p-2 flex justify-between items-center">
       <EditableTitle initialValue={discipline.title} onSave={handleTitleSave} />
@@ -22,5 +22,5 @@ export function DisciplineItem({ discipline, onDelete }: DisciplineItemProps) {
         ✕
       </button>
     </div>
-  )
+  );
 }

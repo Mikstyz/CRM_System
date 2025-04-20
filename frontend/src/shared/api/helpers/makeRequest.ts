@@ -1,6 +1,6 @@
-import { BaseApiProps } from '@/shared/types/typeAPI.ts'
-import { AxiosResponse } from 'axios'
-import { axiosInstance } from '@/shared/api/axiosInstance.ts'
+import { BaseApiProps } from "@/shared/types/typeAPI.ts";
+import { AxiosResponse } from "axios";
+import { axiosInstance } from "@/shared/api/axiosInstance.ts";
 
 /**
  * Выполняет HTTP-запрос с использованием экземпляра axios.
@@ -18,21 +18,21 @@ export async function makeRequest<TResponse = unknown, TRequest = any>({
   config,
 }: BaseApiProps<TRequest>): Promise<AxiosResponse<TResponse>> {
   switch (method) {
-    case 'GET':
+    case "GET":
       return await axiosInstance.get<TResponse>(url, {
         ...config,
         params: body,
-      })
-    case 'DELETE':
+      });
+    case "DELETE":
       return await axiosInstance.delete<TResponse>(url, {
         ...config,
         data: body,
-      })
-    case 'POST':
-      return await axiosInstance.post<TResponse>(url, body, config)
-    case 'PUT':
-      return await axiosInstance.put<TResponse>(url, body, config)
+      });
+    case "POST":
+      return await axiosInstance.post<TResponse>(url, body, config);
+    case "PUT":
+      return await axiosInstance.put<TResponse>(url, body, config);
     default:
-      throw new Error(`Неподдерживаемый метод: ${method}`)
+      throw new Error(`Неподдерживаемый метод: ${method}`);
   }
 }

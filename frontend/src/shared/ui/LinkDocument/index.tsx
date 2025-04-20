@@ -1,7 +1,7 @@
 interface LinkDocumentProps {
-  href: string
-  children: React.ReactNode
-  className?: string
+  href: string;
+  children: React.ReactNode;
+  className?: string;
 }
 export function LinkDocument({ href, children, className }: LinkDocumentProps) {
   return (
@@ -13,5 +13,5 @@ export function LinkDocument({ href, children, className }: LinkDocumentProps) {
     >
       {children}
     </a>
-  )
+  );
 }
