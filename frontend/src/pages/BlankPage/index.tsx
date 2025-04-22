@@ -50,7 +50,7 @@ export function BlankPage({
       semester: 1,
       student: "",
       company: "",
-      startDate: new Date().toISOString().slice(0, 10),
+      startDate: "",
       position: "",
     },
   });
