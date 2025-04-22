@@ -12,7 +12,7 @@ export function DisciplineItem({ discipline, onDelete }: DisciplineItemProps) {
   };
   return (
     <div className="border rounded-lg p-2 flex justify-between items-center">
-      <EditableTitle initialValue={discipline.title} onSave={handleTitleSave} />
+      <EditableTitle initialValue={discipline.title} onSave={handleTitleSave} className="w-full" />
       <div>{}</div>
       <button
         onClick={onDelete}
