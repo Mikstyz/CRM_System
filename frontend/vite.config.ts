@@ -24,7 +24,13 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@wails": path.resolve(__dirname, "./wailsjs/go/models"),
+      "@wails": path.resolve(__dirname, "./wailsjs"),
     },
   },
+  root: '.',          // корень — frontend
+  base: './',         // относительные пути в сборке
+  build: {
+    outDir: '../build',   // собираем в ../build
+    emptyOutDir: true
+  }
 });

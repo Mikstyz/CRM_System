@@ -1,4 +1,3 @@
-// test/mock.test.ts
 import { Group } from "@/entities/group/types";
 
 export const initialGroups: Group[] = [

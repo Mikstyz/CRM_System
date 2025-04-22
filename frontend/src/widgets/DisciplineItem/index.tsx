@@ -1,5 +1,5 @@
 import { EditableTitle } from "@/shared/ui/EditableTitle";
-import { Discipline } from "../../entities/discipline/types";
+import {Discipline} from "@/entities/discipline/types";
 
 interface DisciplineItemProps {
   discipline: Discipline;
@@ -12,7 +12,11 @@ export function DisciplineItem({ discipline, onDelete }: DisciplineItemProps) {
   };
   return (
     <div className="border rounded-lg p-2 flex justify-between items-center">
-      <EditableTitle initialValue={discipline.title} onSave={handleTitleSave} className="w-full" />
+      <EditableTitle
+        initialValue={discipline.title}
+        onSave={handleTitleSave}
+        className="w-full"
+      />
       <div>{}</div>
       <button
         onClick={onDelete}

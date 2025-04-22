@@ -12,7 +12,7 @@ import { Filters, filterSchema, FiltersRaw } from "./schema";
 import { ButtonPush } from "@/shared/ui/ButtonPush";
 import { addGroup } from "@/entities/group/store/groupSlice";
 
-export function FilterGroup({groupsLength}: {groupsLength: number}) {
+export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s) => s.groupFilters);
   const { course, specialty, graduates, groupNumber } = useAppSelector(
@@ -55,125 +55,129 @@ export function FilterGroup({groupsLength}: {groupsLength: number}) {
 
   return (
     <>
-    <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
-      <h2 className="font-semibold mb-2">Фильтрация</h2>
+      <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
+        <h2 className="font-semibold mb-2">Фильтрация</h2>
 
-      <form className="flex flex-wrap gap-2">
-        {/* Курс */}
-        <InputFilterGroup
-          title="Курс"
-          inputProps={{
-            type: "number",
-            placeholder: "1",
-            ...register("course"),
-            className: clsx(
-              "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-              errors.course ? "border-red-500" : "border-gray-300",
-              !errors.course && watch("course") ? "focus:border-green-500" : "",
-            ),
-          }}
-          error={errors.course?.message}
-          />
-
-        {/* Специальность */}
-        <InputFilterGroup
-          title="Специальность"
-          inputProps={{
-            type: "text",
-            placeholder: "ИСП",
-            ...register("specialty"),
-            className: clsx(
-              "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-              errors.specialty ? "border-red-500" : "border-gray-300",
-              !errors.specialty && watch("specialty")
-              ? "focus:border-green-500"
-              : "",
-            ),
-          }}
-          error={errors.specialty?.message}
-          />
-
-        {/* Выпускники */}
-        <InputFilterGroup
-          title="Выпускники (9/11)"
-          inputProps={{
-            type: "text",
-            placeholder: "9",
-            ...register("graduates"),
-            className: clsx(
-              "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-              errors.graduates ? "border-red-500" : "border-gray-300",
-              !errors.graduates && watch("graduates")
-              ? "focus:border-green-500"
-              : "",
-            ),
-          }}
-          error={errors.graduates?.message}
-          />
-
-        {/* Номер группы */}
-        <InputFilterGroup
-          title="Номер группы"
-          inputProps={{
-            type: "number",
-            placeholder: "45",
-            ...register("groupNumber"),
-            className: clsx(
-              "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-              errors.groupNumber ? "border-red-500" : "border-gray-300",
-              !errors.groupNumber && watch("groupNumber")
-              ? "focus:border-green-500"
-              : "",
-            ),
-          }}
-          error={errors.groupNumber?.message}
-          />
-      </form>
-      </aside>
-      { groupsLength <= 0 && <ButtonPush
-            onClick={() => {
-              if (course && specialty && graduates && groupNumber) {
-                dispatch(
-                  addGroup({
-                    id: crypto.randomUUID(),
-                    name: `${course}${specialty}${graduates}-${groupNumber}`,
-                    isExpanded: false,
-                    disciplines: {
-                      1: [],
-                      2: [],
-                    },
-                  }),
-                )
-              } else {
-                if (!course) {
-                  setError("course", {
-                    type: "custom",
-                    message: "Выберите курс",
-                  });
-                }
-                if (!specialty) {
-                  setError("specialty", {
-                    type: "custom",
-                    message: "Выберите специальность",
-                  });
-                }
-                if (!graduates) {
-                  setError("graduates", {
-                    type: "custom",
-                    message: "Выберите выпускников",
-                  });
-                }
-                if (!groupNumber) {
-                  setError("groupNumber", {
-                    type: "custom",
-                    message: "Выберите номер группы",
-                  });
-                }
-              }
+        <form className="flex flex-wrap gap-2">
+          {/* Курс */}
+          <InputFilterGroup
+            title="Курс"
+            inputProps={{
+              type: "number",
+              placeholder: "1",
+              ...register("course"),
+              className: clsx(
+                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
+                errors.course ? "border-red-500" : "border-gray-300",
+                !errors.course && watch("course")
+                  ? "focus:border-green-500"
+                  : "",
+              ),
             }}
-            >
-            Добавить группу
-          </ButtonPush>}
-            </>
+            error={errors.course?.message}
+          />
+
+          {/* Специальность */}
+          <InputFilterGroup
+            title="Специальность"
+            inputProps={{
+              type: "text",
+              placeholder: "ИСП",
+              ...register("specialty"),
+              className: clsx(
+                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
+                errors.specialty ? "border-red-500" : "border-gray-300",
+                !errors.specialty && watch("specialty")
+                  ? "focus:border-green-500"
+                  : "",
+              ),
+            }}
+            error={errors.specialty?.message}
+          />
+
+          {/* Выпускники */}
+          <InputFilterGroup
+            title="Выпускники (9/11)"
+            inputProps={{
+              type: "text",
+              placeholder: "9",
+              ...register("graduates"),
+              className: clsx(
+                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
+                errors.graduates ? "border-red-500" : "border-gray-300",
+                !errors.graduates && watch("graduates")
+                  ? "focus:border-green-500"
+                  : "",
+              ),
+            }}
+            error={errors.graduates?.message}
+          />
+
+          {/* Номер группы */}
+          <InputFilterGroup
+            title="Номер группы"
+            inputProps={{
+              type: "number",
+              placeholder: "45",
+              ...register("groupNumber"),
+              className: clsx(
+                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
+                errors.groupNumber ? "border-red-500" : "border-gray-300",
+                !errors.groupNumber && watch("groupNumber")
+                  ? "focus:border-green-500"
+                  : "",
+              ),
+            }}
+            error={errors.groupNumber?.message}
+          />
+        </form>
+      </aside>
+      {groupsLength <= 0 && (
+        <ButtonPush
+          onClick={() => {
+            if (course && specialty && graduates && groupNumber) {
+              dispatch(
+                addGroup({
+                  id: crypto.randomUUID(),
+                  name: `${course}${specialty}${graduates}-${groupNumber}`,
+                  isExpanded: false,
+                  disciplines: {
+                    1: [],
+                    2: [],
+                  },
+                }),
+              );
+            } else {
+              if (!course) {
+                setError("course", {
+                  type: "custom",
+                  message: "Выберите курс",
+                });
+              }
+              if (!specialty) {
+                setError("specialty", {
+                  type: "custom",
+                  message: "Выберите специальность",
+                });
+              }
+              if (!graduates) {
+                setError("graduates", {
+                  type: "custom",
+                  message: "Выберите выпускников",
+                });
+              }
+              if (!groupNumber) {
+                setError("groupNumber", {
+                  type: "custom",
+                  message: "Выберите номер группы",
+                });
+              }
+            }
+          }}
+        >
+          Добавить группу
+        </ButtonPush>
+      )}
+    </>
   );
 }
