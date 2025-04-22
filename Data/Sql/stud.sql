@@ -1,24 +1,6 @@
--- Создание таблицы студентов
-CREATE TABLE IF NOT EXISTS students (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    FullName TEXT NOT NULL,
-    Speciality TEXT NOT NULL,
-    GroupNum INTEGER NOT NULL,
-    Semester INTEGER NOT NULL,
-    Well INTEGER NOT NULL,
-    gClass INTEGER NOT NULL DEFAULT 1
-);
+PRAGMA foreign_keys = ON;
 
--- Создание таблицы работодателей
-CREATE TABLE IF NOT EXISTS employers (
-    studid INTEGER NOT NULL,
-    enterprise TEXT NULL,
-    workstartdate DATE NULL,
-    jobtitle TEXT NULL,
-    FOREIGN KEY (studid) REFERENCES students(id) ON DELETE CASCADE
-);
-
--- Создание таблицы групп
+-- Группы
 CREATE TABLE IF NOT EXISTS einf_groups (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Well INTEGER NOT NULL,
@@ -28,49 +10,31 @@ CREATE TABLE IF NOT EXISTS einf_groups (
     GroupNum INTEGER NOT NULL
 );
 
--- Создание таблицы связи группа-учебный предмет
+-- Студенты
+CREATE TABLE IF NOT EXISTS students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    FullName TEXT NOT NULL,
+    group_id INTEGER NOT NULL,
+    FOREIGN KEY (group_id) REFERENCES einf_groups(Id) ON DELETE CASCADE
+);
+
+-- Таблица работодателей
+CREATE TABLE IF NOT EXISTS employers (
+    studid INTEGER NOT NULL,
+    enterprise TEXT NULL,
+    workstartdate DATE NULL,
+    jobtitle TEXT NULL,
+    FOREIGN KEY (studid) REFERENCES students(id) ON DELETE CASCADE
+);
+
+-- Таблица связь группа–предмет
 CREATE TABLE IF NOT EXISTS group_subject (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER NOT NULL,
     subject_name TEXT NOT NULL,
-    FOREIGN KEY (group_id) REFERENCES einf_groups(id) ON DELETE CASCADE
+    FOREIGN KEY (group_id) REFERENCES einf_groups(Id) ON DELETE CASCADE
 );
 
--- Индекс на столбцы group_id для ускорения поиска
+-- Индексы
 CREATE INDEX IF NOT EXISTS idx_group_subject_group_id ON group_subject(group_id);
-
--- Индекс на столбцы Speciality, GroupNum, Well, Semester для ускорения поиска
-CREATE INDEX IF NOT EXISTS idx_students_group_data ON students (Speciality, GroupNum, Well, Semester);
-
--- Триггер для удаления студентов при удалении группы
-CREATE TRIGGER IF NOT EXISTS trigger_delete_students_for_group
-AFTER DELETE ON einf_groups
-FOR EACH ROW
-BEGIN
-    DELETE FROM students
-    WHERE Speciality = OLD.Speciality
-    AND GroupNum = OLD.GroupNum
-    AND Well = OLD.Well;
-END;
-
--- Триггер для обновления данных студентов при изменении группы
-CREATE TRIGGER IF NOT EXISTS trigger_update_student_group_data
-AFTER UPDATE ON einf_groups
-FOR EACH ROW
-WHEN (OLD.Speciality != NEW.Speciality
-    OR OLD.GroupNum != NEW.GroupNum
-    OR OLD.Well != NEW.Well
-    OR OLD.Semester != NEW.Semester
-    OR OLD.gClass != NEW.gClass)
-BEGIN
-    UPDATE students
-    SET Speciality = NEW.Speciality,
-        GroupNum = NEW.GroupNum,
-        Well = NEW.Well,
-        Semester = NEW.Semester,
-        gClass = NEW.gClass
-    WHERE Speciality = OLD.Speciality
-    AND GroupNum = OLD.GroupNum
-    AND Well = OLD.Well
-    AND Semester = OLD.Semester;
-END;
+CREATE INDEX IF NOT EXISTS idx_students_group_id ON students (group_id);

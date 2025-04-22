@@ -18,7 +18,7 @@ type Update struct {
 	Error string
 }
 
-type Delete struct {
+type Remove struct {
 	Code  int
 	Error string
 }

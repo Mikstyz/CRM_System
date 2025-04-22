@@ -81,8 +81,8 @@ func (a *App) Update_StudentById(studId int, newFullName string, newWell byte, n
 	return res
 }
 
-func (a *App) Delete_Student(studId int) modeles.Delete {
-	var res modeles.Delete
+func (a *App) Delete_Student(studId int) modeles.Remove {
+	var res modeles.Remove
 	_, err := routes.Delete_Student(studId)
 	code := 200
 	if err != nil {
@@ -120,8 +120,8 @@ func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkSta
 	return res
 }
 
-func (a *App) Delete_EmpbyStudentId(studId int) modeles.Delete {
-	var res modeles.Delete
+func (a *App) Delete_EmpbyStudentId(studId int) modeles.Remove {
+	var res modeles.Remove
 	_, err := routes.Delete_EmpbyStudentId(studId)
 	code := 200
 	if err != nil {
@@ -172,8 +172,8 @@ func (a *App) Update_GroupById(groupId int, newWell byte, newGClass byte, newSpe
 	return res
 }
 
-func (a *App) Delete_GroupById(groupId int) modeles.Delete {
-	var res modeles.Delete
+func (a *App) Delete_GroupById(groupId int) modeles.Remove {
+	var res modeles.Remove
 	_, err := routes.Delete_GroupById(groupId)
 	code := 200
 	if err != nil {
@@ -237,8 +237,8 @@ func (a *App) Update_SubjectById(subjectId int, newSubject string) modeles.Updat
 	return res
 }
 
-func (a *App) Delete_SubjectById(subjectId int) modeles.Delete {
-	var res modeles.Delete
+func (a *App) Delete_SubjectById(subjectId int) modeles.Remove {
+	var res modeles.Remove
 	_, err := routes.Delete_SubjectById(subjectId)
 	code := 200
 	if err != nil {
@@ -249,8 +249,8 @@ func (a *App) Delete_SubjectById(subjectId int) modeles.Delete {
 	return res
 }
 
-func (a *App) Delete_AllSubjectByGroupId(groupID int) modeles.Delete {
-	var res modeles.Delete
+func (a *App) Delete_AllSubjectByGroupId(groupID int) modeles.Remove {
+	var res modeles.Remove
 	_, err := routes.Delete_AllSubjectByGroupId(groupID)
 	code := 200
 	if err != nil {

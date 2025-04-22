@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
 
-const dbPath string = "E:/code/Go/Wails/CRM_System/Backend/Data/Sql/stud.db"
-
 // DB — глобальная переменная для работы с базой данных
 var DB *sql.DB
 
+//const dbPath string = "E:\\code\\Go\\CRM_System\\Data\\Sql\\stud.db"
+
 func Init() {
+	cwd, _ := os.Getwd()
+
+	dbPath := filepath.Join(cwd, "Data", "Sql", "stud.db")
+
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Fatalf("База данных не существует по пути: %s", dbPath)
 	}
@@ -28,9 +33,8 @@ func Init() {
 
 	// Проверяем, доступна ли база данных
 	if err = DB.Ping(); err != nil {
-		log.Fatalf("БД не отвечает: %v", err)
+		log.Fatalf("[db-DataConn.go] PathDb: %s\nБД не отвечает: %v", dbPath, err.Error())
 	}
-
 }
 
 func PingDB() error {
