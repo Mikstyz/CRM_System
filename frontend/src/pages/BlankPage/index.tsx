@@ -1,20 +1,20 @@
-import {VirtualizedSearch} from "@/features/VirtualizedSearch";
-import {EditableTitle} from "@/shared/ui/EditableTitle";
-import {LinkDocument} from "@/shared/ui/LinkDocument";
+import { VirtualizedSearch } from "@/features/VirtualizedSearch";
+import { EditableTitle } from "@/shared/ui/EditableTitle";
 
-import {z} from "zod";
-import {useForm, SubmitHandler} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {MIN_SEMESTER, MAX_SEMESTER} from "@/shared/const";
-import {selectBlank, setStudent} from "@/entities/blank/store/blankSlice";
-import {useAppDispatch, useAppSelector} from "@/shared/lib/hooks/redux";
-import {useEffect} from "react";
+import { z } from "zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
+import { selectBlank, setStudent } from "@/entities/blank/store/blankSlice";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
+import { useEffect } from "react";
+import { Id } from "@/shared/types";
 
 export function BlankPage({
-                            groupId,
-                            groupName,
-                          }: {
-  groupId: string | null;
+  groupId,
+  groupName,
+}: {
+  groupId: Id | null;
   groupName: string;
 }) {
   const dispatch = useAppDispatch();
@@ -43,7 +43,7 @@ export function BlankPage({
     register,
     handleSubmit,
     setValue,
-    formState: {errors},
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema), // generic выводится автоматически
     defaultValues: {
@@ -89,12 +89,10 @@ export function BlankPage({
           Группа:
           <EditableTitle
             initialValue={groupName}
-            onSave={() => {
-            }}
+            onSave={() => {}}
             className="ml-1 inline-block text-2xl font-bold"
           />
         </h1>
-        <LinkDocument href="#">Открыть XLSX студентов</LinkDocument>
       </div>
 
       <div className="flex gap-4">
@@ -104,7 +102,7 @@ export function BlankPage({
             type="number"
             min={MIN_SEMESTER}
             max={MAX_SEMESTER}
-            {...register("semester", {valueAsNumber: true})}
+            {...register("semester", { valueAsNumber: true })}
             className="border rounded p-1"
           />
           {errors.semester && (
@@ -120,9 +118,9 @@ export function BlankPage({
           maxDropdownHeight={200}
           onSelect={(s) => {
             // 1) пишем ФИО в форму
-            setValue("student", s.fullName, {shouldValidate: true});
+            setValue("student", s.fullName, { shouldValidate: true });
             // 2) сохраняем id + ФИО в blankSlice
-            dispatch(setStudent({id: s.id, fullName: s.fullName}));
+            dispatch(setStudent({ id: s.id, fullName: s.fullName }));
           }}
         />
       </div>

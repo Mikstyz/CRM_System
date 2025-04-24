@@ -101,7 +101,7 @@ export function VirtualizedSearch({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     onSelect?.({
-      id: String(Date.now()),
+      id: Date.now(),
       fullName: e.target.value,
     });
     setIsOpen(true);

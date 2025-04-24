@@ -1,12 +1,13 @@
 import { FixedSizeList } from "react-window";
 import { Discipline, Semester } from "@/entities/discipline/types";
 import { DisciplineItem } from "@/widgets/DisciplineItem";
+import { Id } from "@/shared/types";
 
 interface Props {
   semester: Semester;
   items: Discipline[];
   onAdd(): void;
-  onDelete(id: string): void;
+  onDelete(id: Id): void;
 }
 
 export const SemesterDisciplines = ({
