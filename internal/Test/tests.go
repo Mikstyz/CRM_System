@@ -2,6 +2,7 @@ package Test
 
 import (
 	"CRM_System/internal/db/repository"
+	"CRM_System/internal/models"
 	"CRM_System/internal/routes"
 	"fmt"
 	"log"
@@ -30,7 +31,10 @@ func TestGenerateFilledPDF() {
 	}
 
 	// Генерация PDF
-	Dock, err := routes.GenerateFilledPDF(studentID, "Иван Иванов", groupID)
+	var pdfDATA models.GeneratePDF // ЗАПОЛНИТЬ ДАННЫЕ
+	хуй
+
+	Dock, err := routes.GenerateFilledPDF(pdfDATA)
 	if err != nil || Dock == nil {
 		fmt.Printf("[ERROR] Ошибка при генерации документа: %v\n", err)
 	} else {

@@ -2,16 +2,15 @@ package repository
 
 import (
 	db "CRM_System/internal/db"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"fmt"
 	"log"
 
 	_ "modernc.org/sqlite"
 )
 
-// Получение информации о студентах
-func InfStdByGroup() ([]modeles.Student, error) {
-	const query = `SELECT id, FullName, Well, gClass, Speciality, GroupNum, Semester FROM students`
+func InfStdByGroup() ([]models.Student, error) {
+	const query = `SELECT id, FullName, Well, Course, Speciality, GroupNum, Semester FROM students`
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -19,10 +18,10 @@ func InfStdByGroup() ([]modeles.Student, error) {
 	}
 	defer rows.Close()
 
-	var students []modeles.Student
+	var students []models.Student
 	for rows.Next() {
-		var s modeles.Student
-		err := rows.Scan(&s.ID, &s.FullName, &s.Well, &s.GClass, &s.Speciality, &s.GroupNum, &s.Semester)
+		var s models.Student
+		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum, &s.Semester)
 		if err != nil {
 			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
@@ -36,25 +35,24 @@ func InfStdByGroup() ([]modeles.Student, error) {
 	return students, nil
 }
 
-func GetStudentByID(studentID int) (*modeles.Student, error) {
+func GetStudentByID(studentID int) (*models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
-		SELECT FullName, Speciality, GroupNum, Semester, Well, gClass
+		SELECT FullName, Speciality, GroupNum, Semester, Well, Course
 		FROM students
-		WHERE id = ?
-	`
+		WHERE id = ?`
 
 	db.Init()
 
-	var student modeles.Student
+	var student models.Student
 	err := db.DB.QueryRow(query, studentID).Scan(
 		&student.FullName,
 		&student.Speciality,
 		&student.GroupNum,
 		&student.Semester,
-		&student.Well,
-		&student.GClass,
+		&student.Groudates,
+		&student.Course,
 	)
 	if err != nil {
 		log.Printf("Ошибка при получении студента: %v", err)
@@ -65,14 +63,14 @@ func GetStudentByID(studentID int) (*modeles.Student, error) {
 }
 
 // Создание студента
-func CrtStd(fullName string, well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
+func CrtStd(fullName string, Course byte, Groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	log.Println("Создаю нового студента...")
 
 	const query = `
-		INSERT INTO students (FullName, Well, gClass, Speciality, GroupNum, Semester)
+		INSERT INTO students (FullName, Well, Course, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?, ?)`
 
-	res, err := db.DB.Exec(query, fullName, well, gClass, speciality, groupNum, semester)
+	res, err := db.DB.Exec(query, fullName, Groudates, Course, speciality, groupNum, semester)
 	if err != nil {
 		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
 	}
@@ -86,15 +84,15 @@ func CrtStd(fullName string, well byte, gClass byte, speciality string, groupNum
 	return int(id), nil
 }
 
-func UpdateStd(studId int, newFullName string, newWell byte, newClass byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
+func UpdateStd(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
 	log.Printf("Обновляю данные студента с ID=%d...\n", studId)
 
 	const query = `
 		UPDATE students 
-		SET FullName = ?, Well = ?, gClass = ?, Speciality = ?, GroupNum = ?, Semester = ?
+		SET FullName = ?, Well = ?, Course = ?, Speciality = ?, GroupNum = ?, Semester = ?
 		WHERE id = ?`
 
-	res, err := db.DB.Exec(query, newFullName, newWell, newClass, newSpeciality, newGroupNum, newSemester, studId)
+	res, err := db.DB.Exec(query, newFullName, newGroudates, newCourse, newSpeciality, newGroupNum, newSemester, studId)
 	if err != nil {
 		return false, fmt.Errorf("не удалось обновить данные студента: %v", err)
 	}
@@ -137,8 +135,8 @@ func DelStd(studId int) (bool, error) {
 	return false, nil
 }
 
-// продвинутое созадение студена
-func CreateStudentWithEmptyEmployment(fullName string, well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
+// Продвинутое создание студента
+func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	log.Println("Создаю нового студента и пустую запись о трудоустройстве (в транзакции)...")
 
 	tx, err := db.DB.Begin()
@@ -148,10 +146,10 @@ func CreateStudentWithEmptyEmployment(fullName string, well byte, gClass byte, s
 
 	// Шаг 1: вставляем студента
 	const insertStudent = `
-		INSERT INTO students (FullName, Well, gClass, Speciality, GroupNum, Semester)
+		INSERT INTO students (FullName, Well, Course, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?, ?)`
 
-	res, err := tx.Exec(insertStudent, fullName, well, gClass, speciality, groupNum, semester)
+	res, err := tx.Exec(insertStudent, fullName, Groudates, Course, speciality, groupNum, semester)
 	if err != nil {
 		tx.Rollback()
 		return 0, fmt.Errorf("не удалось вставить студента: %v", err)

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"CRM_System/internal/routes"
 	"context"
 	"fmt"
@@ -30,8 +30,8 @@ func (a *App) Greet(name string) string {
 
 //----------------- Student ----------------
 
-func (a *App) Inf_AllStudent() modeles.Inf_AllStudents {
-	var info modeles.Inf_AllStudents
+func (a *App) Inf_AllStudent() models.Inf_AllStudents {
+	var info models.Inf_AllStudents
 	stud, err := routes.Inf_AllStudent()
 	code := 200
 	if err != nil {
@@ -43,8 +43,8 @@ func (a *App) Inf_AllStudent() modeles.Inf_AllStudents {
 	return info
 }
 
-func (a *App) Inf_StudentByID(studentID int) modeles.Inf_Student {
-	var info modeles.Inf_Student
+func (a *App) Inf_StudentByID(studentID int) models.Inf_Student {
+	var info models.Inf_Student
 	stud, err := routes.Inf_StudentByID(studentID)
 	code := 200
 	if err != nil {
@@ -56,33 +56,59 @@ func (a *App) Inf_StudentByID(studentID int) modeles.Inf_Student {
 	return info
 }
 
-func (a *App) Create_Student(fullName string, well byte, gClass byte, speciality string, groupNum int, semester byte) modeles.Create {
-	var res modeles.Create
-	id, err := routes.Create_Student(fullName, well, gClass, speciality, groupNum, semester)
+func (a *App) Inf_StudentbyGroup()
+
+func (a *App) CreateStudent(fullName string, course byte, groudates byte, speciality string, number int, Semester byte) models.OutStudentAPI {
+	var res models.OutStudentAPI
+
+	id, err := routes.Create_Student(fullName, course, groudates, speciality, number, Semester)
+
 	code := 200
+
 	if err != nil {
 		code = 500
 		res.Error = err.Error()
+		return res
 	}
+
 	res.Code = code
 	res.Id = id
+	res.FullName = fullName
+	res.Speciality = speciality
+	res.Number = number
+	res.Semester = Semester
+	res.Course = course
+	res.Groudates = groudates
+
 	return res
 }
 
-func (a *App) Update_StudentById(studId int, newFullName string, newWell byte, newClass byte, newSpeciality string, newGroupNum int, newSemester byte) modeles.Update {
-	var res modeles.Update
-	_, err := routes.Update_StudentById(studId, newFullName, newWell, newClass, newSpeciality, newGroupNum, newSemester)
+func (a *App) Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newClass byte, newSpeciality string, newNumber int, newSemester byte) models.OutStudentAPI {
+	var res models.OutStudentAPI
+
+	status, err := routes.Update_StudentById(studId, newFullName, newCourse, newGroudates, newClass, newSpeciality, newNumber, newSemester)
+
 	code := 200
-	if err != nil {
+
+	if err != nil || status == false {
 		code = 500
 		res.Error = err.Error()
 	}
+
 	res.Code = code
+	res.Id = studId
+	res.FullName = newFullName
+	res.Speciality = newSpeciality
+	res.Number = newNumber
+	res.Semester = newSemester
+	res.Course = newCourse
+	res.Groudates = newGroudates
+
 	return res
 }
 
-func (a *App) Delete_Student(studId int) modeles.Remove {
-	var res modeles.Remove
+func (a *App) Delete_Student(studId int) models.Remove {
+	var res models.Remove
 	_, err := routes.Delete_Student(studId)
 	code := 200
 	if err != nil {
@@ -90,13 +116,14 @@ func (a *App) Delete_Student(studId int) modeles.Remove {
 		res.Error = err.Error()
 	}
 	res.Code = code
+
 	return res
 }
 
 //----------------- Employers --------------
 
-func (a *App) Inf_EmpByStudentId(StudentId int) modeles.Inf_Employer {
-	var info modeles.Inf_Employer
+func (a *App) Inf_EmpByStudentId(StudentId int) models.Inf_Employer {
+	var info models.Inf_Employer
 	emp, err := routes.Inf_EmpByStudentId(StudentId)
 	code := 200
 	if err != nil {
@@ -108,8 +135,8 @@ func (a *App) Inf_EmpByStudentId(StudentId int) modeles.Inf_Employer {
 	return info
 }
 
-func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) modeles.Update {
-	var res modeles.Update
+func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) models.Update {
+	var res models.Update
 	_, err := routes.Update_EmpbyStudentId(studId, newEnterprise, newWorkStartDate, newJobTitle)
 	code := 200
 	if err != nil {
@@ -120,8 +147,8 @@ func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkSta
 	return res
 }
 
-func (a *App) Delete_EmpbyStudentId(studId int) modeles.Remove {
-	var res modeles.Remove
+func (a *App) Delete_EmpbyStudentId(studId int) models.Remove {
+	var res models.Remove
 	_, err := routes.Delete_EmpbyStudentId(studId)
 	code := 200
 	if err != nil {
@@ -134,8 +161,8 @@ func (a *App) Delete_EmpbyStudentId(studId int) modeles.Remove {
 
 //----------------- Group -------------------
 
-func (a *App) Inf_AllGroup() modeles.Inf_AllGroup {
-	var info modeles.Inf_AllGroup
+func (a *App) Inf_AllGroup() models.Inf_AllGroup {
+	var info models.Inf_AllGroup
 	groups, err := routes.Inf_AllGroup()
 	code := 200
 	if err != nil {
@@ -147,33 +174,56 @@ func (a *App) Inf_AllGroup() modeles.Inf_AllGroup {
 	return info
 }
 
-func (a *App) Create_Group(well byte, gClass byte, speciality string, groupNum int, semester byte) modeles.Create {
-	var res modeles.Create
-	id, err := routes.Create_Group(well, gClass, speciality, groupNum, semester)
+func (a *App) Create_Group(Course byte, Groudates byte, speciality string, Number int, Semester byte) models.OutGroupApi {
+	var res models.OutGroupApi
+
+	id, err := routes.Create_Group(Course, Groudates, speciality, Number, Semester)
+
 	code := 200
+
 	if err != nil {
 		code = 500
 		res.Error = err.Error()
 	}
+
 	res.Code = code
+
 	res.Id = id
+	res.Course = Course
+	res.Groudates = Groudates
+	res.Speciality = speciality
+	res.Number = Number
+	res.Semester = Semester
+
 	return res
 }
 
-func (a *App) Update_GroupById(groupId int, newWell byte, newGClass byte, newSpeciality string, newGroupNum int, newSemester byte) modeles.Update {
-	var res modeles.Update
-	_, err := routes.Update_GroupById(groupId, newWell, newGClass, newSpeciality, newGroupNum, newSemester)
+func (a *App) Update_GroupById(groupId int, newCourse byte, newGroudates byte, newSpeciality string, newNumber int, newSemester byte) models.OutGroupApi {
+	var res models.OutGroupApi
+
+	status, err := routes.Update_GroupById(groupId, newCourse, newGroudates, newSpeciality, newNumber, newSemester)
+
 	code := 200
-	if err != nil {
+
+	if err != nil || status == false {
 		code = 500
 		res.Error = err.Error()
 	}
+
 	res.Code = code
+
+	res.Id = groupId
+	res.Course = newCourse
+	res.Groudates = newGroudates
+	res.Speciality = newSpeciality
+	res.Number = newNumber
+	res.Semester = newSemester
+
 	return res
 }
 
-func (a *App) Delete_GroupById(groupId int) modeles.Remove {
-	var res modeles.Remove
+func (a *App) Delete_GroupById(groupId int) models.Remove {
+	var res models.Remove
 	_, err := routes.Delete_GroupById(groupId)
 	code := 200
 	if err != nil {
@@ -184,8 +234,8 @@ func (a *App) Delete_GroupById(groupId int) modeles.Remove {
 	return res
 }
 
-func (a *App) GetGroupId_GroupIdByInfo(well byte, gClass byte, speciality string, groupNum int, semester byte) modeles.GetId {
-	var res modeles.GetId
+func (a *App) GetGroupId_GroupIdByInfo(well byte, gClass byte, speciality string, groupNum int, semester byte) models.GetId {
+	var res models.GetId
 	id, err := routes.GetGroupId_GroupIdByInfo(well, gClass, speciality, groupNum, semester)
 	code := 200
 	if err != nil {
@@ -199,8 +249,8 @@ func (a *App) GetGroupId_GroupIdByInfo(well byte, gClass byte, speciality string
 
 //----------------- Subject -----------------
 
-func (a *App) Inf_SubjectByGroupId(groupId int) modeles.Inf_Subject {
-	var info modeles.Inf_Subject
+func (a *App) Inf_SubjectByGroupId(groupId int) models.Inf_Subject {
+	var info models.Inf_Subject
 	subjects, err := routes.Inf_SubjectByGroupId(groupId)
 	code := 200
 	if err != nil {
@@ -212,33 +262,42 @@ func (a *App) Inf_SubjectByGroupId(groupId int) modeles.Inf_Subject {
 	return info
 }
 
-func (a *App) Add_SubjectByGroupId(groupId int, newSubject string) modeles.Create {
-	var res modeles.Create
+func (a *App) Add_SubjectByGroupId(groupId int, newSubject string) models.Create {
+	var res models.Create
+
 	id, err := routes.Add_SubjectByGroupId(groupId, newSubject)
+
 	code := 200
+
 	if err != nil {
 		code = 500
 		res.Error = err.Error()
 	}
+
 	res.Code = code
+
 	res.Id = id
+
 	return res
 }
 
-func (a *App) Update_SubjectById(subjectId int, newSubject string) modeles.Update {
-	var res modeles.Update
-	_, err := routes.Update_SubjectById(subjectId, newSubject)
+func (a *App) Update_SubjectById(subjectId int, newSubject string) models.Update {
+	var res models.Update
+
+	status, err := routes.Update_SubjectById(subjectId, newSubject)
 	code := 200
-	if err != nil {
+
+	if err != nil || status == false {
 		code = 500
 		res.Error = err.Error()
 	}
+
 	res.Code = code
 	return res
 }
 
-func (a *App) Delete_SubjectById(subjectId int) modeles.Remove {
-	var res modeles.Remove
+func (a *App) Delete_SubjectById(subjectId int) models.Remove {
+	var res models.Remove
 	_, err := routes.Delete_SubjectById(subjectId)
 	code := 200
 	if err != nil {
@@ -249,8 +308,8 @@ func (a *App) Delete_SubjectById(subjectId int) modeles.Remove {
 	return res
 }
 
-func (a *App) Delete_AllSubjectByGroupId(groupID int) modeles.Remove {
-	var res modeles.Remove
+func (a *App) Delete_AllSubjectByGroupId(groupID int) models.Remove {
+	var res models.Remove
 	_, err := routes.Delete_AllSubjectByGroupId(groupID)
 	code := 200
 	if err != nil {
@@ -263,9 +322,9 @@ func (a *App) Delete_AllSubjectByGroupId(groupID int) modeles.Remove {
 
 //----------------- PDF ----------------------
 
-func (a *App) GenerateFilledPDF(StudentId int, StudentName string, GroupId int) modeles.PdfDock {
-	var res modeles.PdfDock
-	file, err := routes.GenerateFilledPDF(StudentId, StudentName, GroupId)
+func (a *App) GenerateFilledPDF(dockDATA models.GeneratePDF) models.PdfDock {
+	var res models.PdfDock
+	file, err := routes.GenerateFilledPDF(dockDATA)
 	code := 200
 	if err != nil {
 		code = 500

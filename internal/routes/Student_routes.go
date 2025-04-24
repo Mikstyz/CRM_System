@@ -2,11 +2,11 @@ package routes
 
 import (
 	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"fmt"
 )
 
-func Inf_AllStudent() ([]modeles.Student, error) {
+func Inf_AllStudent() ([]models.Student, error) {
 	result, err := repo.InfStdByGroup()
 
 	if err != nil {
@@ -18,7 +18,7 @@ func Inf_AllStudent() ([]modeles.Student, error) {
 	return result, nil
 }
 
-func Inf_StudentByID(studentID int) (*modeles.Student, error) {
+func Inf_StudentByID(studentID int) (*models.Student, error) {
 	result, err := repo.GetStudentByID(studentID)
 
 	if err != nil {
@@ -30,8 +30,8 @@ func Inf_StudentByID(studentID int) (*modeles.Student, error) {
 	return result, nil
 }
 
-func Create_Student(fullName string, well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
-	result, err := repo.CreateStudentWithEmptyEmployment(fullName, well, gClass, speciality, groupNum, semester)
+func Create_Student(fullName string, course byte, groduates byte, speciality string, groupNum int, semester byte) (int, error) {
+	result, err := repo.CreateStudentWithEmptyEmployment(fullName, course, groduates, speciality, groupNum, semester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при создании студента %v: %v\n", fullName, err)
@@ -42,8 +42,8 @@ func Create_Student(fullName string, well byte, gClass byte, speciality string, 
 	return result, nil
 }
 
-func Update_StudentById(studId int, newFullName string, newWell byte, newClass byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
-	result, err := repo.UpdateStd(studId, newFullName, newWell, newClass, newSpeciality, newGroupNum, newSemester)
+func Update_StudentById(studId int, newFullName string, newGroduates byte, newCourse byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
+	result, err := repo.UpdateStd(studId, newFullName, newGroduates, newCourse, newSpeciality, newGroupNum, newSemester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении данных студента с ID %d: %v\n", studId, err)

@@ -6,7 +6,7 @@ import (
 )
 
 func Inf_SubjectByGroupId(groupId int) ([]string, error) {
-	result, err := repo.InfDisciplinesInGroup(groupId)
+	result, err := repo.InfDisciplinesByGroup(groupId)
 
 	if err != nil {
 		fmt.Printf("Ошибка при получении предметов группы с ID %d: %v\n", groupId, err)

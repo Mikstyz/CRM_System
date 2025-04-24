@@ -1,10 +1,10 @@
-package modeles
+package models
 
 type EinfGroup struct {
 	Id         int
-	Well       int
+	Course     int
 	Speciality string
-	GClass     byte
+	Groudates  byte
 	Semester   byte
 	Number     int
 }

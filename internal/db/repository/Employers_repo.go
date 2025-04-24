@@ -2,13 +2,13 @@ package repository
 
 import (
 	db "CRM_System/internal/db"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"fmt"
 
 	_ "modernc.org/sqlite"
 )
 
-func InfEmpById(StudId int) (modeles.EInfEmp, error) {
+func InfEmpById(StudId int) (models.EInfEmp, error) {
 	const query = "SELECT Enterprise, WorkStartDate, JobTitle FROM employers WHERE studId = ?"
 
 	db.Init()
@@ -16,26 +16,26 @@ func InfEmpById(StudId int) (modeles.EInfEmp, error) {
 	// Выполняем запрос
 	rows, err := db.DB.Query(query, StudId)
 	if err != nil {
-		return modeles.EInfEmp{}, fmt.Errorf("ошибка при выполнении запроса: %w", err)
+		return models.EInfEmp{}, fmt.Errorf("ошибка при выполнении запроса: %w", err)
 	}
 	defer rows.Close()
 
-	var employer modeles.EInfEmp
+	var employer models.EInfEmp
 
 	// Проверяем, есть ли данные
 	if rows.Next() {
 		// Если данные есть, сканируем их в структуру
 		if err := rows.Scan(&employer.Enterprise, &employer.WorkStartDate, &employer.JobTitle); err != nil {
-			return modeles.EInfEmp{}, fmt.Errorf("ошибка при сканировании данных: %w", err)
+			return models.EInfEmp{}, fmt.Errorf("ошибка при сканировании данных: %w", err)
 		}
 	} else {
 		// Если данных нет, возвращаем ошибку "нет данных"
-		return modeles.EInfEmp{}, fmt.Errorf("работодатель с таким ID не найден")
+		return models.EInfEmp{}, fmt.Errorf("работодатель с таким ID не найден")
 	}
 
 	// Проверка на ошибки после выполнения запроса
 	if err := rows.Err(); err != nil {
-		return modeles.EInfEmp{}, fmt.Errorf("ошибка при обработке результата запроса: %w", err)
+		return models.EInfEmp{}, fmt.Errorf("ошибка при обработке результата запроса: %w", err)
 	}
 
 	// Возвращаем найденную информацию о работодателе

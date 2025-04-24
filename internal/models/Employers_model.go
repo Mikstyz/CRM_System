@@ -1,4 +1,4 @@
-package modeles
+package models
 
 type EInfEmp struct {
 	Enterprise    string

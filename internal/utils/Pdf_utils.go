@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"bytes"
 	"fmt"
 	"log"
@@ -24,7 +24,7 @@ func init() {
 	log.Printf("Рабочая директория для шрифтов: %s", FontDir)
 }
 
-func GenerateFilledPDF(Data modeles.PdfDoc) ([]byte, error) {
+func GenerateFilledPDF(Data models.PdfDoc) ([]byte, error) {
 	log.Println("Формирование PDF документа")
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
@@ -64,12 +64,20 @@ func GenerateFilledPDF(Data modeles.PdfDoc) ([]byte, error) {
 	pdf.Ln(10)
 
 	pdf.SetFillColor(255, 255, 255)
-	for i, subject := range Data.SubjectArray {
+
+	for i := 0; i < 1; i++ {
 		pdf.CellFormat(15, 7, fmt.Sprintf("%d.", i+1), "1", 0, "R", false, 0, "")
-		pdf.CellFormat(120, 7, subject, "1", 0, "L", false, 0, "")
+		pdf.CellFormat(120, 7, "_", "1", 0, "L", false, 0, "")
 		pdf.CellFormat(55, 7, "", "1", 0, "C", false, 0, "")
 		pdf.Ln(7)
 	}
+
+	// for i, subject := range Data.SubjectArray {
+	// 	pdf.CellFormat(15, 7, fmt.Sprintf("%d.", i+1), "1", 0, "R", false, 0, "")
+	// 	pdf.CellFormat(120, 7, subject, "1", 0, "L", false, 0, "")
+	// 	pdf.CellFormat(55, 7, "", "1", 0, "C", false, 0, "")
+	// 	pdf.Ln(7)
+	// }
 
 	pdf.Ln(10)
 	pdf.SetFontSize(12)

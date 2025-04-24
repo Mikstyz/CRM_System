@@ -5,39 +5,7 @@ import (
 	"log"
 )
 
-func InfDiscipAnDock(groupId int) ([]string, error) {
-	log.Println("Получение предметов группы")
-	const query = `SELECT subject_name FROM group_subject WHERE group_id = ?`
-
-	db.Init()
-
-	rows, err := db.DB.Query(query, groupId)
-	if err != nil {
-		log.Printf("Ошибка при получении предметов группы: %v", err)
-		return nil, err
-	}
-	defer rows.Close()
-
-	var disciplines []string
-	for rows.Next() {
-		var subjectName string
-		if err := rows.Scan(&subjectName); err != nil {
-			log.Printf("Ошибка при сканировании предметов группы: %v", err)
-			continue
-		}
-		disciplines = append(disciplines, subjectName)
-	}
-
-	if err := rows.Err(); err != nil {
-		log.Printf("Ошибка при чтении предметов группы: %v", err)
-		return nil, err
-	}
-
-	log.Printf("Получено предметов: %d", len(disciplines))
-	return disciplines, nil
-}
-
-func InfDisciplinesInGroup(groupId int) ([]string, error) {
+func InfDisciplinesByGroup(groupId int) ([]string, error) {
 	log.Println("Получение предметов группы")
 	const query = `SELECT subject_name FROM group_subject WHERE group_id = ?`
 

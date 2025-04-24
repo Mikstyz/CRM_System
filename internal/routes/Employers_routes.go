@@ -2,43 +2,34 @@ package routes
 
 import (
 	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"CRM_System/internal/utils"
 	"fmt"
 )
 
-func GenerateFilledPDF(StudentId int, StudentName string, GroupId int) ([]byte, error) {
-	InfEmp, err := repo.InfEmpById(StudentId)
-	if err != nil {
-		fmt.Printf("Ошибка при получении данных о трудоустройстве для студента с ID %d: %v\n", StudentId, err)
-		return nil, fmt.Errorf("ошибка при получении данных о трудоустройстве: %w", err)
+// поменять входные данные на имя студента и Id группы
+// поменять входные данные на все поля (группы) (инфы про место работы) (имя студента)
+func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
+	data := models.PdfDoc{
+		Name:          dataPdf.StudentName,
+		Enterprise:    dataPdf.Enterprise,
+		WorkStartDate: dataPdf.WorkStartDate,
+		JobTitle:      dataPdf.JobTitle,
 	}
 
-	subj, err := repo.InfDiscipAnDock(GroupId)
-	if err != nil {
-		fmt.Printf("Ошибка при получении списка предметов для группы с ID %d: %v\n", GroupId, err)
-		return nil, fmt.Errorf("ошибка при получении списка предметов: %w", err)
-	}
-
-	data := modeles.PdfDoc{
-		Name:          StudentName,
-		Enterprise:    InfEmp.Enterprise,
-		WorkStartDate: InfEmp.WorkStartDate,
-		JobTitle:      InfEmp.JobTitle,
-		SubjectArray:  subj,
-	}
+	//проверка на null
 
 	PdfDock, err := utils.GenerateFilledPDF(data)
 	if err != nil {
-		fmt.Printf("Ошибка при генерации PDF для студента с ID %d: %v\n", StudentId, err)
+		fmt.Printf("Ошибка при генерации PDF для студента %s: %v\n", dataPdf.StudentName, err)
 		return nil, fmt.Errorf("ошибка при генерации PDF: %w", err)
 	}
 
-	fmt.Printf("Успешное создание PDF для студента %s (ID: %d)\n", StudentName, StudentId)
+	fmt.Printf("Успешное создание PDF для студента %s (ID: %d)\n", dataPdf.StudentName)
 	return PdfDock, nil
 }
 
-func Inf_EmpByStudentId(StudentId int) (modeles.EInfEmp, error) {
+func Inf_EmpByStudentId(StudentId int) (models.EInfEmp, error) {
 	result, err := repo.InfEmpById(StudentId)
 	if err != nil {
 		fmt.Printf("Ошибка при получении данных о трудоустройстве для студента с ID %d: %v\n", StudentId, err)

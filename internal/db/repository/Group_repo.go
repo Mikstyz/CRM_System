@@ -2,17 +2,17 @@ package repository
 
 import (
 	"CRM_System/internal/db"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"database/sql"
 	"errors"
 	"fmt"
 )
 
-func InfAllGrp() ([]modeles.EinfGroup, error) {
+func InfAllGrp() ([]models.EinfGroup, error) {
 	const query = `
-		SELECT Id, Well, Speciality, GClass, Semester, GroupNum
+		SELECT Id, Course, Speciality, Groudates, Semester, GroupNum
 		FROM einf_groups
-		ORDER BY GClass, Speciality, GroupNum`
+		ORDER BY Course, Speciality, GroupNum`
 
 	db.Init()
 
@@ -22,15 +22,15 @@ func InfAllGrp() ([]modeles.EinfGroup, error) {
 	}
 	defer rows.Close()
 
-	var groups []modeles.EinfGroup
+	var groups []models.EinfGroup
 
 	for rows.Next() {
-		var group modeles.EinfGroup
+		var group models.EinfGroup
 		if err := rows.Scan(
 			&group.Id,
-			&group.Well,
+			&group.Course,
 			&group.Speciality,
-			&group.GClass,
+			&group.Groudates,
 			&group.Semester,
 			&group.Number,
 		); err != nil {
@@ -46,14 +46,14 @@ func InfAllGrp() ([]modeles.EinfGroup, error) {
 	return groups, nil
 }
 
-func CrtGrp(well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
+func CrtGrp(course byte, groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	const query = `
-		INSERT INTO einf_groups (Well, gClass, Speciality, GroupNum, Semester)
+		INSERT INTO einf_groups (Course, Groudates, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?)`
 
 	db.Init()
 
-	res, err := db.DB.Exec(query, well, gClass, speciality, groupNum, semester)
+	res, err := db.DB.Exec(query, course, groudates, speciality, groupNum, semester)
 	if err != nil {
 		return 0, err
 	}
@@ -66,15 +66,15 @@ func CrtGrp(well byte, gClass byte, speciality string, groupNum int, semester by
 	return int(id), nil
 }
 
-func UpdateGrp(groupId int, newWell byte, newGClass byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
+func UpdateGrp(groupId int, newCourse byte, newGroudates byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
 	const query = `
 		UPDATE einf_groups
-		SET Well = ?, GClass = ?, Speciality = ?, GroupNum = ?, Semester = ?
+		SET Course = ?, Groudates = ?, Speciality = ?, GroupNum = ?, Semester = ?
 		WHERE Id = ?`
 
 	db.Init()
 
-	res, err := db.DB.Exec(query, newWell, newGClass, newSpeciality, newGroupNum, newSemester, groupId)
+	res, err := db.DB.Exec(query, newCourse, newGroudates, newSpeciality, newGroupNum, newSemester, groupId)
 	if err != nil {
 		return false, err
 	}
@@ -105,13 +105,13 @@ func DelGrp(groupId int) (bool, error) {
 	return rowsAffected > 0, nil
 }
 
-func GetGroupIDByParams(well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
+func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	var groupID int
 
 	err := db.DB.QueryRow(`
 		SELECT id FROM einf_groups
-		WHERE Speciality = $1 AND GroupNum = $2 AND Semester = $3 AND Well = $4 AND GClass = $5
-	`, speciality, groupNum, semester, well, gClass).Scan(&groupID)
+		WHERE Speciality = $1 AND GroupNum = $2 AND Semester = $3 AND Course = $4 AND Groudates = $5
+	`, speciality, groupNum, semester, course, groudates).Scan(&groupID)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

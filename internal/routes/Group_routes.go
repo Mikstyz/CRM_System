@@ -2,11 +2,11 @@ package routes
 
 import (
 	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/modeles"
+	"CRM_System/internal/models"
 	"fmt"
 )
 
-func Inf_AllGroup() ([]modeles.EinfGroup, error) {
+func Inf_AllGroup() ([]models.EinfGroup, error) {
 	result, err := repo.InfAllGrp()
 
 	if err != nil {
@@ -18,8 +18,8 @@ func Inf_AllGroup() ([]modeles.EinfGroup, error) {
 	return result, nil
 }
 
-func Create_Group(well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
-	result, err := repo.CrtGrp(well, gClass, speciality, groupNum, semester)
+func Create_Group(course byte, groduates byte, speciality string, groupNum int, semester byte) (int, error) {
+	result, err := repo.CrtGrp(course, groduates, speciality, groupNum, semester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при создании группы: %v\n", err)
@@ -31,8 +31,8 @@ func Create_Group(well byte, gClass byte, speciality string, groupNum int, semes
 	return result, nil
 }
 
-func Update_GroupById(groupId int, newWell byte, newGClass byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
-	result, err := repo.UpdateGrp(groupId, newWell, newGClass, newSpeciality, newGroupNum, newSemester)
+func Update_GroupById(groupId int, newCourse byte, newGroduates byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
+	result, err := repo.UpdateGrp(groupId, newCourse, newGroduates, newSpeciality, newGroupNum, newSemester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении группы с ID %d: %v\n", groupId, err)
@@ -57,11 +57,11 @@ func Delete_GroupById(groupId int) (bool, error) {
 	return result, nil
 }
 
-func GetGroupId_GroupIdByInfo(well byte, gClass byte, speciality string, groupNum int, semester byte) (int, error) {
-	result, err := repo.GetGroupIDByParams(well, gClass, speciality, groupNum, semester)
+func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, groupNum int, semester byte) (int, error) {
+	result, err := repo.GetGroupIDByParams(course, groduates, speciality, groupNum, semester)
 
 	if err != nil {
-		fmt.Printf("Ошибка при получении ID группы с параметрами: well=%d, gClass=%d, speciality=%s, groupNum=%d, semester=%d: %v\n", well, gClass, speciality, groupNum, semester, err)
+		fmt.Printf("Ошибка при получении ID группы с параметрами: course=%d, groduates=%d, speciality=%s, groupNum=%d, semester=%d: %v\n", course, groduates, speciality, groupNum, semester, err)
 		return 0, err
 	} else {
 		fmt.Println("Успешное получение ID группы")
