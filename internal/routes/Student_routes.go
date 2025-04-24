@@ -42,8 +42,10 @@ func Create_Student(fullName string, course byte, groduates byte, speciality str
 	return result, nil
 }
 
-func Update_StudentById(studId int, newFullName string, newGroduates byte, newCourse byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
-	result, err := repo.UpdateStd(studId, newFullName, newGroduates, newCourse, newSpeciality, newGroupNum, newSemester)
+//studId, newFullName, newCourse, newGroudates, newClass, newSpeciality, newNumber, newSemester
+
+func Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int, newSemester byte) (bool, error) {
+	result, err := repo.UpdateStd(studId, newFullName, newGroudates, newCourse, newSpeciality, newNumber, newSemester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении данных студента с ID %d: %v\n", studId, err)

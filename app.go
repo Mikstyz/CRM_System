@@ -2,7 +2,7 @@ package main
 
 import (
 	"CRM_System/internal/models"
-	"CRM_System/internal/routes"
+	routes "CRM_System/internal/routes"
 	"context"
 	"fmt"
 )
@@ -56,7 +56,9 @@ func (a *App) Inf_StudentByID(studentID int) models.Inf_Student {
 	return info
 }
 
-func (a *App) Inf_StudentbyGroup()
+func (a *App) Inf_StudentbyGroup() {
+
+}
 
 func (a *App) CreateStudent(fullName string, course byte, groudates byte, speciality string, number int, Semester byte) models.OutStudentAPI {
 	var res models.OutStudentAPI
@@ -83,10 +85,10 @@ func (a *App) CreateStudent(fullName string, course byte, groudates byte, specia
 	return res
 }
 
-func (a *App) Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newClass byte, newSpeciality string, newNumber int, newSemester byte) models.OutStudentAPI {
+func (a *App) UpdateStudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int, newSemester byte) models.OutStudentAPI {
 	var res models.OutStudentAPI
 
-	status, err := routes.Update_StudentById(studId, newFullName, newCourse, newGroudates, newClass, newSpeciality, newNumber, newSemester)
+	status, err := routes.Update_StudentById(studId, newFullName, newCourse, newGroudates, newSpeciality, newNumber, newSemester)
 
 	code := 200
 
@@ -107,11 +109,11 @@ func (a *App) Update_StudentById(studId int, newFullName string, newCourse byte,
 	return res
 }
 
-func (a *App) Delete_Student(studId int) models.Remove {
+func (a *App) DeleteStudents(studId int) models.Remove {
 	var res models.Remove
-	_, err := routes.Delete_Student(studId)
+	status, err := routes.Delete_Student(studId)
 	code := 200
-	if err != nil {
+	if err != nil || status == false {
 		code = 500
 		res.Error = err.Error()
 	}

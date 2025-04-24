@@ -25,7 +25,7 @@ func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
 		return nil, fmt.Errorf("ошибка при генерации PDF: %w", err)
 	}
 
-	fmt.Printf("Успешное создание PDF для студента %s (ID: %d)\n", dataPdf.StudentName)
+	//fmt.Printf("Успешное создание PDF для студента %s (ID: %d)\n", dataPdf.StudentName)
 	return PdfDock, nil
 }
 
