@@ -14,7 +14,7 @@ export function ButtonPanelGroupCard({
   return (
     <button
       onClick={onClick}
-      className={` text-white font-bold py-1 px-2 rounded ${className}`}
+      className={` w-[2.2em] h-[2.2em] flex justify-center items-center bg-[#2a2a2a] text-white font-bold rounded ${className}`}
       title={title}
     >
       {children}

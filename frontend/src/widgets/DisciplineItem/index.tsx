@@ -1,5 +1,5 @@
 import { EditableTitle } from "@/shared/ui/EditableTitle";
-import {Discipline} from "@/entities/discipline/types";
+import { Discipline } from "@/entities/discipline/types";
 
 interface DisciplineItemProps {
   discipline: Discipline;

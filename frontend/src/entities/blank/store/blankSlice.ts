@@ -19,7 +19,7 @@ const blankSlice = createSlice({
   name: "blank",
   initialState,
   reducers: {
-    openBlank(state, { payload }: PayloadAction<string>) {
+    openBlank(state, { payload }: PayloadAction<Id>) {
       state.isOpen = true;
       state.groupId = payload;
     },

@@ -2,13 +2,14 @@ import { DisciplineItem } from "../DisciplineItem";
 import { PanelGroupCard } from "@/features/PanelGroupCard";
 import { ListChildComponentProps } from "react-window";
 import { EditableTitle } from "@/shared/ui/EditableTitle";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { Semester } from "@/entities/discipline/types";
 import { SemesterDisciplines } from "@/features/SemesterDisciplines";
 import { Id } from "@/shared/types";
 import { openBlank } from "@/entities/blank/store/blankSlice";
 import { duplicateGroup } from "@/entities/group/store/groupSlice";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
+import { Group } from "@/entities/group/types";
 
 interface DisciplineItemProps {
   discipline: any;
@@ -28,25 +29,19 @@ const Row = memo(
 Row.displayName = "Row";
 
 interface Props {
-  group: {
-    id: string | number;
-    name: string;
-    isExpanded: boolean;
-    disciplines: Record<number, any[]>;
-  };
-  onToggleExpand: () => void;
+  group: Group;
   onAddDiscipline: (semester: Semester) => void;
   onDeleteGroup: () => void;
   onDeleteDiscipline: (semester: Semester, id: Id) => void;
 }
 
 export function GroupCard({
-  group: { id, name, isExpanded, disciplines },
-  onToggleExpand,
+  group: { id, name, disciplines },
   onAddDiscipline,
   onDeleteGroup,
   onDeleteDiscipline,
 }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
   const handleTitleSave = useCallback(
     (value: string) => console.log(`Group[${id}] → ${value}`),
@@ -55,9 +50,9 @@ export function GroupCard({
 
   return (
     <section className="border-2 rounded-xl p-4">
-      <header className="flex items-center justify-between mb-2">
+      <header className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">
-          Группа:{" "}
+          Группа:
           <EditableTitle
             initialValue={name}
             onSave={handleTitleSave}
@@ -66,10 +61,15 @@ export function GroupCard({
         </h2>
 
         <PanelGroupCard
-          onToggleExpand={onToggleExpand}
-          onDeleteGroup={onDeleteGroup}
-          onDuplicateGroup={() => dispatch(duplicateGroup(id.toString()))}
-          onOpenBlank={() => dispatch(openBlank(id.toString()))}
+          onToggleExpand={() => setIsExpanded((prev) => !prev)}
+          onDeleteGroup={() => {
+            const isConfirmed = confirm(
+              "Вы уверены, что хотите удалить группу?",
+            );
+            if (isConfirmed) onDeleteGroup();
+          }}
+          onDuplicateGroup={() => dispatch(duplicateGroup(id))}
+          onOpenBlank={() => dispatch(openBlank(id))}
           isExpanded={isExpanded}
         />
       </header>

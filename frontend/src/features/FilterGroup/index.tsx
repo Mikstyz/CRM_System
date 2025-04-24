@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import clsx from "classnames";
 import { InputFilterGroup } from "./ui/InputFilterGroup";
 import { setFilters } from "@/entities/group/store/groupFiltersSlice";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
@@ -11,6 +10,8 @@ import { shallowEqual } from "react-redux";
 import { Filters, filterSchema, FiltersRaw } from "./schema";
 import { ButtonPush } from "@/shared/ui/ButtonPush";
 import { addGroup } from "@/entities/group/store/groupSlice";
+import { Create_Group } from "@wails/go/main/App";
+import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
 
 export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
@@ -23,6 +24,8 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
     register,
     watch,
     setError,
+    setValue,
+    getValues,
     formState: { errors },
   } = useForm<FiltersRaw>({
     resolver: zodResolver(filterSchema),
@@ -56,24 +59,41 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   return (
     <>
       <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
-        <h2 className="font-semibold mb-2">Фильтрация</h2>
+        <div className="flex justify-between mb-1">
+          <h2 className="font-semibold mb-2">Фильтрация</h2>
+          {(getValues("course") ||
+            getValues("graduates") ||
+            getValues("groupNumber") ||
+            getValues("specialty")) && (
+            <button
+              type="button"
+              className="ml-auto text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-md"
+              onClick={() => {
+                setError("course", {});
+                setError("graduates", {});
+                setError("groupNumber", {});
+                setError("specialty", {});
+                setValue("course", undefined);
+                setValue("graduates", undefined);
+                setValue("groupNumber", undefined);
+                setValue("specialty", undefined);
+              }}
+            >
+              Очистить форму
+            </button>
+          )}
+        </div>
 
         <form className="flex flex-wrap gap-2">
           {/* Курс */}
-          <InputFilterGroup
+          <GraduatesToggle
             title="Курс"
-            inputProps={{
-              type: "number",
-              placeholder: "1",
-              ...register("course"),
-              className: clsx(
-                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-                errors.course ? "border-red-500" : "border-gray-300",
-                !errors.course && watch("course")
-                  ? "focus:border-green-500"
-                  : "",
-              ),
+            variant={["1", "2", "3", "4"]}
+            onChange={(num) => {
+              setValue("course", num);
+              setError("course", {});
             }}
+            value={getValues("course")}
             error={errors.course?.message}
           />
 
@@ -84,32 +104,19 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
               type: "text",
               placeholder: "ИСП",
               ...register("specialty"),
-              className: clsx(
-                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-                errors.specialty ? "border-red-500" : "border-gray-300",
-                !errors.specialty && watch("specialty")
-                  ? "focus:border-green-500"
-                  : "",
-              ),
             }}
             error={errors.specialty?.message}
           />
 
           {/* Выпускники */}
-          <InputFilterGroup
+          <GraduatesToggle
             title="Выпускники (9/11)"
-            inputProps={{
-              type: "text",
-              placeholder: "9",
-              ...register("graduates"),
-              className: clsx(
-                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-                errors.graduates ? "border-red-500" : "border-gray-300",
-                !errors.graduates && watch("graduates")
-                  ? "focus:border-green-500"
-                  : "",
-              ),
+            variant={["9", "11"]}
+            onChange={(num) => {
+              setValue("graduates", num);
+              setError("graduates", {});
             }}
+            value={getValues("graduates")}
             error={errors.graduates?.message}
           />
 
@@ -119,14 +126,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
             inputProps={{
               type: "number",
               placeholder: "45",
-              ...register("groupNumber"),
-              className: clsx(
-                "border rounded px-3 py-2 w-full focus:outline-none focus:ring-1",
-                errors.groupNumber ? "border-red-500" : "border-gray-300",
-                !errors.groupNumber && watch("groupNumber")
-                  ? "focus:border-green-500"
-                  : "",
-              ),
+              ...register("groupNumber")
             }}
             error={errors.groupNumber?.message}
           />
@@ -136,17 +136,39 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
         <ButtonPush
           onClick={() => {
             if (course && specialty && graduates && groupNumber) {
-              dispatch(
-                addGroup({
-                  id: crypto.randomUUID(),
-                  name: `${course}${specialty}${graduates}-${groupNumber}`,
-                  isExpanded: false,
-                  disciplines: {
-                    1: [],
-                    2: [],
-                  },
-                }),
-              );
+              let idGroup;
+              (async function () {
+                const res = (await Create_Group(
+                  course,
+                  Number(graduates),
+                  specialty,
+                  groupNumber,
+                  1,
+                )) as {
+                  Code: number;
+                  Error: string;
+                  Id: number;
+                };
+                idGroup = res.Id;
+                if (idGroup) {
+                  dispatch(
+                    addGroup({
+                      id: idGroup,
+                      name: `${course}${specialty}${graduates}-${groupNumber}`,
+                      dateNameGroup: {
+                        course: course.toString(),
+                        specialty,
+                        graduates,
+                        groupNumber,
+                      },
+                      disciplines: {
+                        1: [],
+                        2: [],
+                      },
+                    }),
+                  );
+                }
+              })();
             } else {
               if (!course) {
                 setError("course", {

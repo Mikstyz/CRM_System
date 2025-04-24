@@ -1,5 +1,7 @@
+import { Id } from "@/shared/types";
+
 export interface Discipline {
-  id: string;
+  id: Id;
   title: string;
 }
 export type Semester = 1 | 2;

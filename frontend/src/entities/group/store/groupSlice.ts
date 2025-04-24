@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Discipline, Semester } from "@/entities/discipline/types";
 import { Group } from "../types";
+import { Id } from "@/shared/types";
 
 interface GroupsState {
   list: Group[];
@@ -13,12 +14,8 @@ export const groupSlice = createSlice({
   name: "groups",
   initialState,
   reducers: {
-    setGroups(state, { payload }: PayloadAction<Group[]>) {
+    setGroups(state, { payload }: PayloadAction<Group[] | []>) {
       state.list = payload;
-    },
-    toggleExpand(state, { payload }: PayloadAction<string>) {
-      const g = state.list.find((gr) => gr.id === payload);
-      if (g) g.isExpanded = !g.isExpanded;
     },
 
     /** add / delete now carry `semester` */
@@ -27,7 +24,7 @@ export const groupSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        groupId: string;
+        groupId: Id;
         semester: Semester;
         disc: Discipline;
       }>,
@@ -40,9 +37,9 @@ export const groupSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        groupId: string;
+        groupId: Id;
         semester: Semester;
-        discId: string;
+        discId: Id;
       }>,
     ) {
       const g = state.list.find((gr) => gr.id === payload.groupId);
@@ -55,7 +52,7 @@ export const groupSlice = createSlice({
 
     updateGroup(
       state,
-      { payload }: PayloadAction<{ groupId: string; patch: Partial<Group> }>,
+      { payload }: PayloadAction<{ groupId: Id; patch: Partial<Group> }>,
     ) {
       const g = state.list.find((gr) => gr.id === payload.groupId);
       if (g) Object.assign(g, payload.patch);
@@ -64,28 +61,25 @@ export const groupSlice = createSlice({
     addGroup(state, { payload }: PayloadAction<Group>) {
       state.list = [payload, ...state.list];
     },
-    deleteGroup(state, { payload }: PayloadAction<string>) {
+    deleteGroup(state, { payload }: PayloadAction<Id>) {
       state.list = state.list.filter((g) => g.id !== payload);
     },
-    duplicateGroup(state, { payload }: PayloadAction<string>) {
-      const src = state.list.find((g) => g.id === payload);
-      if (!src) return;
-      state.list = [
-        ...state.list,
-        {
-          ...JSON.parse(JSON.stringify(src)), // deep clone
-          id: crypto.randomUUID(),
-          name: src.name + "0",
-          isExpanded: false,
-        },
-      ];
+    duplicateGroup(state, { payload }: PayloadAction<Id>) {
+      const srcIndex = state.list.findIndex((g) => g.id === payload);
+      if (srcIndex === -1) return;
+      const src = state.list[srcIndex];
+      const duplicatedGroup = {
+        ...JSON.parse(JSON.stringify(src)),
+        id: crypto.randomUUID(),
+        name: src.name + "0",
+      };
+      state.list.splice(srcIndex + 1, 0, duplicatedGroup);
     },
   },
 });
 
 export const {
   setGroups,
-  toggleExpand,
   addDiscipline,
   deleteDiscipline,
   updateGroup,

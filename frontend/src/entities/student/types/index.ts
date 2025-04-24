@@ -1,5 +1,7 @@
+import { Id } from "@/shared/types";
+
 export interface Student {
-  id: string;
+  id: Id;
   fullName: string;
   groups: string[];
   semester: number;
