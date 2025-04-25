@@ -10,7 +10,35 @@ import (
 )
 
 func InfStdByGroup() ([]models.Student, error) {
-	const query = `SELECT id, FullName, Well, Course, Speciality, GroupNum, Semester FROM students`
+	const query = `SELECT id, FullName, Groudates, Course, Speciality, GroupNum, Semester FROM students`
+
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
+	}
+	defer rows.Close()
+
+	var students []models.Student
+	for rows.Next() {
+		var s models.Student
+		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum, &s.Semester)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
+		}
+		students = append(students, s)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка после чтения строк: %v", err)
+	}
+
+	return students, nil
+}
+
+func InfStudentByGroup(GroupId int) ([]models.Student, error) {
+	log.Printf("Получения студентов по группе")
+
+	const query = `SELECT FullName, Speciality, GroupNum, Semester, Groudates, Course FROM students WHERE group_id`
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -67,7 +95,7 @@ func CrtStd(fullName string, Course byte, Groudates byte, speciality string, gro
 	log.Println("Создаю нового студента...")
 
 	const query = `
-		INSERT INTO students (FullName, Well, Course, Speciality, GroupNum, Semester)
+		INSERT INTO students (FullName, Groudates, Course, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?, ?)`
 
 	res, err := db.DB.Exec(query, fullName, Groudates, Course, speciality, groupNum, semester)
@@ -89,7 +117,7 @@ func UpdateStd(studId int, newFullName string, newCourse byte, newGroudates byte
 
 	const query = `
 		UPDATE students 
-		SET FullName = ?, Well = ?, Course = ?, Speciality = ?, GroupNum = ?, Semester = ?
+		SET FullName = ?, Groudates = ?, Course = ?, Speciality = ?, GroupNum = ?, Semester = ?
 		WHERE id = ?`
 
 	res, err := db.DB.Exec(query, newFullName, newGroudates, newCourse, newSpeciality, newGroupNum, newSemester, studId)
@@ -146,7 +174,7 @@ func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates by
 
 	// Шаг 1: вставляем студента
 	const insertStudent = `
-		INSERT INTO students (FullName, Well, Course, Speciality, GroupNum, Semester)
+		INSERT INTO students (FullName, Groudates, Course, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?, ?)`
 
 	res, err := tx.Exec(insertStudent, fullName, Groudates, Course, speciality, groupNum, semester)

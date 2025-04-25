@@ -8,6 +8,7 @@ import (
 	"log"
 )
 
+// Переделать
 func TestGenerateFilledPDF() {
 	studentID, _ := routes.Create_Student("Иван Иванов", 85, 3, "Программная инженерия", 101, 2)
 	groupID, _ := routes.Create_Group(85, 3, "Программная инженерия", 101, 2)
@@ -32,7 +33,7 @@ func TestGenerateFilledPDF() {
 
 	// Генерация PDF
 	var pdfDATA models.GeneratePDF // ЗАПОЛНИТЬ ДАННЫЕ
-	хуй
+	//хуй
 
 	Dock, err := routes.GenerateFilledPDF(pdfDATA)
 	if err != nil || Dock == nil {

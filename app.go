@@ -32,14 +32,19 @@ func (a *App) Greet(name string) string {
 
 func (a *App) Inf_AllStudent() models.Inf_AllStudents {
 	var info models.Inf_AllStudents
+
 	stud, err := routes.Inf_AllStudent()
+
 	code := 200
+
 	if err != nil {
 		code = 500
 		info.Error = err.Error()
 	}
+
 	info.Code = code
 	info.Students = stud
+
 	return info
 }
 
@@ -137,13 +142,17 @@ func (a *App) Inf_EmpByStudentId(StudentId int) models.Inf_Employer {
 	return info
 }
 
-func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) models.Update {
-	var res models.Update
+func (a *App) Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) models.OutEmployer {
+	var res models.OutEmployer
 	_, err := routes.Update_EmpbyStudentId(studId, newEnterprise, newWorkStartDate, newJobTitle)
 	code := 200
 	if err != nil {
 		code = 500
 		res.Error = err.Error()
+	} else {
+		res.Enterprise = newEnterprise
+		res.WorkStartDate = newWorkStartDate
+		res.JobTitle = newJobTitle
 	}
 	res.Code = code
 	return res
@@ -264,34 +273,41 @@ func (a *App) Inf_SubjectByGroupId(groupId int) models.Inf_Subject {
 	return info
 }
 
-func (a *App) Add_SubjectByGroupId(groupId int, newSubject string) models.Create {
-	var res models.Create
+func (a *App) Add_SubjectByGroupId(groupId int, newSubject string) models.OutSubject {
+	var res models.OutSubject
 
 	id, err := routes.Add_SubjectByGroupId(groupId, newSubject)
-
 	code := 200
 
 	if err != nil {
 		code = 500
 		res.Error = err.Error()
+	} else {
+		res.Subject = newSubject
+		res.GroupId = groupId
 	}
 
 	res.Code = code
-
-	res.Id = id
+	res.GroupId = id
 
 	return res
 }
 
-func (a *App) Update_SubjectById(subjectId int, newSubject string) models.Update {
-	var res models.Update
+func (a *App) Update_SubjectById(subjectId int, newSubject string) models.OutSubject {
+	var res models.OutSubject
 
 	status, err := routes.Update_SubjectById(subjectId, newSubject)
 	code := 200
 
-	if err != nil || status == false {
+	if err != nil || !status {
 		code = 500
-		res.Error = err.Error()
+		if err != nil {
+			res.Error = err.Error()
+		} else {
+			res.Error = "не удалось обновить предмет"
+		}
+	} else {
+		res.Subject = newSubject
 	}
 
 	res.Code = code

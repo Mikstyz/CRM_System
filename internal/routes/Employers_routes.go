@@ -39,6 +39,10 @@ func Inf_EmpByStudentId(StudentId int) (models.EInfEmp, error) {
 	return result, nil
 }
 
+func Create_Employers(studId int, enterprise string, workStartDate string, jobTitle string) {
+	repo.CreateEmp(studId, enterprise, workStartDate, jobTitle)
+}
+
 func Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) (bool, error) {
 	result, err := repo.UpdateEmp(studId, newEnterprise, newWorkStartDate, newJobTitle)
 

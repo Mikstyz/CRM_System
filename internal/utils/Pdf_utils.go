@@ -20,7 +20,7 @@ func init() {
 		log.Fatalf("Не удалось определить рабочую директорию: %v", err)
 	}
 
-	FontDir = filepath.Join(wd, "internal", "Config", "ttf")
+	FontDir = filepath.Join(wd, "Config", "ttf")
 	log.Printf("Рабочая директория для шрифтов: %s", FontDir)
 }
 
@@ -82,10 +82,10 @@ func GenerateFilledPDF(Data models.PdfDoc) ([]byte, error) {
 	pdf.Ln(10)
 	pdf.SetFontSize(12)
 	pdf.MultiCell(190, 7, "Предприятие предлагает зачесть вышеуказанные виды работ как успешно освоенные на рабочем месте.", "", "L", false)
-	pdf.Ln(5)
+	pdf.Ln(15)
 	pdf.Cell(0, 7, "Должность ответственного лица:")
-	pdf.Ln(20)
-	pdf.Cell(0, 7, "____________________________________________________________________________________________________________")
+	pdf.Ln(10)
+	pdf.Cell(0, 7, "____________________________________________________________________________")
 	pdf.Ln(30)
 	pdf.Cell(0, 7, "«___» _____________ 2025 г.")
 	pdf.Ln(0)

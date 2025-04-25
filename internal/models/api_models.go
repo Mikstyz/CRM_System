@@ -33,8 +33,8 @@ type OutStudentAPI struct {
 	Speciality string `json:"speciality,omitempty"`
 	Number     int    `json:"group_num,omitempty"`
 	Semester   byte   `json:"semester,omitempty"`
-	Course     byte   `json:"Course,omitempty"`
-	Groudates  byte   `json:"Groduates,omitempty"`
+	Course     byte   `json:"course,omitempty"`
+	Groudates  byte   `json:"groudates,omitempty"`
 }
 
 type Inf_AllStudents struct {
@@ -50,6 +50,15 @@ type Inf_Student struct {
 }
 
 // Employers
+type OutEmployer struct {
+	Code  int    `json:"code"`
+	Error string `json:"error,omitempty"`
+
+	Enterprise    string `json:"enterprise,omitempty"`
+	WorkStartDate string `json:"work_start_date,omitempty"`
+	JobTitle      string `json:"job_title,omitempty"`
+}
+
 type Inf_Employer struct {
 	Code     int     `json:"code"`
 	Employer EInfEmp `json:"employer,omitempty"`
@@ -61,12 +70,12 @@ type OutGroupApi struct {
 	Code  int    `json:"code"`
 	Error string `json:"error,omitempty"`
 
-	Id         int    `json:"Id,omitempty"`
-	Course     byte   `json:"Course,omitempty"`
-	Groudates  byte   `json:"Groudates,omitempty"`
+	Id         int    `json:"id,omitempty"`
+	Course     byte   `json:"course,omitempty"`
+	Groudates  byte   `json:"groudates,omitempty"`
 	Speciality string `json:"speciality,omitempty"`
-	Number     int    `json:"Number,omitempty"`
-	Semester   byte   `json:"Semester,omitempty"`
+	Number     int    `json:"group_num,omitempty"`
+	Semester   byte   `json:"semester,omitempty"`
 }
 
 type Inf_AllGroup struct {
@@ -76,6 +85,13 @@ type Inf_AllGroup struct {
 }
 
 // Subject
+type OutSubject struct {
+	Code    int    `json:"code"`
+	Error   string `json:"error,omitempty"`
+	GroupId int    `json:"group_id,omitempty"`
+	Subject string `json:"subject_name,omitempty"`
+}
+
 type Inf_Subject struct {
 	Code    int      `json:"code"`
 	Subject []string `json:"subject,omitempty"`
