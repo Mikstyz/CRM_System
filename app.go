@@ -94,11 +94,11 @@ func (a *App) CreateStudent(dto dtos.CreateStudDTO) models.OutStudentAPI {
 func (a *App) UpdateStudentById(dto dtos.UpdateStudDTO) models.OutStudentAPI {
 	var res models.OutStudentAPI
 
-	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
+	Status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
 
 	code := 200
 
-	if err != nil || status == false {
+	if err != nil || !Status {
 		code = 500
 		res.Error = err.Error()
 	}
@@ -117,9 +117,9 @@ func (a *App) UpdateStudentById(dto dtos.UpdateStudDTO) models.OutStudentAPI {
 
 func (a *App) DeleteStudents(dto dtos.DeleteStudDTO) models.Remove {
 	var res models.Remove
-	status, err := routes.Delete_Student(dto.StudId)
+	Status, err := routes.Delete_Student(dto.StudId)
 	code := 200
-	if err != nil || status == false {
+	if err != nil || !Status {
 		code = 500
 		res.Error = err.Error()
 	}
@@ -213,11 +213,11 @@ func (a *App) Create_Group(dto dtos.CreateGroupDTO) models.OutGroupApi {
 func (a *App) Update_GroupById(dto dtos.UpdateGroupDTO) models.OutGroupApi {
 	var res models.OutGroupApi
 
-	status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
+	Status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
 
 	code := 200
 
-	if err != nil || status == false {
+	if err != nil || !Status {
 		code = 500
 		res.Error = err.Error()
 	}
