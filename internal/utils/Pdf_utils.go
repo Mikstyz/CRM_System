@@ -20,7 +20,7 @@ func init() {
 		log.Fatalf("Не удалось определить рабочую директорию: %v", err)
 	}
 
-	FontDir = filepath.Join(wd, "Config", "ttf")
+	FontDir = filepath.Join(wd)
 	log.Printf("Рабочая директория для шрифтов: %s", FontDir)
 }
 

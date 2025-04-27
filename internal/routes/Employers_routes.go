@@ -4,7 +4,9 @@ import (
 	repo "CRM_System/internal/db/repository"
 	"CRM_System/internal/models"
 	"CRM_System/internal/utils"
+	"errors"
 	"fmt"
+	"strings"
 )
 
 // поменять входные данные на имя студента и Id группы
@@ -17,7 +19,14 @@ func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
 		JobTitle:      dataPdf.JobTitle,
 	}
 
-	//проверка на null
+	// проверка на пустые строки, а не на nil
+	if strings.TrimSpace(dataPdf.StudentName) == "" ||
+		strings.TrimSpace(dataPdf.Enterprise) == "" ||
+		strings.TrimSpace(dataPdf.WorkStartDate) == "" ||
+		strings.TrimSpace(dataPdf.JobTitle) == "" {
+
+		return nil, errors.New("обязательные поля не должны быть пустыми")
+	}
 
 	PdfDock, err := utils.GenerateFilledPDF(data)
 	if err != nil {
@@ -25,7 +34,6 @@ func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
 		return nil, fmt.Errorf("ошибка при генерации PDF: %w", err)
 	}
 
-	//fmt.Printf("Успешное создание PDF для студента %s (ID: %d)\n", dataPdf.StudentName)
 	return PdfDock, nil
 }
 
