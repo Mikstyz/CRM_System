@@ -75,31 +75,32 @@ export const createGroupsThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/createGroups", async ({ dateNameGroup }, { rejectWithValue }) => {
   try {
-    const res = await CreateGroup({
-      course: Number(dateNameGroup.course),
-      groudates: Number(dateNameGroup.graduates),
-      speciality: dateNameGroup.specialty,
-      group_num: dateNameGroup.groupNumber,
-    });
-    const Groups = res.Groups;
-    if (res.code === 200 && Groups.Id) {
-      return {
-        id: Groups.Id,
-        name: `${dateNameGroup.course}${dateNameGroup.specialty}${dateNameGroup.graduates}-${dateNameGroup.groupNumber}`,
-        dateNameGroup: {
-          course: Groups.Course.toString() as Course,
-          specialty: Groups.Speciality,
-          graduates: Groups.Groudates.toString() as Graduates,
-          groupNumber: Groups.Number,
-        },
-        disciplines: {
-          1: [],
-          2: [],
-        },
-      };
-    } else {
-      return rejectWithValue("Ошибка при создании группы");
-    }
+    // const res = await CreateGroup({
+    //   course: Number(dateNameGroup.course),
+    //   groudates: Number(dateNameGroup.graduates),
+    //   speciality: dateNameGroup.specialty,
+    //   group_num: dateNameGroup.groupNumber,
+    // });
+    // const Groups = res.Groups;
+    // if (res.code === 200 && Groups.Id) {
+    //   return {
+    //     id: Groups.Id,
+    //     name: `${dateNameGroup.course}${dateNameGroup.specialty}${dateNameGroup.graduates}-${dateNameGroup.groupNumber}`,
+    //     dateNameGroup: {
+    //       course: Groups.Course.toString() as Course,
+    //       specialty: Groups.Speciality,
+    //       graduates: Groups.Groudates.toString() as Graduates,
+    //       groupNumber: Groups.Number,
+    //     },
+    //     disciplines: {
+    //       1: [],
+    //       2: [],
+    //     },
+    //   };
+    // } else {
+    //   return rejectWithValue("Ошибка при создании группы");
+    // }
+    return rejectWithValue("Ошибка при создании группы");
   } catch (error) {
     console.error("Error creating group:", error);
     return rejectWithValue(
@@ -136,15 +137,16 @@ export const deleteGroupsThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/deleteGroups", async (groupsId, { rejectWithValue }) => {
   try {
-    const res = await DeleteGroupByID({ groupId });
-    if (res?.code === 200) {
-      return groupsId;
-    } else {
-      console.error("Ошибка удаления группы", res?.error);
-      return rejectWithValue(
-        `Failed to delete group: ${res?.error || "Unknown error"}`,
-      );
-    }
+    // const res = await DeleteGroupByID({ groupId });
+    // if (res?.code === 200) {
+    //   return groupsId;
+    // } else {
+    //   console.error("Ошибка удаления группы", res?.error);
+    //   return rejectWithValue(
+    //     `Failed to delete group: ${res?.error || "Unknown error"}`,
+    //   );
+    // }
+    return rejectWithValue(`Failed to delete group: Unknown error`);
   } catch (error) {
     console.error("Error deleting group:", error);
     return rejectWithValue(
@@ -163,28 +165,29 @@ export const duplicateGroupThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/duplicateGroup", async (groupId, { rejectWithValue }) => {
   try {
-    const res = await DuplicateGroupAllData({ groupId });
-    if (res?.code === 200) {
-      return {
-        id: res.Groups.Id,
-        name: `${res.Groups.Course}${res.Groups.Speciality}${res.Groups.Groudates}-${res.Groups.Number}`,
-        dateNameGroup: {
-          course: res.Groups.Course.toString() as Course,
-          specialty: res.Groups.Speciality,
-          graduates: res.Groups.Groudates.toString() as Graduates,
-          groupNumber: res.Groups.Number,
-        },
-        disciplines: {
-          1: [],
-          2: [],
-        },
-      };
-    } else {
-      console.error("Ошибка дублирования группы", res?.error);
-      return rejectWithValue(
-        `Failed to duplicate group: ${res?.error || "Unknown error"}`,
-      );
-    }
+    // const res = await DuplicateGroupAllData({ groupId });
+    // if (res?.code === 200) {
+    //   return {
+    //     id: res.Groups.Id,
+    //     name: `${res.Groups.Course}${res.Groups.Speciality}${res.Groups.Groudates}-${res.Groups.Number}`,
+    //     dateNameGroup: {
+    //       course: res.Groups.Course.toString() as Course,
+    //       specialty: res.Groups.Speciality,
+    //       graduates: res.Groups.Groudates.toString() as Graduates,
+    //       groupNumber: res.Groups.Number,
+    //     },
+    //     disciplines: {
+    //       1: [],
+    //       2: [],
+    //     },
+    //   };
+    // } else {
+    //   console.error("Ошибка дублирования группы", res?.error);
+    // return rejectWithValue(
+    //   `Failed to duplicate group: ${res?.error || "Unknown error"}`,
+    // );
+    // }
+    return rejectWithValue(`Failed to duplicate group: Unknown error`);
   } catch (error) {
     console.error("Error duplicating group:", error);
     return rejectWithValue(
@@ -242,26 +245,27 @@ export const addDisciplinesThunks = createAsyncThunk<
   "userFiles/addDisciplines",
   async ({ groupId, semester, newTitle }, { rejectWithValue }) => {
     try {
-      const res = await AddSubjectByGroupID({
-        GroupId: String(groupId),
-        NewSubject: newTitle,
-      });
-      console.log("Add_SubjectByGroupId", res);
-      if (res?.group_id && res.subject_name) {
-        return {
-          groupId,
-          semester,
-          disc: {
-            id: res.group_id,
-            title: res.subject_name,
-          },
-        };
-      } else {
-        console.error("Ошибка добавления дисциплины", res?.error);
-        return rejectWithValue(
-          `Failed to add discipline: ${res?.error || "Unknown error"}`,
-        );
-      }
+      // const res = await AddSubjectByGroupID({
+      //   GroupId: String(groupId),
+      //   NewSubject: newTitle,
+      // });
+      // console.log("Add_SubjectByGroupId", res);
+      // if (res?.group_id && res.subject_name) {
+      //   return {
+      //     groupId,
+      //     semester,
+      //     disc: {
+      //       id: res.group_id,
+      //       title: res.subject_name,
+      //     },
+      //   };
+      // } else {
+      //   console.error("Ошибка добавления дисциплины", res?.error);
+      //   return rejectWithValue(
+      //     `Failed to add discipline: ${res?.error || "Unknown error"}`,
+      //   );
+      // }
+      return rejectWithValue(`Failed to add discipline: Unknown error`);
     } catch (error) {
       console.error("Error adding discipline:", error);
       return rejectWithValue(
@@ -325,17 +329,18 @@ export const deleteDisciplinesThunks = createAsyncThunk<
   "userFiles/deleteDisciplines",
   async ({ groupId, semester, discId }, { rejectWithValue }) => {
     try {
-      const res = await DeleteSubjectByID({
-        SubjectId: String(discId),
-      });
-      if (res?.code === 200) {
-        return { groupId, semester, discId };
-      } else {
-        console.log("Ошибка удаления дисциплины", res?.error);
-        return rejectWithValue(
-          `Failed to delete discipline: ${res?.error || "Unknown error"}`,
-        );
-      }
+      // const res = await DeleteSubjectByID({
+      //   SubjectId: String(discId),
+      // });
+      // if (res?.code === 200) {
+      //   return { groupId, semester, discId };
+      // } else {
+      //   console.log("Ошибка удаления дисциплины", res?.error);
+      //   return rejectWithValue(
+      //     `Failed to delete discipline: ${res?.error || "Unknown error"}`,
+      //   );
+      // }
+      return rejectWithValue(`Failed to delete discipline: Unknown error`);
     } catch (error) {
       console.error("Error deleting discipline:", error);
       return rejectWithValue(
