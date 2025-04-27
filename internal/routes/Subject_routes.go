@@ -2,11 +2,12 @@ package routes
 
 import (
 	repo "CRM_System/internal/db/repository"
+	"CRM_System/internal/models"
 	"fmt"
 )
 
-func Inf_SubjectByGroupId(groupId int) ([]string, error) {
-	result, err := repo.InfDisciplinesByGroup(groupId)
+func Inf_SubjectByGroupId(groupId int, Semester byte) ([]string, error) {
+	result, err := repo.InfDisciplinesByGroup(groupId, Semester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при получении предметов группы с ID %d: %v\n", groupId, err)
@@ -17,20 +18,20 @@ func Inf_SubjectByGroupId(groupId int) ([]string, error) {
 	return result, nil
 }
 
-func Inf_DisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (map[int][]string, error) {
+func Inf_DisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (models.DisciplinesBySemester, error) {
 	result, err := repo.InfDisciplinesByGroupData(Speciality, GroupNum, Course, Groudates)
 
 	if err != nil {
 		fmt.Printf("Ошибка при получении предметов %v", err)
-		return nil, err
+		return result, err
 	}
 
 	fmt.Printf("Успешное получение предметов для группы")
 	return result, nil
 }
 
-func Add_SubjectByGroupId(groupId int, newSubject string) (int, error) {
-	result, err := repo.AddDisciplinesInGroup(groupId, newSubject)
+func Add_SubjectByGroupId(groupId int, newSubject string, Semester byte) (int, error) {
+	result, err := repo.AddDisciplinesInGroup(groupId, newSubject, Semester)
 
 	if err != nil {
 		fmt.Printf("Ошибка при добавлении предмета %s в группу с ID %d: %v\n", newSubject, groupId, err)

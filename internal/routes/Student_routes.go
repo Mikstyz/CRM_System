@@ -30,20 +30,20 @@ func Inf_StudentByID(studentID int) (models.Student, error) {
 	return result, nil
 }
 
-func Inf_StudentByGroup(course byte, speciality string, groupNum int, Semester byte) ([]models.Student, error) {
-	result, err := repo.GetStudentByGroup(course, speciality, groupNum, Semester)
+func Inf_StudentByGroup(course byte, speciality string, groupNum int) ([]models.Student, error) {
+	result, err := repo.GetStudentByGroup(course, speciality, groupNum)
 
 	if err != nil {
-		fmt.Print("Ошибка при получении студентов группы")
+		fmt.Println("Ошибка при получении студентов группы")
 		return nil, err
 	}
 
-	fmt.Printf("Успешное получнеие студентов группы")
+	fmt.Println("Успешное получение студентов группы")
 	return result, nil
 }
 
-func Create_Student(fullName string, course byte, groduates byte, speciality string, groupNum int, semester byte) (int, error) {
-	result, err := repo.CreateStudentWithEmptyEmployment(fullName, course, groduates, speciality, groupNum, semester)
+func Create_Student(fullName string, course byte, groduates byte, speciality string, groupNum int) (int, error) {
+	result, err := repo.CreateStudentWithEmptyEmployment(fullName, course, groduates, speciality, groupNum)
 
 	if err != nil {
 		fmt.Printf("Ошибка при создании студента %v: %v\n", fullName, err)
@@ -54,8 +54,8 @@ func Create_Student(fullName string, course byte, groduates byte, speciality str
 	return result, nil
 }
 
-func Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int, newSemester byte) (bool, error) {
-	result, err := repo.UpdateStd(studId, newFullName, newGroudates, newCourse, newSpeciality, newNumber, newSemester)
+func Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int) (bool, error) {
+	result, err := repo.UpdateStd(studId, newFullName, newGroudates, newCourse, newSpeciality, newNumber)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении данных студента с ID %d: %v\n", studId, err)

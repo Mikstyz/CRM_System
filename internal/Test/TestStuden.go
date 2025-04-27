@@ -28,19 +28,19 @@ func Test_InfStudentByID() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName, semester := "Иван Иванов", byte(1)
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum, semester)
+	fullName := "Иван Иванов"
+	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -96,19 +96,19 @@ func Test_CreateStudent() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID=[%d, %d]", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName, semester := "Иван Иванов", byte(1)
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum, semester)
+	fullName := "Иван Иванов"
+	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -169,19 +169,19 @@ func Test_UpdateStudentById() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с Id %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName, semester := "Иван Иванов", byte(1)
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum, semester)
+	fullName := "Иван Иванов"
+	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -192,8 +192,8 @@ func Test_UpdateStudentById() (int, int, error) {
 
 	// Обновляем студента
 	log.Printf("[INFO] Обновляем студента с ID=%d...", studentID)
-	newFullName, newCourse, newGraduates, newSpeciality, newNumber, newSemester := "Пётр Петров", byte(2), byte(5), "Кибербезопасность", 102, byte(2)
-	ok, err := routes.Update_StudentById(studentID, newFullName, newCourse, newGraduates, newSpeciality, newNumber, newSemester)
+	newFullName, newCourse, newGraduates, newSpeciality, newNumber := "Пётр Петров", byte(2), byte(5), "Кибербезопасность", 102
+	ok, err := routes.Update_StudentById(studentID, newFullName, newCourse, newGraduates, newSpeciality, newNumber)
 	if err != nil || !ok {
 		log.Printf("Ошибка при обновлении студента: %v", err)
 		Bad++
@@ -249,19 +249,19 @@ func Test_DeleteStudent() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName, semester := "Иван Иванов", byte(1)
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum, semester)
+	fullName := "Иван Иванов"
+	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -312,22 +312,21 @@ func Test_InfStudentByGroup() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID=[%d, %d]", groupId)
 	Ok++
 
 	// Создаём двух студентов для 1-го семестра
 	log.Println("[INFO] Создаём тестовых студентов для 1-го семестра...")
 	studentNames := []string{"Иван Иванов", "Пётр Петров"}
-	semester := byte(1)
 	studentIDs := make([]int, 0, len(studentNames))
 	for _, fullName := range studentNames {
-		studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum, semester)
+		studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
 		if err != nil {
 			log.Printf("Ошибка при создании студента %s: %v", fullName, err)
 			Bad++
@@ -340,7 +339,7 @@ func Test_InfStudentByGroup() (int, int, error) {
 
 	// Получаем студентов по группе
 	log.Println("[INFO] Получаем студентов по группе для 1-го семестра...")
-	students, err := routes.Inf_StudentByGroup(course, speciality, groupNum, semester)
+	students, err := routes.Inf_StudentByGroup(course, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при получении студентов группы: %v", err)
 		Bad++

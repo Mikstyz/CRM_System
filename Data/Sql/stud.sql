@@ -1,9 +1,9 @@
+-- Создание таблицы студентов
 CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     FullName TEXT NOT NULL,
     Speciality TEXT NOT NULL,
     GroupNum INTEGER NOT NULL,
-    Semester INTEGER NOT NULL,
     Course INTEGER NOT NULL,
     Groudates INTEGER NOT NULL DEFAULT 1
 );
@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS employers (
 CREATE TABLE IF NOT EXISTS einf_groups (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Course INTEGER NOT NULL,
-    Semester INTEGER NOT NULL,
     Speciality TEXT NOT NULL,
     Groudates INTEGER NOT NULL,
     GroupNum INTEGER NOT NULL
@@ -32,14 +31,15 @@ CREATE TABLE IF NOT EXISTS group_subject (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER NOT NULL,
     subject_name TEXT NOT NULL,
+    semester INTEGER NOT NULL CHECK (semester IN (1, 2)),
     FOREIGN KEY (group_id) REFERENCES einf_groups(id) ON DELETE CASCADE
 );
 
--- Индекс на столбцы group_id для ускорения поиска
+-- Индекс на столбец group_id для ускорения поиска
 CREATE INDEX IF NOT EXISTS idx_group_subject_group_id ON group_subject(group_id);
 
--- Индекс на столбцы Speciality, GroupNum, Course, Semester для ускорения поиска
-CREATE INDEX IF NOT EXISTS idx_students_group_data ON students (Speciality, GroupNum, Course, Semester);
+-- Индекс на столбцы Speciality, GroupNum, Course для ускорения поиска
+CREATE INDEX IF NOT EXISTS idx_students_group_data ON students (Speciality, GroupNum, Course);
 
 -- Триггер для удаления студентов при удалении группы
 CREATE TRIGGER IF NOT EXISTS trigger_delete_students_for_group
@@ -59,25 +59,19 @@ FOR EACH ROW
 WHEN (OLD.Speciality != NEW.Speciality 
     OR OLD.GroupNum != NEW.GroupNum 
     OR OLD.Course != NEW.Course 
-    OR OLD.Semester != NEW.Semester 
     OR OLD.Groudates != NEW.Groudates)
 BEGIN
     UPDATE students 
     SET Speciality = NEW.Speciality, 
         GroupNum = NEW.GroupNum, 
         Course = NEW.Course, 
-        Semester = NEW.Semester, 
         Groudates = NEW.Groudates 
     WHERE Speciality = OLD.Speciality 
     AND GroupNum = OLD.GroupNum 
-    AND Course = OLD.Course 
-    AND Semester = OLD.Semester;
+    AND Course = OLD.Course;
 END;
 
-
 -- Триггер создаёт пустую запись в таблице employers для нового студента
--- Срабатывает после вставки записи в students
--- Вставляет studid = id нового студента, остальные поля — NULL
 CREATE TRIGGER IF NOT EXISTS trigger_create_empty_employer
 AFTER INSERT ON students
 FOR EACH ROW
@@ -87,8 +81,6 @@ BEGIN
 END;
 
 -- Триггер удаляет запись из employers при удалении студента
--- Срабатывает после удаления записи из students
--- Удаляет все записи в employers, где studid равен id удалённого студента
 CREATE TRIGGER IF NOT EXISTS trigger_delete_employer_on_student_delete
 AFTER DELETE ON students
 FOR EACH ROW

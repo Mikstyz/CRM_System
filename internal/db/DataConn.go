@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
@@ -12,12 +13,12 @@ import (
 // DB — глобальная переменная для работы с базой данных
 var DB *sql.DB
 
-const dbPath string = "E:\\code\\Go\\CRM_System\\Data\\Sql\\stud.db"
+//const dbPath string = "E:\\code\\Go\\CRM_System\\Data\\Sql\\stud.db"
 
 func Init() {
-	//cwd, _ := os.Getwd()
+	cwd, _ := os.Getwd()
 
-	//dbPath := filepath.Join(cwd, "Data", "Sql", "stud.db")
+	dbPath := filepath.Join(cwd, "Data", "Sql", "stud.db")
 
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Fatalf("База данных не существует по пути: %s", dbPath)

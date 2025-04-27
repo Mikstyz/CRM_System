@@ -26,9 +26,10 @@ type AppInf_AllGroup struct {
 
 // AppCrtOutGroupApi для возврата данных при создании группы
 type AppCrtOutGroupApi struct {
-	Code   int         `json:"code"`
-	Groups []EinfGroup `json:Groups,omitempty`
-	Error  string      `json:"error,omitempty"`
+	Code  int       `json:"code"`
+	One   EinfGroup `json:One,omitempty`
+	Two   EinfGroup `json:Two,omitempty`
+	Error string    `json:"error,omitempty"`
 }
 
 // AppUpdateOutGroupApi для возврата данных при обновлении группы
@@ -53,9 +54,9 @@ type AppInf_Subject struct {
 
 // AppInf_Disciplines для возврата предметов по семестрам
 type AppInf_Disciplines struct {
-	Code        int              `json:"code"`
-	Disciplines map[int][]string `json:"disciplines,omitempty"`
-	Error       string           `json:"error,omitempty"`
+	Code        int                   `json:"code"`
+	Disciplines DisciplinesBySemester `json:"disciplines,omitempty"`
+	Error       string                `json:"error,omitempty"`
 }
 
 // AppOutSubject для возврата данных о предмете при создании/обновлении

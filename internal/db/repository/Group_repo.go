@@ -9,9 +9,10 @@ import (
 	"log"
 )
 
+// InfAllGrp возвращает список всех групп.
 func InfAllGrp() ([]models.EinfGroup, error) {
 	const query = `
-		SELECT Id, Course, Speciality, Groudates, Semester, GroupNum
+		SELECT Id, Course, Speciality, Groudates, GroupNum
 		FROM einf_groups
 		ORDER BY Course, Speciality, GroupNum`
 
@@ -19,12 +20,12 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
+		log.Printf("Ошибка при получении групп: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
 
 	var groups []models.EinfGroup
-
 	for rows.Next() {
 		var group models.EinfGroup
 		if err := rows.Scan(
@@ -32,32 +33,34 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 			&group.Course,
 			&group.Speciality,
 			&group.Groudates,
-			&group.Semester,
 			&group.Number,
 		); err != nil {
-			return nil, err
+			log.Printf("Ошибка при сканировании группы: %v", err)
+			continue
 		}
 		groups = append(groups, group)
 	}
 
 	if err := rows.Err(); err != nil {
+		log.Printf("Ошибка при чтении групп: %v", err)
 		return nil, err
 	}
 
 	return groups, nil
 }
 
+// InfGroupById возвращает данные группы по её ID.
 func InfGroupById(GroupId int) (*models.EinfGroup, error) {
-	const query = `SELECT Id, Course, Speciality, Groudates, Semester, GroupNum FROM einf_groups WHERE id = ?`
+	const query = `SELECT Id, Course, Speciality, Groudates, GroupNum FROM einf_groups WHERE Id = ?`
 
 	db.Init()
 
 	var Group models.EinfGroup
 	err := db.DB.QueryRow(query, GroupId).Scan(
+		&Group.Id,
 		&Group.Course,
 		&Group.Speciality,
 		&Group.Groudates,
-		&Group.Semester,
 		&Group.Number,
 	)
 	if err != nil {
@@ -68,107 +71,86 @@ func InfGroupById(GroupId int) (*models.EinfGroup, error) {
 	return &Group, nil
 }
 
-func CrtGrp(course byte, groudates byte, speciality string, groupNum int) ([2]int, error) {
+// CrtGrp создаёт новую группу.
+func CrtGrp(course byte, groudates byte, speciality string, groupNum int) (int, error) {
 	const query = `
-		INSERT INTO einf_groups (Course, Groudates, Speciality, GroupNum, Semester)
-		VALUES (?, ?, ?, ?, ?)`
+		INSERT INTO einf_groups (Course, Groudates, Speciality, GroupNum)
+		VALUES (?, ?, ?, ?)
+		RETURNING Id`
 
 	db.Init()
 
-	tx, err := db.DB.Begin()
+	var groupId int
+	err := db.DB.QueryRow(query, course, groudates, speciality, groupNum).Scan(&groupId)
 	if err != nil {
-		return [2]int{}, err
+		log.Printf("Ошибка при создании группы: %v", err)
+		return 0, err
 	}
 
-	var ids [2]int
-
-	// Первая запись с semester = 1
-	res1, err := tx.Exec(query, course, groudates, speciality, groupNum, 1)
-	if err != nil {
-		tx.Rollback()
-		return [2]int{}, err
-	}
-
-	id1, err := res1.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		return [2]int{}, err
-	}
-	ids[0] = int(id1)
-
-	// Вторая запись с semester = 2
-	res2, err := tx.Exec(query, course, groudates, speciality, groupNum, 2)
-	if err != nil {
-		tx.Rollback()
-		return [2]int{}, err
-	}
-
-	id2, err := res2.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		return [2]int{}, err
-	}
-	ids[1] = int(id2)
-
-	err = tx.Commit()
-	if err != nil {
-		return [2]int{}, err
-	}
-
-	return ids, nil
+	return groupId, nil
 }
 
+// UpdateGrp обновляет данные группы.
 func UpdateGrp(groupId int, newCourse byte, newGroudates byte, newSpeciality string, newGroupNum int) (bool, error) {
 	const query = `
 		UPDATE einf_groups
 		SET Course = ?, Groudates = ?, Speciality = ?, GroupNum = ?
-		WHERE Id = ?`
+		WHERE Id = ?
+		RETURNING Id`
 
 	db.Init()
 
-	res, err := db.DB.Exec(query, newCourse, newGroudates, newSpeciality, newGroupNum, groupId)
+	var updatedId int
+	err := db.DB.QueryRow(query, newCourse, newGroudates, newSpeciality, newGroupNum, groupId).Scan(&updatedId)
+	if err == sql.ErrNoRows {
+		log.Printf("Группа с ID=%d не найдена", groupId)
+		return false, nil
+	}
 	if err != nil {
+		log.Printf("Ошибка при обновлении группы: %v", err)
 		return false, err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return false, err
-	}
-
-	return rowsAffected > 0, nil
+	return true, nil
 }
 
+// DelGrp удаляет группу по параметрам.
 func DelGrp(course byte, graduates byte, speciality string, groupNum int) (bool, error) {
-	const query = `DELETE FROM einf_groups WHERE Course = ? AND Groudates = ? AND Speciality = ? AND GroupNum = ?`
+	const query = `DELETE FROM einf_groups WHERE Course = ? AND Groudates = ? AND Speciality = ? AND GroupNum = ? RETURNING Id`
 
 	log.Printf("Удаляем группу: Course=%v, Groudates=%v, Speciality=%s, GroupNum=%v", course, graduates, speciality, groupNum)
-	res, err := db.DB.Exec(query, course, graduates, speciality, groupNum)
+
+	db.Init()
+
+	var deletedId int
+	err := db.DB.QueryRow(query, course, graduates, speciality, groupNum).Scan(&deletedId)
+	if err == sql.ErrNoRows {
+		log.Println("Группа не найдена")
+		return false, nil
+	}
 	if err != nil {
+		log.Printf("Ошибка при удалении группы: %v", err)
 		return false, err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		log.Printf("RowsAffected error: %v", err)
-		return false, err
-	}
-
-	return rowsAffected > 0, nil
+	return true, nil
 }
 
-func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum int, semester byte) (int, error) {
+// GetGroupIDByParams возвращает ID группы по параметрам.
+func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum int) (int, error) {
+	const query = `
+		SELECT Id FROM einf_groups
+		WHERE Speciality = ? AND GroupNum = ? AND Course = ? AND Groudates = ?`
+
+	db.Init()
+
 	var groupID int
-
-	err := db.DB.QueryRow(`
-		SELECT id FROM einf_groups
-		WHERE Speciality = $1 AND GroupNum = $2 AND Semester = $3 AND Course = $4 AND Groudates = $5
-	`, speciality, groupNum, semester, course, groudates).Scan(&groupID)
-
+	err := db.DB.QueryRow(query, speciality, groupNum, course, groudates).Scan(&groupID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return 0, fmt.Errorf("группа с указанными параметрами не найдена")
 		}
+		log.Printf("Ошибка при получении ID группы: %v", err)
 		return 0, fmt.Errorf("ошибка при получении ID группы: %w", err)
 	}
 

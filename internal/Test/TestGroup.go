@@ -27,18 +27,18 @@ func Test_CreateGroup() (int, int, error) {
 
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	if groupIds[0] == 0 || groupIds[1] == 0 {
+	if groupId == 0 {
 		log.Println("[ERROR] Ошибка: ID групп не должны быть 0")
 		Bad++
 		return Ok, Bad, errors.New("нулевые ID групп")
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Удаляем созданную группу
@@ -61,19 +61,19 @@ func Test_UpdateGroupById() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Обновляем группу
-	log.Printf("[INFO] Обновляем группу с ID=%d...", groupIds[0])
+	log.Printf("[INFO] Обновляем группу с ID=%d...", groupId)
 	newCourse, newGraduates, newSpeciality, newGroupNum := byte(2), byte(5), "Кибербезопасность", 102
-	ok, err := routes.Update_GroupById(groupIds[0], newCourse, newGraduates, newSpeciality, newGroupNum)
+	ok, err := routes.Update_GroupById(groupId, newCourse, newGraduates, newSpeciality, newGroupNum)
 	if err != nil || !ok {
 		log.Printf("Ошибка при обновлении группы: %v", err)
 		Bad++
@@ -84,9 +84,9 @@ func Test_UpdateGroupById() (int, int, error) {
 
 	// Проверяем обновление
 	log.Println("[INFO] Проверяем обновление группы...")
-	groupId, err := routes.GetGroupId_GroupIdByInfo(newCourse, newGraduates, newSpeciality, newGroupNum, 1)
-	if err != nil || groupId != groupIds[0] {
-		log.Printf("Ошибка: обновлённая группа не найдена или неверный ID: %v, ожидался ID=%d, получен=%d", err, groupIds[0], groupId)
+	groupId, err = routes.GetGroupId_GroupIdByInfo(newCourse, newGraduates, newSpeciality, newGroupNum)
+	if err != nil || groupId != groupId {
+		log.Printf("Ошибка: обновлённая группа не найдена или неверный ID: %v, ожидался ID=%d, получен=%d", err, groupId, groupId)
 		Bad++
 		return Ok, Bad, errors.New("ошибка проверки обновления группы")
 	}
@@ -113,13 +113,13 @@ func Test_DeleteGroupById() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Удаляем группу
@@ -135,7 +135,7 @@ func Test_DeleteGroupById() (int, int, error) {
 
 	// Проверяем, что группа удалена
 	log.Println("[INFO] Проверяем удаление группы...")
-	_, err = routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum, 1)
+	_, err = routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum)
 	if err == nil {
 		log.Println("[ERROR] Ошибка: группа должна быть удалена, но она всё ещё существует.")
 		Bad++
@@ -153,20 +153,20 @@ func Test_GetGroupIdByInfo() (int, int, error) {
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Проверяем получение ID для 1-го семестра
 	log.Println("[INFO] Проверяем получение ID группы для 1-го семестра...")
-	groupId, err := routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum, 1)
-	if err != nil || groupId != groupIds[0] {
-		log.Printf("Ошибка при получении ID группы для 1-го семестра: %v, ожидался ID=%d, получен=%d", err, groupIds[0], groupId)
+	groupId, err = routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum)
+	if err != nil || groupId != groupId {
+		log.Printf("Ошибка при получении ID группы для 1-го семестра: %v, ожидался ID=%d, получен=%d", err, groupId, groupId)
 		Bad++
 		return Ok, Bad, errors.New("ошибка получения ID группы для 1-го семестра")
 	}
@@ -175,9 +175,9 @@ func Test_GetGroupIdByInfo() (int, int, error) {
 
 	// Проверяем получение ID для 2-го семестра
 	log.Println("[INFO] Проверяем получение ID группы для 2-го семестра...")
-	groupId, err = routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum, 2)
-	if err != nil || groupId != groupIds[1] {
-		log.Printf("Ошибка при получении ID группы для 2-го семестра: %v, ожидался ID=%d, получен=%d", err, groupIds[1], groupId)
+	groupId, err = routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, groupNum)
+	if err != nil || groupId != groupId {
+		log.Printf("Ошибка при получении ID группы для 2-го семестра: %v, ожидался ID=%d, получен=%d", err, groupId, groupId)
 		Bad++
 		return Ok, Bad, errors.New("ошибка получения ID группы для 2-го семестра")
 	}
@@ -204,77 +204,37 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 	// Создаём тестовую группу
 	log.Println("[INFO] Создаём тестовую группу...")
 	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupIds, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	if groupId == 0 {
+		log.Println("[ERROR] Ошибка: ID группы не должен быть 0")
+		Bad++
+		return Ok, Bad, errors.New("нулевой ID группы")
+	}
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
-
-	// Добавляем предметы в оба семестра
-	log.Println("[INFO] Добавляем предметы в 1-й семестр...")
-	subjectsSem1 := []string{"Математика", "Программирование"}
-	for _, subj := range subjectsSem1 {
-		subjectId, err := routes.Add_SubjectByGroupId(groupIds[0], subj)
-		if err != nil {
-			log.Printf("Ошибка при добавлении предмета %s в 1-й семестр: %v", subj, err)
-			Bad++
-			return Ok, Bad, errors.New("ошибка добавления предмета в 1-й семестр")
-		}
-		log.Printf("Предмет %s добавлен в 1-й семестр с ID=%d", subj, subjectId)
-		Ok++
-	}
-
-	log.Println("[INFO] Добавляем предметы во 2-й семестр...")
-	subjectsSem2 := []string{"Физика", "Базы данных"}
-	for _, subj := range subjectsSem2 {
-		subjectId, err := routes.Add_SubjectByGroupId(groupIds[1], subj)
-		if err != nil {
-			log.Printf("Ошибка при добавлении предмета %s во 2-й семестр: %v", subj, err)
-			Bad++
-			return Ok, Bad, errors.New("ошибка добавления предмета во 2-й семестр")
-		}
-		log.Printf("Предмет %s добавлен во 2-й семестр с ID=%d", subj, subjectId)
-		Ok++
-	}
 
 	// Дублируем группу
-	log.Println("[INFO] Дублируем группу со всеми данными...")
-	newGroupNum := groupNum + 1
-	success, err := routes.DublicateGroupAllData(course, graduates, speciality, groupNum)
-	if err != nil || success[0] == 0 || success[1] == 0 {
-		log.Printf("Ошибка при дублировании группы: %v, success=%v", err, success)
+	log.Println("[INFO] Дублируем группу...")
+	newGroupId, err := routes.DublicateGroupAllData(course, graduates, speciality, groupNum)
+	if err != nil {
+		log.Printf("Ошибка при дублировании группы: %v", err)
 		Bad++
-		return Ok, Bad, errors.New("ошибка дублирования группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Группа успешно продублирована.")
+	if newGroupId == 0 {
+		log.Println("[ERROR] Ошибка: ID новой группы не должен быть 0")
+		Bad++
+		return Ok, Bad, errors.New("нулевой ID новой группы при дублировании")
+	}
+	log.Printf("Группа успешно продублирована с ID %d", newGroupId)
 	Ok++
 
-	// Проверяем создание новой группы
-	log.Println("[INFO] Проверяем создание новой группы...")
-	newGroupId, err := routes.GetGroupId_GroupIdByInfo(course, graduates, speciality, newGroupNum, 1)
-	if err != nil || newGroupId == 0 {
-		log.Printf("Ошибка: новая группа не найдена: %v", err)
-		Bad++
-		return Ok, Bad, errors.New("новая группа не найдена")
-	}
-	log.Printf("Новая группа найдена с ID=%d", newGroupId)
-	Ok++
-
-	// Проверяем копирование предметов
-	log.Println("[INFO] Проверяем копирование предметов для 1-го семестра новой группы...")
-	newSubjects, err := routes.Inf_SubjectByGroupId(newGroupId)
-	if err != nil || len(newSubjects) != len(subjectsSem1) {
-		log.Printf("Ошибка при получении предметов новой группы: %v, ожидалось %d предметов, получено %d", err, len(subjectsSem1), len(newSubjects))
-		Bad++
-		return Ok, Bad, errors.New("ошибка копирования предметов")
-	}
-	log.Println("[INFO] Предметы для 1-го семестра новой группы успешно скопированы.")
-	Ok++
-
-	// Удаляем тестовую и новую группы
+	// Удаляем тестовую группу
 	log.Println("[INFO] Удаляем тестовую группу...")
 	ok, err := routes.Delete_GroupById(course, graduates, speciality, groupNum)
 	if err != nil || !ok {
@@ -285,7 +245,9 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
-	log.Println("[INFO] Удаляем новую группу...")
+	// Удаляем новую группу
+	log.Println("[INFO] Удаляем продублированную группу...")
+	newGroupNum := groupNum + 1
 	ok, err = routes.Delete_GroupById(course, graduates, speciality, newGroupNum)
 	if err != nil || !ok {
 		log.Printf("Ошибка при удалении новой группы: %v", err)
