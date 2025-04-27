@@ -92,7 +92,7 @@ func GetIdByNameByGroup(StudentName string, Course byte, Speciality string, Grod
 	return groupId, nil
 }
 
-func GetStudentByID(studentID int) (*models.Student, error) {
+func GetStudentByID(studentID int) (models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
@@ -111,10 +111,10 @@ func GetStudentByID(studentID int) (*models.Student, error) {
 	)
 	if err != nil {
 		log.Printf("Ошибка при получении студента: %v", err)
-		return nil, err
+		return models.Student{}, err
 	}
 
-	return &student, nil
+	return student, nil
 }
 
 func GetStudentByGroup(course byte, speciality string, groupNum int, semester byte) ([]models.Student, error) {

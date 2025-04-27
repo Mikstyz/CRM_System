@@ -244,7 +244,7 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 	log.Println("[INFO] Дублируем группу со всеми данными...")
 	newGroupNum := groupNum + 1
 	success, err := routes.DublicateGroupAllData(course, graduates, speciality, groupNum)
-	if err != nil || !success {
+	if err != nil || success[0] == 0 || success[1] == 0 {
 		log.Printf("Ошибка при дублировании группы: %v, success=%v", err, success)
 		Bad++
 		return Ok, Bad, errors.New("ошибка дублирования группы")

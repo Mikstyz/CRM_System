@@ -1,23 +1,36 @@
 package dtos
 
+// InfSubjectDTO для запроса предметов по ID группы
 type InfSubjectDTO struct {
-	GroupId int
+	GroupId int `json:"group_id"`
 }
 
+// InfDisciplinesByGroupDataDTO для запроса предметов по данным группы
+type InfDisciplinesByGroupDataDTO struct {
+	Speciality string `json:"speciality"`
+	GroupNum   int    `json:"group_num"`
+	Course     int    `json:"course"`
+	Groudates  int    `json:"groudates"`
+}
+
+// AddSubjectDTO для добавления предмета в группу
 type AddSubjectDTO struct {
-	GroupId    int
-	NewSubject string
+	GroupId    int    `json:"group_id"`
+	NewSubject string `json:"new_subject"`
 }
 
+// UpdateSubjectDTO для обновления предмета
 type UpdateSubjectDTO struct {
-	SubjectId  int
-	NewSubject string
+	SubjectId  int    `json:"subject_id"`
+	NewSubject string `json:"new_subject"`
 }
 
-type DeleteSubjectById struct {
-	SubjectId int
+// DeleteSubjectDTO для удаления предмета
+type DeleteSubjectDTO struct {
+	SubjectId int `json:"subject_id"`
 }
 
-type DeleteAddSubjectByGroup struct {
-	GroupId int
+// DeleteAllSubjectByGroupDTO для удаления всех предметов группы
+type DeleteAllSubjectByGroupDTO struct {
+	GroupId int `json:"group_id"`
 }

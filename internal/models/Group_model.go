@@ -2,7 +2,7 @@ package models
 
 type EinfGroup struct {
 	Id         int
-	Course     int
+	Course     byte
 	Speciality string
 	Groudates  byte
 	Semester   byte

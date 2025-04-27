@@ -1,28 +1,37 @@
 package dtos
 
-type InfStudByIdDTO struct {
-	StudentID int
+type Inf_AllStudent struct{}
+
+type Inf_StudentByID struct {
+	StudentID int `json:"StudentID"`
 }
 
-type CreateStudDTO struct {
-	FullName   string
-	Course     byte
-	Groudates  byte
-	Speciality string
-	Number     int
-	Semester   byte
+type Inf_StudentByGroup struct {
+	Course     byte   `json:"Course"`
+	Speciality string `json:"Speciality"`
+	GroupNum   int    `json:"Number"`
+	Semester   byte   `json:"Semester"`
 }
 
-type UpdateStudDTO struct {
-	StudId        int
-	NewFullName   string
-	NewCourse     byte
-	NewGroudates  byte
-	NewSpeciality string
-	NewNumber     int
-	NewSemester   byte
+type Create_Student struct {
+	FullName   string `json:"FullName"`
+	Course     byte   `json:"Course"`
+	Graduates  byte   `json:"Groduates"`
+	Speciality string `json:"Speciality"`
+	GroupNum   int    `json:"Number"`
+	Semester   byte   `json:"Semester"`
 }
 
-type DeleteStudDTO struct {
-	StudId int
+type Update_StudentById struct {
+	StudId        int    `json:"StudId"`
+	NewFullName   string `json:"NewFullName"`
+	NewCourse     byte   `json:"NewCourse"`
+	NewGraduates  byte   `json:"NewGroudates"`
+	NewSpeciality string `json:"NewSpeciality"`
+	NewNumber     int    `json:"NewNumber"`
+	NewSemester   byte   `json:"NewSemester"`
+}
+
+type Delete_Student struct {
+	StudId int `json:"StudId"`
 }

@@ -51,11 +51,4 @@ func main() {
 	db.Init()
 
 	Test.TestAll()
-
-	//Test.TestAll()
-
-	//Test.Test_Employers()
-	//test.Test_CreateStudentWithEmptyEmployment()
-
-	//Test.TestGenerateFilledPDF()
 }

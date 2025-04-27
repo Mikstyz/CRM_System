@@ -1,15 +1,23 @@
 package dtos
 
-type InfEmployersDTO struct {
-	StudInt int
+type Inf_EmpByStudentId struct {
+	StudentId int `json:"StudentId"`
 }
 
-type UpdateEmployersDTO struct {
-	StudId           int
-	NewEnterprise    string
-	NewWorkStartDate string
-	NewJobTitle      string
+type Create_Employers struct {
+	StudId        int    `json:"StudId"`
+	Enterprise    string `json:"Enterprise"`
+	WorkStartDate string `json:"WorkStartDate"`
+	JobTitle      string `json:"JobTitle"`
 }
-type DeleteEmployersDTO struct {
-	StudId int
+
+type Update_EmpbyStudentId struct {
+	StudId           int    `json:"StudId"`
+	NewEnterprise    string `json:"NewEnterprise"`
+	NewWorkStartDate string `json:"NewWorkStartDate"`
+	NewJobTitle      string `json:"NewJobTitle"`
+}
+
+type Delete_EmpbyStudentId struct {
+	StudId int `json:"StudId"`
 }

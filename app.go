@@ -2,7 +2,7 @@ package main
 
 import (
 	dtos "CRM_System/internal/DTOs"
-	"CRM_System/internal/models"
+	models "CRM_System/internal/models"
 	routes "CRM_System/internal/routes"
 	"context"
 	"fmt"
@@ -29,328 +29,319 @@ func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello %s, It's show time!", name)
 }
 
-//----------------- Student ----------------
-
-func (a *App) Inf_AllStudent() models.Inf_AllStudents {
-	var info models.Inf_AllStudents
-
-	stud, err := routes.Inf_AllStudent()
-
-	code := 200
-
+// ----------------- Student ----------------
+// ----------------------------------- Inf_AllStudent -----------------------------------
+func (a *App) InfAllStudent(dto dtos.Inf_AllStudent) models.AppInf_AllStudent {
+	students, err := routes.Inf_AllStudent()
 	if err != nil {
-		code = 500
-		info.Error = err.Error()
+		return models.AppInf_AllStudent{Code: 500, Error: err.Error()}
 	}
-
-	info.Code = code
-	info.Students = stud
-
-	return info
+	return models.AppInf_AllStudent{Code: 200, Students: students}
 }
 
-func (a *App) Inf_StudentByID(dto dtos.InfStudByIdDTO) models.Inf_Student {
-	var info models.Inf_Student
-	stud, err := routes.Inf_StudentByID(dto.StudentID)
-	code := 200
+// ----------------------------------- Inf_StudentByID -----------------------------------
+func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID {
+	student, err := routes.Inf_StudentByID(dto.StudentID)
 	if err != nil {
-		code = 500
-		info.Error = err.Error()
+		return models.AppInf_StudentByID{Code: 500, Error: err.Error()}
 	}
-	info.Code = code
-	info.Student = append(info.Student, *stud)
-	return info
+	return models.AppInf_StudentByID{Code: 200, Student: student}
 }
 
-func (a *App) Inf_StudentbyGroup() {
-
-}
-
-func (a *App) CreateStudent(dto dtos.CreateStudDTO) models.OutStudentAPI {
-	var res models.OutStudentAPI
-
-	id, err := routes.Create_Student(dto.FullName, dto.Course, dto.Groudates, dto.Speciality, dto.Number, dto.Semester)
-
-	code := 200
-
+// ----------------------------------- Inf_StudentByGroup -----------------------------------
+func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_StudentByGroup {
+	students, err := routes.Inf_StudentByGroup(dto.Course, dto.Speciality, dto.GroupNum, dto.Semester)
 	if err != nil {
-		code = 500
-		res.Error = err.Error()
-		return res
+		return models.AppInf_StudentByGroup{Code: 500, Error: err.Error()}
 	}
-
-	res.Code = code
-	res.Id = id
-	res.FullName = dto.FullName
-	res.Speciality = dto.Speciality
-	res.Number = dto.Number
-	res.Semester = dto.Semester
-	res.Course = dto.Course
-	res.Groudates = dto.Groudates
-
-	return res
+	return models.AppInf_StudentByGroup{Code: 200, Students: students}
 }
 
-func (a *App) UpdateStudentById(dto dtos.UpdateStudDTO) models.OutStudentAPI {
-	var res models.OutStudentAPI
-
-	Status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
-
-	code := 200
-
-	if err != nil || !Status {
-		code = 500
-		res.Error = err.Error()
-	}
-
-	res.Code = code
-	res.Id = dto.StudId
-	res.FullName = dto.NewFullName
-	res.Speciality = dto.NewSpeciality
-	res.Number = dto.NewNumber
-	res.Semester = dto.NewSemester
-	res.Course = dto.NewCourse
-	res.Groudates = dto.NewGroudates
-
-	return res
-}
-
-func (a *App) DeleteStudents(dto dtos.DeleteStudDTO) models.Remove {
-	var res models.Remove
-	Status, err := routes.Delete_Student(dto.StudId)
-	code := 200
-	if err != nil || !Status {
-		code = 500
-		res.Error = err.Error()
-	}
-	res.Code = code
-
-	return res
-}
-
-//----------------- Employers --------------
-
-func (a *App) Inf_EmpByStudentId(dto dtos.InfEmployersDTO) models.Inf_Employer {
-	var info models.Inf_Employer
-	emp, err := routes.Inf_EmpByStudentId(dto.StudInt)
-	code := 200
+// ----------------------------------- Create_Student -----------------------------------
+func (a *App) CreateStudent(dto dtos.Create_Student) models.AppCreate_Student {
+	id, err := routes.Create_Student(dto.FullName, dto.Course, dto.Graduates, dto.Speciality, dto.GroupNum, dto.Semester)
 	if err != nil {
-		code = 500
-		info.Error = err.Error()
+		return models.AppCreate_Student{Code: 500, Error: err.Error()}
 	}
-	info.Code = code
-	info.Employer = emp
-	return info
+	return models.AppCreate_Student{
+		Code:       200,
+		Id:         id,
+		FullName:   dto.FullName,
+		Course:     dto.Course,
+		Graduates:  dto.Graduates,
+		Speciality: dto.Speciality,
+		GroupNum:   dto.GroupNum,
+		Semester:   dto.Semester,
+	}
 }
 
-func (a *App) Update_EmpbyStudentId(dto dtos.UpdateEmployersDTO) models.OutEmployer {
-	var res models.OutEmployer
-	_, err := routes.Update_EmpbyStudentId(dto.StudId, dto.NewEnterprise, dto.NewWorkStartDate, dto.NewJobTitle)
-	code := 200
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	} else {
-		res.Enterprise = dto.NewEnterprise
-		res.WorkStartDate = dto.NewWorkStartDate
-		res.JobTitle = dto.NewJobTitle
-	}
-	res.Code = code
-	return res
-}
-
-func (a *App) Delete_EmpbyStudentId(dto dtos.DeleteEmployersDTO) models.Remove {
-	var res models.Remove
-	_, err := routes.Delete_EmpbyStudentId(dto.StudId)
-	code := 200
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	}
-	res.Code = code
-	return res
-}
-
-//----------------- Group -------------------
-
-func (a *App) Inf_AllGroup() models.Inf_AllGroup {
-	var info models.Inf_AllGroup
-	groups, err := routes.Inf_AllGroup()
-	code := 200
-	if err != nil {
-		code = 500
-		info.Error = err.Error()
-	}
-	info.Code = code
-	info.Groups = groups
-	return info
-}
-
-// UPDATE
-func (a *App) Create_Group(dto dtos.CreateGroupDTO) models.CrtOutGroupApi {
-	var res models.CrtOutGroupApi
-
-	id, err := routes.Create_Group(dto.Course, dto.Groudates, dto.Speciality, dto.Number)
-
-	code := 200
-
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	}
-
-	res.Code = code
-
-	res.Id = id
-	res.Course = dto.Course
-	res.Groudates = dto.Groudates
-	res.Speciality = dto.Speciality
-	res.Number = dto.Number
-
-	return res
-}
-
-// UPDATE
-func (a *App) Update_GroupById(dto dtos.UpdateGroupDTO) models.UpdateOutGroupApi {
-	var res models.UpdateOutGroupApi
-
-	Status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber)
-
-	code := 200
-
-	if err != nil || !Status {
-		code = 500
-		res.Error = err.Error()
-	}
-
-	res.Code = code
-
-	res.Id = dto.GroupId
-	res.Course = dto.NewCourse
-	res.Groudates = dto.NewGroudates
-	res.Speciality = dto.NewSpeciality
-	res.Number = dto.NewNumber
-	res.Semester = dto.NewSemester
-
-	return res
-}
-
-func (a *App) Delete_GroupById(dto dtos.DeleteGroupDTO) models.Remove {
-	var res models.Remove
-	_, err := routes.Delete_GroupById(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
-	code := 200
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	}
-	res.Code = code
-	return res
-}
-
-func (a *App) GetGroupId_GroupIdByInfo(dto dtos.GetGroupIdByInfo) models.GetId {
-	var res models.GetId
-	id, err := routes.GetGroupId_GroupIdByInfo(dto.Course, dto.Groudates, dto.Speciality, dto.Number, dto.Semester)
-	code := 200
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	}
-	res.Code = code
-	res.Id = id
-	return res
-}
-
-//----------------- Subject -----------------
-
-func (a *App) Inf_SubjectByGroupId(dto dtos.InfSubjectDTO) models.Inf_Subject {
-	var info models.Inf_Subject
-	subjects, err := routes.Inf_SubjectByGroupId(dto.GroupId)
-	code := 200
-	if err != nil {
-		code = 500
-		info.Error = err.Error()
-	}
-	info.Code = code
-	info.Subject = subjects
-	return info
-}
-
-func (a *App) Add_SubjectByGroupId(dto dtos.AddSubjectDTO) models.OutSubject {
-	var res models.OutSubject
-
-	id, err := routes.Add_SubjectByGroupId(dto.GroupId, dto.NewSubject)
-	code := 200
-
-	if err != nil {
-		code = 500
-		res.Error = err.Error()
-	} else {
-		res.Subject = dto.NewSubject
-		res.GroupId = dto.GroupId
-	}
-
-	res.Code = code
-	res.GroupId = id
-
-	return res
-}
-
-func (a *App) Update_SubjectById(dto dtos.UpdateSubjectDTO) models.OutSubject {
-	var res models.OutSubject
-
-	status, err := routes.Update_SubjectById(dto.SubjectId, dto.NewSubject)
-	code := 200
-
+// ----------------------------------- Update_StudentById -----------------------------------
+func (a *App) UpdateStudentByID(dto dtos.Update_StudentById) models.AppUpdate_StudentById {
+	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewCourse, dto.NewGraduates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
 	if err != nil || !status {
-		code = 500
+		return models.AppUpdate_StudentById{Code: 500, Error: err.Error()}
+	}
+	return models.AppUpdate_StudentById{
+		Code:          200,
+		NewId:         dto.StudId,
+		NewFullName:   dto.NewFullName,
+		NewCourse:     dto.NewCourse,
+		NewGraduates:  dto.NewGraduates,
+		NewSpeciality: dto.NewSpeciality,
+		NewGroupNum:   dto.NewNumber,
+		NewSemester:   dto.NewSemester,
+	}
+}
+
+// ----------------------------------- Delete_Student -----------------------------------
+func (a *App) DeleteStudent(dto dtos.Delete_Student) models.AppDelete_Student {
+	status, err := routes.Delete_Student(dto.StudId)
+	if err != nil || !status {
+		return models.AppDelete_Student{Code: 500, Error: err.Error()}
+	}
+	return models.AppDelete_Student{Code: 200}
+}
+
+// ----------------- Employers --------------
+// ----------------------------------- Inf_EmpByStudentId -----------------------------------
+func (a *App) InfEmpByStudentID(dto dtos.Inf_EmpByStudentId) models.AppInf_EmpByStudentId {
+	employers, err := routes.Inf_EmpByStudentId(dto.StudentId)
+	if err != nil {
+		return models.AppInf_EmpByStudentId{Code: 500, Error: err.Error()}
+	}
+	return models.AppInf_EmpByStudentId{Code: 200, Employers: employers}
+}
+
+// ----------------------------------- Create_Employers -----------------------------------
+// func (a *App) Create_Employers(dto dtos.Create_Employers) models.AppCreate_Employers {
+// 	var res models.AppCreate_Employers
+// 	_, err := routes.Create_Employers()
+
+// 	code := 200
+// 	if err != nil {
+// 		code = 500
+// 		res.Error = err.Error()
+// 	}
+// 	res.Code = code
+// 	return res
+// }
+
+// ----------------------------------- Update_EmpbyStudentId -----------------------------------
+func (a *App) UpdateEmpByStudentID(dto dtos.Update_EmpbyStudentId) models.AppUpdate_EmpbyStudentId {
+	status, err := routes.Update_EmpbyStudentId(dto.StudId, dto.NewEnterprise, dto.NewWorkStartDate, dto.NewJobTitle)
+	if err != nil || !status {
+		return models.AppUpdate_EmpbyStudentId{Code: 500, Error: err.Error()}
+	}
+	return models.AppUpdate_EmpbyStudentId{
+		Code:             200,
+		StudId:           dto.StudId,
+		NewEnterprise:    dto.NewEnterprise,
+		NewWorkStartDate: dto.NewWorkStartDate,
+		NewJobTitle:      dto.NewJobTitle,
+	}
+}
+
+// ----------------------------------- Delete_EmpbyStudentId -----------------------------------
+func (a *App) DeleteEmpByStudentID(dto dtos.Delete_EmpbyStudentId) models.AppDelete_EmpbyStudentId {
+	status, err := routes.Delete_EmpbyStudentId(dto.StudId)
+	if err != nil || !status {
+		return models.AppDelete_EmpbyStudentId{Code: 500, Error: err.Error()}
+	}
+	return models.AppDelete_EmpbyStudentId{Code: 200}
+}
+
+// ----------------- Group -------------------
+// ----------------------------------- Inf_AllGroup -----------------------------------
+// Inf_AllGroup получает список всех групп
+func (a *App) InfAllGroup(dto dtos.InfAllGroupDTO) models.AppInf_AllGroup {
+	groups, err := routes.Inf_AllGroup()
+	if err != nil {
+		return models.AppInf_AllGroup{Code: 500, Error: err.Error()}
+	}
+	return models.AppInf_AllGroup{Code: 200, Groups: groups}
+}
+
+// ----------------------------------- Create_Group -----------------------------------
+// Create_Group создаёт новую группу
+func (a *App) CreateGroup(dto dtos.CreateGroupDTO) models.AppCrtOutGroupApi {
+	id, err := routes.Create_Group(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	if err != nil {
+		return models.AppCrtOutGroupApi{Code: 500, Error: err.Error()}
+	}
+
+	groups := []models.EinfGroup{
+		{
+			Id:         id[0],
+			Course:     dto.Course,
+			Groudates:  dto.Graduates,
+			Speciality: dto.Speciality,
+			Number:     dto.Number,
+			Semester:   1,
+		},
+		{
+			Id:         id[1],
+			Course:     dto.Course,
+			Groudates:  dto.Graduates,
+			Speciality: dto.Speciality,
+			Number:     dto.Number,
+			Semester:   2,
+		},
+	}
+
+	return models.AppCrtOutGroupApi{Code: 200, Groups: groups}
+}
+
+// ----------------------------------- Update_GroupById -----------------------------------
+// Update_GroupById обновляет группу по ID
+func (a *App) UpdateGroupByID(dto dtos.UpdateGroupDTO) models.AppUpdateOutGroupApi {
+	status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGraduates, dto.NewSpeciality, dto.NewNumber)
+	if err != nil || !status {
+		errorMsg := "не удалось обновить группу"
 		if err != nil {
-			res.Error = err.Error()
-		} else {
-			res.Error = "не удалось обновить предмет"
+			errorMsg = err.Error()
 		}
-	} else {
-		res.Subject = dto.NewSubject
+		return models.AppUpdateOutGroupApi{Code: 500, Error: errorMsg}
 	}
-
-	res.Code = code
-	return res
+	return models.AppUpdateOutGroupApi{
+		Code:       200,
+		Id:         dto.GroupId,
+		Course:     dto.NewCourse,
+		Graduates:  dto.NewGraduates,
+		Speciality: dto.NewSpeciality,
+		Number:     dto.NewNumber,
+	}
 }
 
-func (a *App) Delete_SubjectById(dto dtos.DeleteSubjectById) models.Remove {
-	var res models.Remove
+// ----------------------------------- Delete_GroupById -----------------------------------
+// Delete_GroupById удаляет группу по данным
+func (a *App) DeleteGroupByID(dto dtos.DeleteGroupDTO) models.AppRemove {
+	_, err := routes.Delete_GroupById(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	if err != nil {
+		return models.AppRemove{Code: 500, Error: err.Error()}
+	}
+	return models.AppRemove{Code: 200}
+}
+
+// ----------------------------------- GetGroupId_GroupIdByInfo -----------------------------------
+// GetGroupId_GroupIdByInfo получает ID группы по данным
+func (a *App) GetGroupIDByInfo(dto dtos.GetGroupIdByInfoDTO) models.AppGetId {
+	id, err := routes.GetGroupId_GroupIdByInfo(dto.Course, dto.Graduates, dto.Speciality, dto.Number, dto.Semester)
+	if err != nil {
+		return models.AppGetId{Code: 500, Error: err.Error()}
+	}
+	return models.AppGetId{Code: 200, Id: id}
+}
+
+// ----------------------------------- DublicateGroupAllData -----------------------------------
+// DublicateGroupAllData дублирует данные группы
+func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppCrtOutGroupApi {
+	id, err := routes.DublicateGroupAllData(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	if err != nil {
+		return models.AppCrtOutGroupApi{Code: 500, Error: err.Error()}
+	}
+
+	groups := []models.EinfGroup{
+		{
+			Id:         id[0],
+			Course:     dto.Course,
+			Groudates:  dto.Graduates,
+			Speciality: dto.Speciality,
+			Number:     dto.Number,
+			Semester:   1,
+		},
+		{
+			Id:         id[1],
+			Course:     dto.Course,
+			Groudates:  dto.Graduates,
+			Speciality: dto.Speciality,
+			Number:     dto.Number,
+			Semester:   2,
+		},
+	}
+
+	return models.AppCrtOutGroupApi{Code: 200, Groups: groups}
+}
+
+// ----------------- Subject -----------------
+// ----------------------------------- Inf_SubjectByGroupId -----------------------------------
+// Inf_SubjectByGroupId получает список предметов для группы по ID
+func (a *App) InfSubjectByGroupID(dto dtos.InfSubjectDTO) models.AppInf_Subject {
+	subjects, err := routes.Inf_SubjectByGroupId(dto.GroupId)
+	if err != nil {
+		return models.AppInf_Subject{Code: 500, Error: err.Error()}
+	}
+	return models.AppInf_Subject{Code: 200, Subject: subjects}
+}
+
+// ----------------------------------- Inf_DisciplinesByGroupData -----------------------------------
+// Inf_DisciplinesByGroupData получает предметы по данным группы
+func (a *App) InfDisciplinesByGroupData(dto dtos.InfDisciplinesByGroupDataDTO) models.AppInf_Disciplines {
+	disciplines, err := routes.Inf_DisciplinesByGroupData(dto.Speciality, dto.GroupNum, dto.Course, dto.Groudates)
+	if err != nil {
+		return models.AppInf_Disciplines{Code: 500, Error: err.Error()}
+	}
+	return models.AppInf_Disciplines{Code: 200, Disciplines: disciplines}
+}
+
+// ----------------------------------- Add_SubjectByGroupId -----------------------------------
+// Add_SubjectByGroupId добавляет предмет для группы
+func (a *App) AddSubjectByGroupID(dto dtos.AddSubjectDTO) models.AppOutSubject {
+	id, err := routes.Add_SubjectByGroupId(dto.GroupId, dto.NewSubject)
+	if err != nil {
+		return models.AppOutSubject{Code: 500, Error: err.Error()}
+	}
+	return models.AppOutSubject{
+		Code:    200,
+		Id:      id,
+		Subject: dto.NewSubject,
+		GroupId: dto.GroupId,
+	}
+}
+
+// ----------------------------------- Update_SubjectById -----------------------------------
+// Update_SubjectById обновляет предмет по ID
+func (a *App) UpdateSubjectByID(dto dtos.UpdateSubjectDTO) models.AppOutSubject {
+	status, err := routes.Update_SubjectById(dto.SubjectId, dto.NewSubject)
+	if err != nil || !status {
+		errorMsg := "не удалось обновить предмет"
+		if err != nil {
+			errorMsg = err.Error()
+		}
+		return models.AppOutSubject{Code: 500, Error: errorMsg}
+	}
+	return models.AppOutSubject{
+		Code:    200,
+		Id:      dto.SubjectId,
+		Subject: dto.NewSubject,
+	}
+}
+
+// ----------------------------------- Delete_SubjectById -----------------------------------
+// Delete_SubjectById удаляет предмет по ID
+func (a *App) DeleteSubjectByID(dto dtos.DeleteSubjectDTO) models.AppRemove {
 	_, err := routes.Delete_SubjectById(dto.SubjectId)
-	code := 200
 	if err != nil {
-		code = 500
-		res.Error = err.Error()
+		return models.AppRemove{Code: 500, Error: err.Error()}
 	}
-	res.Code = code
-	return res
+	return models.AppRemove{Code: 200}
 }
 
-func (a *App) Delete_AllSubjectByGroupId(dto dtos.DeleteAddSubjectByGroup) models.Remove {
-	var res models.Remove
+// ----------------------------------- Delete_AllSubjectByGroupId -----------------------------------
+// Delete_AllSubjectByGroupId удаляет все предметы для группы
+func (a *App) DeleteAllSubjectsByGroupID(dto dtos.DeleteAllSubjectByGroupDTO) models.AppRemove {
 	_, err := routes.Delete_AllSubjectByGroupId(dto.GroupId)
-	code := 200
 	if err != nil {
-		code = 500
-		res.Error = err.Error()
+		return models.AppRemove{Code: 500, Error: err.Error()}
 	}
-	res.Code = code
-	return res
+	return models.AppRemove{Code: 200}
 }
 
-//----------------- PDF ----------------------
-
-func (a *App) GenerateFilledPDF(dockDATA models.GeneratePDF) models.PdfDock {
-	var res models.PdfDock
+// ----------------- PDF ----------------------
+// ----------------------------------- GenerateFilledPDF -----------------------------------
+func (a *App) GenerateFilledPDF(dockDATA models.GeneratePDF) models.AppPdfDock {
 	file, err := routes.GenerateFilledPDF(dockDATA)
-	code := 200
 	if err != nil {
-		code = 500
-		res.Error = err.Error()
+		return models.AppPdfDock{Code: 500, Error: err.Error()}
 	}
-	res.Code = code
-	res.File = file
-	return res
+	return models.AppPdfDock{Code: 200, File: file}
 }

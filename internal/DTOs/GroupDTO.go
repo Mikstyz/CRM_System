@@ -1,32 +1,46 @@
 package dtos
 
+// InfAllGroupDTO для запроса всех групп
+type InfAllGroupDTO struct{}
+
+// CreateGroupDTO для создания группы
 type CreateGroupDTO struct {
-	Course     byte
-	Groudates  byte
-	Speciality string
-	Number     int
+	Course     byte   `json:"course"`
+	Graduates  byte   `json:"groudates"` // Исправлено groduates на graduates
+	Speciality string `json:"speciality"`
+	Number     int    `json:"group_num"`
 }
 
+// UpdateGroupDTO для обновления группы
 type UpdateGroupDTO struct {
-	GroupId       int
-	NewCourse     byte
-	NewGroudates  byte
-	NewSpeciality string
-	NewNumber     int
-	NewSemester   byte
+	GroupId       int    `json:"group_id"`
+	NewCourse     byte   `json:"new_course"`
+	NewGraduates  byte   `json:"new_groudates"` // Исправлено groduates
+	NewSpeciality string `json:"new_speciality"`
+	NewNumber     int    `json:"new_group_num"`
 }
 
+// DeleteGroupDTO для удаления группы
 type DeleteGroupDTO struct {
-	Course     byte
-	Graduates  byte
-	Speciality string
-	Number     int
+	Course     byte   `json:"course"`
+	Graduates  byte   `json:"groudates"` // Исправлено groduates
+	Speciality string `json:"speciality"`
+	Number     int    `json:"group_num"`
 }
 
-type GetGroupIdByInfo struct {
-	Course     byte
-	Groudates  byte
-	Speciality string
-	Number     int
-	Semester   byte
+// GetGroupIdByInfoDTO для получения ID группы
+type GetGroupIdByInfoDTO struct {
+	Course     byte   `json:"course"`
+	Graduates  byte   `json:"groudates"` // Исправлено groduates
+	Speciality string `json:"speciality"`
+	Number     int    `json:"group_num"`
+	Semester   byte   `json:"semester"`
+}
+
+// DublicateGroupDTO для дублирования группы
+type DublicateGroupDTO struct {
+	Course     byte   `json:"course"`
+	Graduates  byte   `json:"groudates"` // Исправлено groduates
+	Speciality string `json:"speciality"`
+	Number     int    `json:"group_num"`
 }

@@ -18,12 +18,12 @@ func Inf_AllStudent() ([]models.Student, error) {
 	return result, nil
 }
 
-func Inf_StudentByID(studentID int) (*models.Student, error) {
+func Inf_StudentByID(studentID int) (models.Student, error) {
 	result, err := repo.GetStudentByID(studentID)
 
 	if err != nil {
 		fmt.Printf("Ошибка при получении информации о студенте с ID %d: %v\n", studentID, err)
-		return nil, err
+		return models.Student{}, err
 	}
 
 	fmt.Printf("Получение информации о студенте с ID %d: успешное\n", studentID)

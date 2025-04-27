@@ -57,7 +57,7 @@ func Test_InfStudentByID() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student == nil || student.FullName != fullName {
+	if student.FullName != fullName {
 		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, получено=%v", studentID, fullName, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные студента")
@@ -130,7 +130,7 @@ func Test_CreateStudent() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student == nil || student.FullName != fullName {
+	if student.FullName != fullName {
 		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, получено=%v", studentID, fullName, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные студента")
@@ -210,7 +210,7 @@ func Test_UpdateStudentById() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student == nil || student.FullName != newFullName || student.Speciality != newSpeciality {
+	if student.FullName != newFullName || student.Speciality != newSpeciality {
 		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, специальность=%s, получено=%v", studentID, newFullName, newSpeciality, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные обновлённого студента")

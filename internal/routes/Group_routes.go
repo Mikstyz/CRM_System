@@ -48,7 +48,7 @@ func Delete_GroupById(course byte, graduates byte, speciality string, groupNum i
 	result, err := repo.DelGrp(course, graduates, speciality, groupNum)
 
 	if err != nil {
-		fmt.Printf("Ошибка при удалении группы: %v\n", err)
+		fmt.Printf("Ошибка при удалении группы с ID %d: %v\n", err)
 		return false, err
 	} else {
 		fmt.Printf("Успешное удаление группы")
@@ -70,31 +70,31 @@ func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, gr
 	return result, nil
 }
 
-func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) (bool, error) {
+func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) ([2]int, error) {
 	GroupIdOne, err := repo.GetGroupIDByParams(Course, Groduates, Speciality, GroupNum, 1)
 	if err != nil {
-		return false, err
+		return [2]int{0, 0}, err
 	}
 
 	GroupIdTwo, err := repo.GetGroupIDByParams(Course, Groduates, Speciality, GroupNum, 2)
 	if err != nil {
-		return false, err
+		return [2]int{0, 0}, err
 	}
 
 	newGroupIds, err := repo.CrtGrp(Course, Groduates, Speciality, GroupNum+1)
 	if err != nil {
-		return false, err
+		return [2]int{0, 0}, err
 	}
 
 	err = repo.CopyDisciplinesBetweenGroups(GroupIdOne, newGroupIds[0])
 	if err != nil {
-		return false, err
+		return [2]int{0, 0}, err
 	}
 
 	err = repo.CopyDisciplinesBetweenGroups(GroupIdTwo, newGroupIds[1])
 	if err != nil {
-		return false, err
+		return [2]int{0, 0}, err
 	}
 
-	return true, nil
+	return newGroupIds, nil
 }
