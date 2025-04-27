@@ -13,14 +13,14 @@ import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
 import { headerCreateGroup } from "@/features/FilterGroup/lib/headers/headerCreateGroup.ts";
 import { headerCleansingForm } from "@/features/FilterGroup/lib/headers/headerCleansingForm.ts";
 import { RootState } from "@/app/store";
+import { ErrorMassage } from "@/shared/ui/ErrorMassage";
+import { clearErrors } from "@/entities/group/store";
+import { Course, Graduates } from "@/entities/group/types";
 
 export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s: RootState) => s.groupFilters);
-  const { course, specialty, graduates, groupNumber } = useAppSelector(
-    (state: RootState) => state.groupFilters,
-  );
-  const { error, loading } = useAppSelector((s: RootState) => s.groups);
+  const { error } = useAppSelector((s: RootState) => s.groups);
 
   const {
     register,
@@ -57,6 +57,12 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
       pushFilters(cleaned);
     }
   }, [parsed, pushFilters]);
+
+  useEffect(() => {
+    if (error) {
+      dispatch(clearErrors());
+    }
+  }, [dispatch, groupsLength]);
 
   return (
     <>
@@ -125,14 +131,15 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
           />
         </form>
       </aside>
+      <ErrorMassage error={error} className="items-start" />
       {groupsLength <= 0 && (
         <ButtonPush
           onClick={() =>
             headerCreateGroup({
-              course,
-              specialty,
-              graduates,
-              groupNumber,
+              course: getValues("course") as Course,
+              specialty: getValues("specialty"),
+              graduates: getValues("graduates") as Graduates,
+              groupNumber: getValues("groupNumber") as number,
               dispatch,
               setError,
             })

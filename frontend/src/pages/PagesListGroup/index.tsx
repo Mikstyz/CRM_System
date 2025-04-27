@@ -33,6 +33,7 @@ import { selectFilteredGroups } from "@/entities/group/selectors";
 import { Group } from "@/entities/group/types";
 import { closeBlank, selectBlank } from "@/entities/blank/store/blankSlice";
 import { getGroupsThunks } from "@/entities/group/store/thunks.ts";
+import { clearErrors } from "@/entities/group/store";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
@@ -42,6 +43,7 @@ export function PagesListGroup() {
   const currentGroupName = groups.find((g) => g.id === groupId)?.name ?? "";
 
   useEffect(() => {
+    dispatch(clearErrors());
     dispatch(getGroupsThunks());
   }, [dispatch]);
 
