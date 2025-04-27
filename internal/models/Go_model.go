@@ -20,7 +20,7 @@ type GeneratePDF struct {
 	//данные группы
 	GroupId int
 
-	Course     int
+	Course     byte
 	Speciality string
 	Groduates  byte
 	Number     int

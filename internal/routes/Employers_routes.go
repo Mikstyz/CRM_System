@@ -12,14 +12,8 @@ import (
 // поменять входные данные на имя студента и Id группы
 // поменять входные данные на все поля (группы) (инфы про место работы) (имя студента)
 func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
-	data := models.PdfDoc{
-		Name:          dataPdf.StudentName,
-		Enterprise:    dataPdf.Enterprise,
-		WorkStartDate: dataPdf.WorkStartDate,
-		JobTitle:      dataPdf.JobTitle,
-	}
 
-	// проверка на пустые строки, а не на nil
+	// Проверка на пустые обязательные поля
 	if strings.TrimSpace(dataPdf.StudentName) == "" ||
 		strings.TrimSpace(dataPdf.Enterprise) == "" ||
 		strings.TrimSpace(dataPdf.WorkStartDate) == "" ||
@@ -28,10 +22,37 @@ func GenerateFilledPDF(dataPdf models.GeneratePDF) ([]byte, error) {
 		return nil, errors.New("обязательные поля не должны быть пустыми")
 	}
 
+	// Получаем ID студента по имени и данным группы
+	StudId, err := repo.GetIdByNameByGroup(dataPdf.StudentName, dataPdf.Course, dataPdf.Speciality, dataPdf.Groduates, dataPdf.Number)
+	if err != nil {
+		// Логирование ошибки
+		return nil, fmt.Errorf("не удалось получить ID студента: %w", err)
+	}
+
+	// Обновляем информацию о предприятии по ID студента
+	status, err := Update_EmpbyStudentId(StudId, dataPdf.Enterprise, dataPdf.WorkStartDate, dataPdf.JobTitle)
+	if err != nil {
+		// Логирование ошибки обновления
+		return nil, fmt.Errorf("ошибка при обновлении информации о студенте: %w", err)
+	}
+	if !status {
+		// Когда статус обновления ложный, мы возвращаем ошибку с контекстом
+		return nil, fmt.Errorf("не удалось обновить информацию о студенте (статус обновления: %v)", status)
+	}
+
+	// Формируем данные для заполнения PDF
+	data := models.PdfDoc{
+		Name:          dataPdf.StudentName,
+		Enterprise:    dataPdf.Enterprise,
+		WorkStartDate: dataPdf.WorkStartDate,
+		JobTitle:      dataPdf.JobTitle,
+	}
+
+	// Генерация заполненного PDF
 	PdfDock, err := utils.GenerateFilledPDF(data)
 	if err != nil {
-		fmt.Printf("Ошибка при генерации PDF для студента %s: %v\n", dataPdf.StudentName, err)
-		return nil, fmt.Errorf("ошибка при генерации PDF: %w", err)
+		// Логирование ошибки генерации PDF
+		return nil, fmt.Errorf("ошибка при генерации PDF для студента %s: %w", dataPdf.StudentName, err)
 	}
 
 	return PdfDock, nil

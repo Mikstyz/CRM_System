@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 
@@ -69,6 +70,26 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	}
 
 	return students, nil
+}
+
+func GetIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
+	const query = `SELECT Id FROM students WHERE FullName = ? AND Course = ? AND Speciality = ? AND Groudates = ? AND GroupNum = ?`
+
+	db.Init()
+
+	var groupId int
+	err := db.DB.QueryRow(query, StudentName, Course, Speciality, Groduates, Number).Scan(&groupId)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("группа не найдена по указанным данным")
+		}
+
+		log.Printf("Ошибка при получении ID группы: %v", err)
+		return 0, err
+	}
+
+	return groupId, nil
 }
 
 func GetStudentByID(studentID int) (*models.Student, error) {
