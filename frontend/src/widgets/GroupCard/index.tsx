@@ -8,9 +8,9 @@ import { openBlank } from "@/entities/blank/store/blankSlice";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
 import { Group } from "@/entities/group/types";
 import { headerDeleteGroup } from "@/widgets/GroupCard/headers/deleteGroup.ts";
-import {handleTitleGroupSave} from "@/widgets/GroupCard/headers/titleGroupSave.ts";
-import {headerDuplicateGroup} from "@/widgets/GroupCard/headers/duplicateGroup.ts";
-import {Discipline} from "@/entities/discipline/types";
+import { handleTitleGroupSave } from "@/widgets/GroupCard/headers/titleGroupSave.ts";
+import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup.ts";
+import { Discipline } from "@/entities/discipline/types";
 
 interface DisciplineItemProps {
   discipline: Discipline;
@@ -33,9 +33,7 @@ interface Props {
   group: Group;
 }
 
-export function GroupCard({
-  group,
-}: Props) {
+export function GroupCard({ group }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -46,15 +44,19 @@ export function GroupCard({
           Группа:
           <EditableTitle
             initialValue={group.name}
-            onSave={(value) => handleTitleGroupSave({dispatch, group, value})}
+            onSave={(value) => handleTitleGroupSave({ dispatch, group, value })}
             className="ml-1 w-min"
           />
         </h2>
 
         <PanelGroupCard
           onToggleExpand={() => setIsExpanded((prev) => !prev)}
-          onDeleteGroup={() => headerDeleteGroup({ dispatch, groupId: group.id })}
-          onDuplicateGroup={() => headerDuplicateGroup({dispatch, groupId: group.id})}
+          onDeleteGroup={() =>
+            headerDeleteGroup({ dispatch, groupId: group.id })
+          }
+          onDuplicateGroup={() =>
+            headerDuplicateGroup({ dispatch, groupId: group.id })
+          }
           onOpenBlank={() => {
             dispatch(openBlank(group.id));
           }}
