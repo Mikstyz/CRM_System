@@ -2,23 +2,22 @@ import { FixedSizeList } from "react-window";
 import { Discipline, Semester } from "@/entities/discipline/types";
 import { DisciplineItem } from "@/widgets/DisciplineItem";
 import { Id } from "@/shared/types";
+import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
+import { headerDeleteDiscipline } from "@/features/SemesterDisciplines/heanders/deleteDiscipline.ts";
+import { headerAddDiscipline } from "@/features/SemesterDisciplines/heanders/addDiscipline.ts";
 
 interface Props {
   semester: Semester;
   items: Discipline[];
-  onAdd(): void;
-  onDelete(id: Id): void;
+  groupId: Id;
 }
 
-export const SemesterDisciplines = ({
-  semester,
-  items,
-  onAdd,
-  onDelete,
-}: Props) => {
+export const SemesterDisciplines = ({ semester, items, groupId }: Props) => {
+  const dispatch = useAppDispatch();
   const itemData = items.map((d) => ({
     discipline: d,
-    onDelete: () => onDelete(d.id),
+    onDelete: () =>
+      headerDeleteDiscipline({ dispatch, groupId, semester, discId: d.id }),
   }));
 
   return (
@@ -29,7 +28,14 @@ export const SemesterDisciplines = ({
 
       <div className="p-3 space-y-2">
         <button
-          onClick={onAdd}
+          onClick={() =>
+            headerAddDiscipline({
+              dispatch,
+              groupId,
+              semester,
+              newTitle: "Новый предмет",
+            })
+          }
           className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded"
         >
           + предмет

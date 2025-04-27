@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Course, Graduates } from "@/entities/group/types";
 
 export interface GroupFilters {
-  course?: number | null;
+  course?: Course | null;
   specialty?: string | null;
-  graduates?: "9" | "11" | null;
+  graduates?: Graduates | null;
   groupNumber?: number | null;
 }
 

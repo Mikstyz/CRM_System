@@ -11,7 +11,7 @@ export const selectFilteredGroups = createSelector(
       if (!meta) return false;
 
       return (
-        (f.course ? meta.course === f.course : true) &&
+        (f.course ? String(meta.course) === f.course : true) &&
         (f.specialty
           ? meta.specialty.startsWith(f.specialty.toUpperCase())
           : true) &&

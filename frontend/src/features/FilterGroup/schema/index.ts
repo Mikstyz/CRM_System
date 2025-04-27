@@ -7,7 +7,7 @@ const toNumOrUndef = (v: unknown) => {
 };
 
 export const filterSchema = z.object({
-  course: z.preprocess(toNumOrUndef, z.number().min(1).max(4).optional()),
+  course: z.preprocess(toNumOrUndef, z.enum(["1", "2", "3", "4"]).optional()),
   specialty: z
     .string()
     .trim()
