@@ -2,17 +2,18 @@ import { DisciplineItem } from "../DisciplineItem";
 import { PanelGroupCard } from "@/features/PanelGroupCard";
 import { ListChildComponentProps } from "react-window";
 import { EditableTitle } from "@/shared/ui/EditableTitle";
-import { memo, useCallback, useState } from "react";
-import { Semester } from "@/entities/discipline/types";
+import { memo, useState } from "react";
 import { SemesterDisciplines } from "@/features/SemesterDisciplines";
-import { Id } from "@/shared/types";
 import { openBlank } from "@/entities/blank/store/blankSlice";
-import { duplicateGroup } from "@/entities/group/store/groupSlice";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
 import { Group } from "@/entities/group/types";
+import { headerDeleteGroup } from "@/widgets/GroupCard/headers/deleteGroup.ts";
+import { handleTitleGroupSave } from "@/widgets/GroupCard/headers/titleGroupSave.ts";
+import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup.ts";
+import { Discipline } from "@/entities/discipline/types";
 
 interface DisciplineItemProps {
-  discipline: any;
+  discipline: Discipline;
   onDelete: () => void;
 }
 
@@ -30,23 +31,11 @@ Row.displayName = "Row";
 
 interface Props {
   group: Group;
-  onAddDiscipline: (semester: Semester) => void;
-  onDeleteGroup: () => void;
-  onDeleteDiscipline: (semester: Semester, id: Id) => void;
 }
 
-export function GroupCard({
-  group: { id, name, disciplines },
-  onAddDiscipline,
-  onDeleteGroup,
-  onDeleteDiscipline,
-}: Props) {
+export function GroupCard({ group }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
-  const handleTitleSave = useCallback(
-    (value: string) => console.log(`Group[${id}] → ${value}`),
-    [id],
-  );
 
   return (
     <section className="border-2 rounded-xl p-4">
@@ -54,22 +43,23 @@ export function GroupCard({
         <h2 className="text-lg font-semibold">
           Группа:
           <EditableTitle
-            initialValue={name}
-            onSave={handleTitleSave}
+            initialValue={group.name}
+            onSave={(value) => handleTitleGroupSave({ dispatch, group, value })}
             className="ml-1 w-min"
           />
         </h2>
 
         <PanelGroupCard
           onToggleExpand={() => setIsExpanded((prev) => !prev)}
-          onDeleteGroup={() => {
-            const isConfirmed = confirm(
-              "Вы уверены, что хотите удалить группу?",
-            );
-            if (isConfirmed) onDeleteGroup();
+          onDeleteGroup={() =>
+            headerDeleteGroup({ dispatch, groupId: group.id })
+          }
+          onDuplicateGroup={() =>
+            headerDuplicateGroup({ dispatch, groupId: group.id })
+          }
+          onOpenBlank={() => {
+            dispatch(openBlank(group.id));
           }}
-          onDuplicateGroup={() => dispatch(duplicateGroup(id))}
-          onOpenBlank={() => dispatch(openBlank(id))}
           isExpanded={isExpanded}
         />
       </header>
@@ -79,17 +69,15 @@ export function GroupCard({
           {/* 1‑й семестр */}
           <SemesterDisciplines
             semester={1}
-            items={disciplines[1]}
-            onAdd={() => onAddDiscipline(1 as Semester)}
-            onDelete={(id) => onDeleteDiscipline(1 as Semester, id)}
+            items={group.disciplines[1]}
+            groupId={group.id}
           />
 
           {/* 2‑й семестр */}
           <SemesterDisciplines
             semester={2}
-            items={disciplines[2]}
-            onAdd={() => onAddDiscipline(2 as Semester)}
-            onDelete={(id) => onDeleteDiscipline(2 as Semester, id)}
+            items={group.disciplines[2]}
+            groupId={group.id}
           />
         </div>
       )}

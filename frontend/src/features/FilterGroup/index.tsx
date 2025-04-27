@@ -2,23 +2,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InputFilterGroup } from "./ui/InputFilterGroup";
-import { setFilters } from "@/entities/group/store/groupFiltersSlice";
+import { setFilters } from "@/features/FilterGroup/store/groupFiltersSlice.ts";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
 import { useDeferredValue, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { shallowEqual } from "react-redux";
 import { Filters, filterSchema, FiltersRaw } from "./schema";
 import { ButtonPush } from "@/shared/ui/ButtonPush";
-import { addGroup } from "@/entities/group/store/groupSlice";
-import { Create_Group } from "@wails/go/main/App";
 import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
+import { headerCreateGroup } from "@/features/FilterGroup/lib/headers/headerCreateGroup.ts";
+import { headerCleansingForm } from "@/features/FilterGroup/lib/headers/headerCleansingForm.ts";
+import { RootState } from "@/app/store";
 
 export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
-  const lastSent = useAppSelector((s) => s.groupFilters);
+  const lastSent = useAppSelector((s: RootState) => s.groupFilters);
   const { course, specialty, graduates, groupNumber } = useAppSelector(
-    (state) => state.groupFilters,
+    (state: RootState) => state.groupFilters,
   );
+  const { error, loading } = useAppSelector((s: RootState) => s.groups);
 
   const {
     register,
@@ -68,16 +70,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
             <button
               type="button"
               className="ml-auto text-sm text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-md"
-              onClick={() => {
-                setError("course", {});
-                setError("graduates", {});
-                setError("groupNumber", {});
-                setError("specialty", {});
-                setValue("course", undefined);
-                setValue("graduates", undefined);
-                setValue("groupNumber", undefined);
-                setValue("specialty", undefined);
-              }}
+              onClick={() => headerCleansingForm({ setError, setValue })}
             >
               Очистить форму
             </button>
@@ -126,7 +119,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
             inputProps={{
               type: "number",
               placeholder: "45",
-              ...register("groupNumber")
+              ...register("groupNumber"),
             }}
             error={errors.groupNumber?.message}
           />
@@ -134,68 +127,16 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
       </aside>
       {groupsLength <= 0 && (
         <ButtonPush
-          onClick={() => {
-            if (course && specialty && graduates && groupNumber) {
-              let idGroup;
-              (async function () {
-                const res = (await Create_Group(
-                  course,
-                  Number(graduates),
-                  specialty,
-                  groupNumber,
-                  1,
-                )) as {
-                  Code: number;
-                  Error: string;
-                  Id: number;
-                };
-                idGroup = res.Id;
-                if (idGroup) {
-                  dispatch(
-                    addGroup({
-                      id: idGroup,
-                      name: `${course}${specialty}${graduates}-${groupNumber}`,
-                      dateNameGroup: {
-                        course: course.toString(),
-                        specialty,
-                        graduates,
-                        groupNumber,
-                      },
-                      disciplines: {
-                        1: [],
-                        2: [],
-                      },
-                    }),
-                  );
-                }
-              })();
-            } else {
-              if (!course) {
-                setError("course", {
-                  type: "custom",
-                  message: "Выберите курс",
-                });
-              }
-              if (!specialty) {
-                setError("specialty", {
-                  type: "custom",
-                  message: "Выберите специальность",
-                });
-              }
-              if (!graduates) {
-                setError("graduates", {
-                  type: "custom",
-                  message: "Выберите выпускников",
-                });
-              }
-              if (!groupNumber) {
-                setError("groupNumber", {
-                  type: "custom",
-                  message: "Выберите номер группы",
-                });
-              }
-            }
-          }}
+          onClick={() =>
+            headerCreateGroup({
+              course,
+              specialty,
+              graduates,
+              groupNumber,
+              dispatch,
+              setError,
+            })
+          }
         >
           Добавить группу
         </ButtonPush>
