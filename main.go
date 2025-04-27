@@ -50,7 +50,7 @@ func main() {
 
 	db.Init()
 
-	Test.Test_GenerateFilledPDF()
+	Test.TestAll()
 
 	//Test.TestAll()
 

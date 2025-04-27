@@ -298,7 +298,7 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 	return Ok, Bad, nil
 }
 
-func TestGroupALL() {
+func TestGroupALL() (int, int) {
 	var Ok, Bad int
 
 	// Тестирование Inf_AllGroup
@@ -358,4 +358,6 @@ func TestGroupALL() {
 	// Итоговый вывод
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestGroupALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
+
+	return Ok, Bad
 }

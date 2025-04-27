@@ -38,6 +38,55 @@ func InfDisciplinesByGroup(groupId int) ([]string, error) {
 	return disciplines, nil
 }
 
+func InfDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (map[int][]string, error) {
+	log.Printf("Получение предметов для группы: Speciality=%s, GroupNum=%d, Course=%d, Groudates=%d", Speciality, GroupNum, Course, Groudates)
+
+	// Запрос для получения предметов и семестров
+	const query = `
+		SELECT gs.subject_name, eg.Semester 
+		FROM group_subject gs
+		JOIN einf_groups eg ON gs.group_id = eg.Id
+		WHERE eg.Speciality = ? AND eg.GroupNum = ? AND eg.Course = ? AND eg.Groudates = ?`
+
+	// Инициализация соединения с базой данных
+	db.Init()
+
+	rows, err := db.DB.Query(query, Speciality, GroupNum, Course, Groudates)
+	if err != nil {
+		log.Printf("Ошибка при получении предметов: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Инициализация мапы для семестров
+	disciplines := make(map[int][]string)
+
+	// Обрабатываем данные
+	for rows.Next() {
+		var subjectName string
+		var semester int
+		if err := rows.Scan(&subjectName, &semester); err != nil {
+			log.Printf("Ошибка при сканировании предмета: %v", err)
+			continue
+		}
+		disciplines[semester] = append(disciplines[semester], subjectName)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Ошибка при чтении данных: %v", err)
+		return nil, err
+	}
+
+	// Если мапа пустая, инициализируем пустые слайсы для семестров 1 и 2
+	if len(disciplines) == 0 {
+		disciplines[1] = []string{}
+		disciplines[2] = []string{}
+	}
+
+	log.Printf("Получено предметов: семестр 1 — %d, семестр 2 — %d", len(disciplines[1]), len(disciplines[2]))
+	return disciplines, nil
+}
+
 func AddDisciplinesInGroup(groupId int, newSubject string) (int, error) {
 	log.Println("Добавление предмета в группу")
 	const query = `INSERT INTO group_subject (group_id, subject_name) VALUES (?, ?) RETURNING id`

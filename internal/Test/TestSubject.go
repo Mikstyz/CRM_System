@@ -8,6 +8,196 @@ import (
 	"reflect"
 )
 
+//Тест получения предметов сразу на 2 семестра
+
+func Test_Inf_DisciplinesByGroupData() (int, int, error) {
+	var Ok, Bad int
+
+	// Создаём группу для теста
+	log.Println("[INFO] Создаём тестовую группу...")
+	course, grads, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupIds, err := routes.Create_Group(course, grads, speciality, groupNum)
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при создании группы: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	log.Printf("[SUCCESS] Группа создана с ID=[%d, %d]", groupIds[0], groupIds[1])
+	Ok++
+	groupId1, groupId2 := groupIds[0], groupIds[1] // ID для семестров 1 и 2
+
+	// Проверяем пустой список предметов
+	log.Println("[INFO] Проверяем пустой список предметов...")
+	disciplines, err := routes.Inf_DisciplinesByGroupData(speciality, groupNum, int(course), int(grads))
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при получении предметов: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	expectedEmpty := map[int][]string{1: {}, 2: {}}
+	if !compareDisciplines(disciplines, expectedEmpty) {
+		log.Printf("[ERROR] Список предметов должен быть пустым, получено=%v", disciplines)
+		Bad++
+		return Ok, Bad, errors.New("список предметов не пуст")
+	}
+	log.Println("[SUCCESS] Пустой список предметов подтверждён")
+	Ok++
+
+	// Добавляем предметы для семестра 1
+	log.Println("[INFO] Добавляем предмет для семестра 1...")
+	subject1 := "Математика"
+	subjectId1, err := routes.Add_SubjectByGroupId(groupId1, subject1)
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при добавлении предмета '%s': %v", subject1, err)
+		Bad++
+		return Ok, Bad, err
+	}
+	log.Printf("[SUCCESS] Предмет '%s' добавлен с ID=%d", subject1, subjectId1)
+	Ok++
+
+	// Добавляем предметы для семестра 2
+	log.Println("[INFO] Добавляем предмет для семестра 2...")
+	subject2 := "Программирование"
+	subjectId2, err := routes.Add_SubjectByGroupId(groupId2, subject2)
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при добавлении предмета '%s': %v", subject2, err)
+		Bad++
+		return Ok, Bad, err
+	}
+	log.Printf("[SUCCESS] Предмет '%s' добавлен с ID=%d", subject2, subjectId2)
+	Ok++
+
+	// Проверяем список предметов после добавления
+	log.Println("[INFO] Проверяем список предметов после добавления...")
+	disciplines, err = routes.Inf_DisciplinesByGroupData(speciality, groupNum, int(course), int(grads))
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при получении предметов: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	log.Printf("[DEBUG] Список предметов: %v", disciplines)
+	expected := map[int][]string{
+		1: {subject1},
+		2: {subject2},
+	}
+	if !compareDisciplines(disciplines, expected) {
+		log.Printf("[ERROR] Данные не совпадают, получено=%v, ожидаемо=%v", disciplines, expected)
+		Bad++
+		return Ok, Bad, errors.New("список предметов не совпадает")
+	}
+	log.Println("[SUCCESS] Данные предметов корректны")
+	Ok++
+
+	// Удаляем предметы
+	log.Printf("[INFO] Удаляем предмет с ID=%d...", subjectId1)
+	ok, err := routes.Delete_SubjectById(subjectId1)
+	if err != nil || !ok {
+		log.Printf("[ERROR] Ошибка при удалении предмета '%s': %v", subject1, err)
+		Bad++
+		return Ok, Bad, errors.New("ошибка удаления предмета")
+	}
+	log.Printf("[SUCCESS] Предмет '%s' успешно удалён", subject1)
+	Ok++
+
+	log.Printf("[INFO] Удаляем предмет с ID=%d...", subjectId2)
+	ok, err = routes.Delete_SubjectById(subjectId2)
+	if err != nil || !ok {
+		log.Printf("[ERROR] Ошибка при удалении предмета '%s': %v", subject2, err)
+		Bad++
+		return Ok, Bad, errors.New("ошибка удаления предмета")
+	}
+	log.Printf("[SUCCESS] Предмет '%s' успешно удалён", subject2)
+	Ok++
+
+	// Проверяем пустой список после удаления
+	log.Println("[INFO] Проверяем пустой список предметов после удаления...")
+	disciplines, err = routes.Inf_DisciplinesByGroupData(speciality, groupNum, int(course), int(grads))
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при получении предметов: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	if !compareDisciplines(disciplines, expectedEmpty) {
+		log.Printf("[ERROR] Список предметов должен быть пустым, получено=%v", disciplines)
+		Bad++
+		return Ok, Bad, errors.New("список предметов не пуст после удаления")
+	}
+	log.Println("[SUCCESS] Пустой список предметов подтверждён")
+	Ok++
+
+	// Удаляем группу
+	log.Println("[INFO] Удаляем тестовую группу...")
+	ok, err = routes.Delete_GroupById(course, grads, speciality, groupNum)
+	if err != nil || !ok {
+		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
+		Bad++
+		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+	}
+	log.Println("[SUCCESS] Тестовая группа успешно удалена")
+	Ok++
+
+	// Проверяем, что предметы удалены после удаления группы
+	log.Println("[INFO] Проверяем отсутствие предметов после удаления группы...")
+	disciplines, err = routes.Inf_DisciplinesByGroupData(speciality, groupNum, int(course), int(grads))
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при получении предметов: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	if !compareDisciplines(disciplines, expectedEmpty) {
+		log.Printf("[ERROR] Предметы не должны существовать после удаления группы, получено=%v", disciplines)
+		Bad++
+		return Ok, Bad, errors.New("предметы существуют после удаления группы")
+	}
+	log.Println("[SUCCESS] Предметы отсутствуют после удаления группы")
+	Ok++
+
+	// Проверяем ошибку при неверных данных
+	log.Println("[INFO] Проверяем ошибку при неверных данных...")
+	disciplines, err = routes.Inf_DisciplinesByGroupData("НеИнформатика", 999, 9, 99)
+	if err != nil {
+		log.Printf("[ERROR] Ошибка при получении предметов для неверных данных: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	if !compareDisciplines(disciplines, expectedEmpty) {
+		log.Printf("[ERROR] Неверные данные должны вернуть пустой список, получено=%v", disciplines)
+		Bad++
+		return Ok, Bad, errors.New("неверные данные не вернули пустой список")
+	}
+	log.Println("[SUCCESS] Пустой список получен для неверных данных")
+	Ok++
+
+	log.Printf("[INFO] Результат теста: %d успешных, %d неудачных", Ok, Bad)
+	return Ok, Bad, nil
+}
+
+// Функция для сравнения данных
+func compareDisciplines(actual, expected map[int][]string) bool {
+	if len(actual) != len(expected) {
+		return false
+	}
+	for key, value := range expected {
+		if !equal(value, actual[key]) {
+			return false
+		}
+	}
+	return true
+}
+
+// Функция для проверки, что два слайса одинаковы
+func equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // Вспомогательная функция для проверки списка предметов
 func checkSubjects(actual, expected []string, action string) error {
 	if !reflect.DeepEqual(actual, expected) {
@@ -521,7 +711,7 @@ func Test_DeleteAllSubjectByGroupId() (int, int, error) {
 }
 
 // Тест всех функций Subjects
-func TestSubjectsALL() {
+func TestSubjectsALL() (int, int) {
 	var Ok, Bad int
 
 	// Тестирование Inf_SubjectByGroupId
@@ -569,7 +759,17 @@ func TestSubjectsALL() {
 	Ok += ok
 	Bad += bad
 
+	ok, bad, err = Test_Inf_DisciplinesByGroupData()
+	if err != nil {
+		log.Fatal("Ошибка в Test_Inf_DisciplinesByGroupData: ", err)
+	}
+	logResults("Test_Inf_DisciplinesByGroupData", ok, bad, err)
+	Ok += ok
+	Bad += bad
+
 	// Итоговый вывод
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestSubjectsALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
+
+	return Ok, Bad
 }

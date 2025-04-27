@@ -388,7 +388,7 @@ func Test_InfStudentByGroup() (int, int, error) {
 	return Ok, Bad, nil
 }
 
-func TestStudentALL() {
+func TestStudentALL() (int, int) {
 	var Ok, Bad int
 
 	// Тестирование Inf_AllStudent
@@ -448,4 +448,6 @@ func TestStudentALL() {
 	// Итоговый вывод
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestStudentALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
+
+	return Ok, Bad
 }

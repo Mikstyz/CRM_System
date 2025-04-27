@@ -625,7 +625,7 @@ func Test_DeleteEmpByStudentId() (int, int, error) {
 }
 
 // Тест всех функций Employers
-func TestEmployersALL() {
+func TestEmployersALL() (int, int) {
 	var Ok, Bad int
 
 	// Тестирование Inf_EmpByStudentId
@@ -667,4 +667,6 @@ func TestEmployersALL() {
 	// Итоговый вывод
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestEmployersALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
+
+	return ok, bad
 }

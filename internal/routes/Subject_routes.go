@@ -17,6 +17,18 @@ func Inf_SubjectByGroupId(groupId int) ([]string, error) {
 	return result, nil
 }
 
+func Inf_DisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (map[int][]string, error) {
+	result, err := repo.InfDisciplinesByGroupData(Speciality, GroupNum, Course, Groudates)
+
+	if err != nil {
+		fmt.Printf("Ошибка при получении предметов %v", err)
+		return nil, err
+	}
+
+	fmt.Printf("Успешное получение предметов для группы")
+	return result, nil
+}
+
 func Add_SubjectByGroupId(groupId int, newSubject string) (int, error) {
 	result, err := repo.AddDisciplinesInGroup(groupId, newSubject)
 
