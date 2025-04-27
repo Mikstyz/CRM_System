@@ -5,7 +5,6 @@ type CreateGroupDTO struct {
 	Groudates  byte
 	Speciality string
 	Number     int
-	Semester   byte
 }
 
 type UpdateGroupDTO struct {
@@ -18,7 +17,10 @@ type UpdateGroupDTO struct {
 }
 
 type DeleteGroupDTO struct {
-	GroupId int
+	Course     byte
+	Graduates  byte
+	Speciality string
+	Number     int
 }
 
 type GetGroupIdByInfo struct {

@@ -1,10 +1,11 @@
 package repository
 
 import (
-	db "CRM_System/internal/db"
-	"CRM_System/internal/models"
 	"fmt"
 	"log"
+
+	db "CRM_System/internal/db"
+	"CRM_System/internal/models"
 
 	_ "modernc.org/sqlite"
 )
@@ -36,11 +37,18 @@ func InfStdByGroup() ([]models.Student, error) {
 }
 
 func InfStudentByGroup(GroupId int) ([]models.Student, error) {
-	log.Printf("Получения студентов по группе")
+	log.Printf("Получение студентов по группе ID=%d", GroupId)
 
-	const query = `SELECT FullName, Speciality, GroupNum, Semester, Groudates, Course FROM students WHERE group_id`
+	const query = `
+		SELECT s.id, s.FullName, s.Groudates, s.Course, s.Speciality, s.GroupNum, s.Semester 
+		FROM students s 
+		WHERE (s.Course, s.Speciality, s.GroupNum) IN (
+			SELECT Course, Speciality, GroupNum 
+			FROM einf_groups 
+			WHERE Id = ?
+		)`
 
-	rows, err := db.DB.Query(query)
+	rows, err := db.DB.Query(query, GroupId)
 	if err != nil {
 		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
 	}
@@ -67,11 +75,9 @@ func GetStudentByID(studentID int) (*models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
-		SELECT FullName, Speciality, GroupNum, Semester, Well, Course
+		SELECT FullName, Speciality, GroupNum, Semester, Groudates, Course
 		FROM students
 		WHERE id = ?`
-
-	db.Init()
 
 	var student models.Student
 	err := db.DB.QueryRow(query, studentID).Scan(
@@ -90,7 +96,35 @@ func GetStudentByID(studentID int) (*models.Student, error) {
 	return &student, nil
 }
 
-// Создание студента
+func GetStudentByGroup(course byte, speciality string, groupNum int, semester byte) ([]models.Student, error) {
+	const query = `
+		SELECT id, FullName, Groudates, Course, Speciality, GroupNum, Semester 
+		FROM students 
+		WHERE Course = ? AND Speciality = ? AND GroupNum = ? AND Semester = ?`
+
+	rows, err := db.DB.Query(query, course, speciality, groupNum, semester)
+	if err != nil {
+		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
+	}
+	defer rows.Close()
+
+	var students []models.Student
+	for rows.Next() {
+		var s models.Student
+		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum, &s.Semester)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
+		}
+		students = append(students, s)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка после чтения строк: %v", err)
+	}
+
+	return students, nil
+}
+
 func CrtStd(fullName string, Course byte, Groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	log.Println("Создаю нового студента...")
 
@@ -108,12 +142,12 @@ func CrtStd(fullName string, Course byte, Groudates byte, speciality string, gro
 		return 0, fmt.Errorf("не получил id нового студента: %v", err)
 	}
 
-	log.Printf("Студент с ID=%d успешно создан\n", id)
+	log.Printf("Студент с ID=%d успешно создан", id)
 	return int(id), nil
 }
 
 func UpdateStd(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newGroupNum int, newSemester byte) (bool, error) {
-	log.Printf("Обновляю данные студента с ID=%d...\n", studId)
+	log.Printf("Обновляю данные студента с ID=%d...", studId)
 
 	const query = `
 		UPDATE students 
@@ -131,16 +165,16 @@ func UpdateStd(studId int, newFullName string, newCourse byte, newGroudates byte
 	}
 
 	if rowsAffected > 0 {
-		log.Printf("Данные студента с ID=%d успешно обновлены\n", studId)
+		log.Printf("Данные студента с ID=%d успешно обновлены", studId)
 		return true, nil
 	}
 
-	log.Printf("Студент с ID=%d не был обновлён (строки не были изменены)\n", studId)
+	log.Printf("Студент с ID=%d не был обновлён (строки не были изменены)", studId)
 	return false, nil
 }
 
 func DelStd(studId int) (bool, error) {
-	log.Printf("Удаляю студента с ID=%d...\n", studId)
+	log.Printf("Удаляю студента с ID=%d...", studId)
 
 	const query = `DELETE FROM students WHERE id = ?`
 
@@ -155,15 +189,14 @@ func DelStd(studId int) (bool, error) {
 	}
 
 	if rowsAffected > 0 {
-		log.Printf("Студент с ID=%d успешно удалён\n", studId)
+		log.Printf("Студент с ID=%d успешно удалён", studId)
 		return true, nil
 	}
 
-	log.Printf("Студент с ID=%d не был удалён (строки не были изменены)\n", studId)
+	log.Printf("Студент с ID=%d не был удалён (строки не были изменены)", studId)
 	return false, nil
 }
 
-// Продвинутое создание студента
 func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates byte, speciality string, groupNum int, semester byte) (int, error) {
 	log.Println("Создаю нового студента и пустую запись о трудоустройстве (в транзакции)...")
 
@@ -172,7 +205,6 @@ func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates by
 		return 0, fmt.Errorf("не удалось начать транзакцию: %v", err)
 	}
 
-	// Шаг 1: вставляем студента
 	const insertStudent = `
 		INSERT INTO students (FullName, Groudates, Course, Speciality, GroupNum, Semester)
 		VALUES (?, ?, ?, ?, ?, ?)`
@@ -189,10 +221,9 @@ func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates by
 		return 0, fmt.Errorf("не получил id нового студента: %v", err)
 	}
 
-	// Шаг 2: вставляем пустую запись работодателя
 	const insertEmployer = `
 		INSERT INTO employers (studid, enterprise, workstartdate, jobtitle)
-		VALUES (?, '', '', '')`
+		VALUES (?, NULL, NULL, NULL)`
 
 	_, err = tx.Exec(insertEmployer, studentID)
 	if err != nil {
@@ -200,11 +231,10 @@ func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates by
 		return 0, fmt.Errorf("не удалось вставить запись о трудоустройстве: %v", err)
 	}
 
-	// Всё ок — коммитим
 	if err := tx.Commit(); err != nil {
 		return 0, fmt.Errorf("не удалось завершить транзакцию: %v", err)
 	}
 
-	log.Printf("✅ Студент с ID=%d и пустое трудоустройство успешно созданы\n", studentID)
+	log.Printf("Студент с ID=%d и пустое трудоустройство успешно созданы", studentID)
 	return int(studentID), nil
 }

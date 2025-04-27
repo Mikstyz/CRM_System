@@ -40,7 +40,7 @@ func Inf_EmpByStudentId(StudentId int) (models.EInfEmp, error) {
 }
 
 func Create_Employers(studId int, enterprise string, workStartDate string, jobTitle string) {
-	repo.CreateEmp(studId, enterprise, workStartDate, jobTitle)
+	repo.CrteEmp(studId, enterprise, workStartDate, jobTitle)
 }
 
 func Update_EmpbyStudentId(studId int, newEnterprise string, newWorkStartDate string, newJobTitle string) (bool, error) {

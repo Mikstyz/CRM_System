@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS employers (
     studid INTEGER NOT NULL,
     enterprise TEXT NULL,
-    workstartdate DATE NULL,
+    workstartdate TEXT NULL,
     jobtitle TEXT NULL,
     FOREIGN KEY (studid) REFERENCES students(id) ON DELETE CASCADE
 );
@@ -72,4 +72,36 @@ BEGIN
     AND GroupNum = OLD.GroupNum 
     AND Course = OLD.Course 
     AND Semester = OLD.Semester;
+END;
+
+
+-- Триггер создаёт пустую запись в таблице employers для нового студента
+-- Срабатывает после вставки записи в students
+-- Вставляет studid = id нового студента, остальные поля — NULL
+CREATE TRIGGER IF NOT EXISTS trigger_create_empty_employer
+AFTER INSERT ON students
+FOR EACH ROW
+BEGIN
+    INSERT INTO employers (studid, enterprise, workstartdate, jobtitle)
+    VALUES (NEW.id, NULL, NULL, NULL);
+END;
+
+-- Триггер удаляет запись из employers при удалении студента
+-- Срабатывает после удаления записи из students
+-- Удаляет все записи в employers, где studid равен id удалённого студента
+CREATE TRIGGER IF NOT EXISTS trigger_delete_employer_on_student_delete
+AFTER DELETE ON students
+FOR EACH ROW
+BEGIN
+    DELETE FROM employers
+    WHERE studid = OLD.id;
+END;
+
+-- Триггер для удаления предметов при удалении группы
+CREATE TRIGGER IF NOT EXISTS trigger_delete_subjects_for_group
+AFTER DELETE ON einf_groups
+FOR EACH ROW
+BEGIN
+    DELETE FROM group_subject
+    WHERE group_id = OLD.Id;
 END;

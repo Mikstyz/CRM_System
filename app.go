@@ -186,10 +186,11 @@ func (a *App) Inf_AllGroup() models.Inf_AllGroup {
 	return info
 }
 
-func (a *App) Create_Group(dto dtos.CreateGroupDTO) models.OutGroupApi {
-	var res models.OutGroupApi
+// UPDATE
+func (a *App) Create_Group(dto dtos.CreateGroupDTO) models.CrtOutGroupApi {
+	var res models.CrtOutGroupApi
 
-	id, err := routes.Create_Group(dto.Course, dto.Groudates, dto.Speciality, dto.Number, dto.Semester)
+	id, err := routes.Create_Group(dto.Course, dto.Groudates, dto.Speciality, dto.Number)
 
 	code := 200
 
@@ -205,15 +206,15 @@ func (a *App) Create_Group(dto dtos.CreateGroupDTO) models.OutGroupApi {
 	res.Groudates = dto.Groudates
 	res.Speciality = dto.Speciality
 	res.Number = dto.Number
-	res.Semester = dto.Semester
 
 	return res
 }
 
-func (a *App) Update_GroupById(dto dtos.UpdateGroupDTO) models.OutGroupApi {
-	var res models.OutGroupApi
+// UPDATE
+func (a *App) Update_GroupById(dto dtos.UpdateGroupDTO) models.UpdateOutGroupApi {
+	var res models.UpdateOutGroupApi
 
-	Status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber, dto.NewSemester)
+	Status, err := routes.Update_GroupById(dto.GroupId, dto.NewCourse, dto.NewGroudates, dto.NewSpeciality, dto.NewNumber)
 
 	code := 200
 
@@ -236,7 +237,7 @@ func (a *App) Update_GroupById(dto dtos.UpdateGroupDTO) models.OutGroupApi {
 
 func (a *App) Delete_GroupById(dto dtos.DeleteGroupDTO) models.Remove {
 	var res models.Remove
-	_, err := routes.Delete_GroupById(dto.GroupId)
+	_, err := routes.Delete_GroupById(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
 	code := 200
 	if err != nil {
 		code = 500

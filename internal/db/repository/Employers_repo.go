@@ -42,7 +42,7 @@ func InfEmpById(StudId int) (models.EInfEmp, error) {
 	return employer, nil
 }
 
-func CreateEmp(studId int, enterprise string, workStartDate string, jobTitle string) (bool, error) {
+func CrteEmp(studId int, enterprise string, workStartDate string, jobTitle string) (bool, error) {
 	const query = `INSERT INTO employers (studid, enterprise, workstartdate, jobtitle)
 		VALUES (?, ?, ?, ?)`
 

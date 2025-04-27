@@ -66,7 +66,19 @@ type Inf_Employer struct {
 }
 
 // Group
-type OutGroupApi struct {
+type CrtOutGroupApi struct {
+	Code  int    `json:"code"`
+	Error string `json:"error,omitempty"`
+
+	Id         [2]int `json:"id,omitempty"`
+	Course     byte   `json:"course,omitempty"`
+	Groudates  byte   `json:"groudates,omitempty"`
+	Speciality string `json:"speciality,omitempty"`
+	Number     int    `json:"group_num,omitempty"`
+	Semester   byte   `json:"semester,omitempty"`
+}
+
+type UpdateOutGroupApi struct {
 	Code  int    `json:"code"`
 	Error string `json:"error,omitempty"`
 

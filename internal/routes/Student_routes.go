@@ -30,6 +30,18 @@ func Inf_StudentByID(studentID int) (*models.Student, error) {
 	return result, nil
 }
 
+func Inf_StudentByGroup(course byte, speciality string, groupNum int, Semester byte) ([]models.Student, error) {
+	result, err := repo.GetStudentByGroup(course, speciality, groupNum, Semester)
+
+	if err != nil {
+		fmt.Print("Ошибка при получении студентов группы")
+		return nil, err
+	}
+
+	fmt.Printf("Успешное получнеие студентов группы")
+	return result, nil
+}
+
 func Create_Student(fullName string, course byte, groduates byte, speciality string, groupNum int, semester byte) (int, error) {
 	result, err := repo.CreateStudentWithEmptyEmployment(fullName, course, groduates, speciality, groupNum, semester)
 
@@ -41,8 +53,6 @@ func Create_Student(fullName string, course byte, groduates byte, speciality str
 	fmt.Printf("Успешное создание студента %s\n", fullName)
 	return result, nil
 }
-
-//studId, newFullName, newCourse, newGroudates, newClass, newSpeciality, newNumber, newSemester
 
 func Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int, newSemester byte) (bool, error) {
 	result, err := repo.UpdateStd(studId, newFullName, newGroudates, newCourse, newSpeciality, newNumber, newSemester)

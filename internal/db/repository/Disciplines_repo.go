@@ -34,6 +34,7 @@ func InfDisciplinesByGroup(groupId int) ([]string, error) {
 	}
 
 	log.Printf("Получено предметов: %d", len(disciplines))
+
 	return disciplines, nil
 }
 
@@ -129,4 +130,33 @@ func DeleteDisciplinesByGroupId(groupID int) (bool, error) {
 	}
 
 	return rowsAffected > 0, nil
+}
+
+func CopyDisciplinesBetweenGroups(oldGroupId int, newGroupId int) error {
+	const query = `
+		INSERT INTO group_subject (group_id, subject_name)
+		SELECT ?, subject_name
+		FROM group_subject
+		WHERE group_id = ?;
+	`
+
+	db.Init()
+
+	tx, err := db.DB.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(query, newGroupId, oldGroupId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
