@@ -10,7 +10,6 @@ type Inf_StudentByGroup struct {
 	Course     byte   `json:"Course"`
 	Speciality string `json:"Speciality"`
 	GroupNum   int    `json:"Number"`
-	Semester   byte   `json:"Semester"`
 }
 
 type Create_Student struct {
@@ -19,7 +18,6 @@ type Create_Student struct {
 	Graduates  byte   `json:"Groduates"`
 	Speciality string `json:"Speciality"`
 	GroupNum   int    `json:"Number"`
-	Semester   byte   `json:"Semester"`
 }
 
 type Update_StudentById struct {
@@ -29,7 +27,6 @@ type Update_StudentById struct {
 	NewGraduates  byte   `json:"NewGroudates"`
 	NewSpeciality string `json:"NewSpeciality"`
 	NewNumber     int    `json:"NewNumber"`
-	NewSemester   byte   `json:"NewSemester"`
 }
 
 type Delete_Student struct {

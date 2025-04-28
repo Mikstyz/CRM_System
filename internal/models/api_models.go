@@ -27,8 +27,7 @@ type AppInf_AllGroup struct {
 // AppCrtOutGroupApi для возврата данных при создании группы
 type AppCrtOutGroupApi struct {
 	Code  int       `json:"code"`
-	One   EinfGroup `json:One,omitempty`
-	Two   EinfGroup `json:Two,omitempty`
+	Group EinfGroup `json:"Group,omitempty"`
 	Error string    `json:"error,omitempty"`
 }
 
@@ -61,11 +60,12 @@ type AppInf_Disciplines struct {
 
 // AppOutSubject для возврата данных о предмете при создании/обновлении
 type AppOutSubject struct {
-	Code    int    `json:"code"`
-	Id      int    `json:"id,omitempty"`
-	GroupId int    `json:"group_id,omitempty"`
-	Subject string `json:"subject_name,omitempty"`
-	Error   string `json:"error,omitempty"`
+	Code     int    `json:"code"`
+	Id       int    `json:"id,omitempty"`
+	GroupId  int    `json:"group_id,omitempty"`
+	Subject  string `json:"subject_name,omitempty"`
+	Semester byte   `json:"Semester"`
+	Error    string `json:"error,omitempty"`
 }
 
 // -------------------- [ Student / Студенты ] --------------------
@@ -96,7 +96,6 @@ type AppCreate_Student struct {
 	Graduates  byte   `json:"Groduates"`
 	Speciality string `json:"Speciality"`
 	GroupNum   int    `json:"Number"`
-	Semester   byte   `json:"Semester"`
 	Error      string `json:"error,omitempty"`
 }
 
@@ -108,7 +107,6 @@ type AppUpdate_StudentById struct {
 	NewGraduates  byte   `json:"NewGroduates"`
 	NewSpeciality string `json:"NewSpeciality"`
 	NewGroupNum   int    `json:"NewNumber"`
-	NewSemester   byte   `json:"NewSemester"`
 	Error         string `json:"error,omitempty"`
 }
 
@@ -121,7 +119,7 @@ type AppDelete_Student struct {
 
 type AppPdfDock struct {
 	Code  int    `json:"code"`
-	File  []byte `json"File,omitempty"`
+	File  []byte `json:"File,omitempty"`
 	Error string `json:"error,omitempty"`
 }
 

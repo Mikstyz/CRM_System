@@ -2,7 +2,8 @@ package dtos
 
 // InfSubjectDTO для запроса предметов по ID группы
 type InfSubjectDTO struct {
-	GroupId int `json:"group_id"`
+	GroupId  int  `json:"group_id"`
+	Semester byte `json:"Semester"`
 }
 
 // InfDisciplinesByGroupDataDTO для запроса предметов по данным группы
@@ -17,6 +18,7 @@ type InfDisciplinesByGroupDataDTO struct {
 type AddSubjectDTO struct {
 	GroupId    int    `json:"group_id"`
 	NewSubject string `json:"new_subject"`
+	Semester   byte   `json:"Semester"`
 }
 
 // UpdateSubjectDTO для обновления предмета

@@ -76,7 +76,12 @@ func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, Group
 		return 0, err
 	}
 
-	newGroupIds, err := repo.CrtGrp(Course, Groduates, Speciality, GroupNum+1)
+	NewNumber, err := repo.MaxNumberByParams(Course, Groduates, Speciality)
+	if err != nil {
+		return 0, err
+	}
+
+	newGroupIds, err := repo.CrtGrp(Course, Groduates, Speciality, NewNumber+1)
 	if err != nil {
 		return 0, err
 	}

@@ -102,7 +102,7 @@ func Test_CreateStudent() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupId)
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
@@ -318,7 +318,7 @@ func Test_InfStudentByGroup() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID=[%d, %d]", groupId)
+	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём двух студентов для 1-го семестра

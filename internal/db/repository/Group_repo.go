@@ -71,6 +71,24 @@ func InfGroupById(GroupId int) (*models.EinfGroup, error) {
 	return &Group, nil
 }
 
+func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
+	const query = `
+		SELECT COALESCE(MAX(GroupNum), 0)
+		FROM groups
+		WHERE Course = ? AND GroupDates = ? AND Speciality = ?
+	`
+
+	db.Init()
+
+	var maxGroupNum int
+	err := db.DB.QueryRow(query, course, groudates, speciality).Scan(&maxGroupNum)
+	if err != nil {
+		return 0, fmt.Errorf("не смогла получить максимальный GroupNum: %w", err)
+	}
+
+	return maxGroupNum, nil
+}
+
 // CrtGrp создаёт новую группу.
 func CrtGrp(course byte, groudates byte, speciality string, groupNum int) (int, error) {
 	const query = `
