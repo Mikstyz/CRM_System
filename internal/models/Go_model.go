@@ -17,9 +17,6 @@ type GeneratePDF struct {
 	//данные о студенте
 	StudentName string
 
-	//данные группы
-	GroupId int
-
 	Course     byte
 	Speciality string
 	Groduates  byte
