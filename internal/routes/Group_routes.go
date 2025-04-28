@@ -18,6 +18,16 @@ func Inf_AllGroup() ([]models.EinfGroup, error) {
 	return result, nil
 }
 
+func Inf_AllGroupAndSubject() ([]models.InFGroupAndSubject, error) {
+	Data, err := repo.InfAllGrpWithSubjects()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return Data, nil
+}
+
 func Create_Group(course byte, groduates byte, speciality string, groupNum int) (int, error) {
 	Id, err := repo.CrtGrp(course, groduates, speciality, groupNum)
 
@@ -70,7 +80,7 @@ func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, gr
 	return result, nil
 }
 
-func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) (int, error) { 
+func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) (int, error) {
 	GroupIdOne, err := repo.GetGroupIDByParams(Course, Groduates, Speciality, GroupNum)
 	if err != nil {
 		return 0, err

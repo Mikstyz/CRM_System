@@ -24,6 +24,13 @@ type AppInf_AllGroup struct {
 	Error  string      `json:"error,omitempty"`
 }
 
+type AppInFGroupAndSubject struct {
+	Code             int                  `json:"code"`
+	GroupsAndSubject []InFGroupAndSubject `json:"groupsAndSubject,omitempty"`
+	Groups           []EinfGroup          `json:"groups,omitempty"`
+	Error            string               `json:"error,omitempty"`
+}
+
 // AppCrtOutGroupApi для возврата данных при создании группы
 type AppCrtOutGroupApi struct {
 	Code  int       `json:"code"`

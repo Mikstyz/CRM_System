@@ -3,6 +3,10 @@ package dtos
 // InfAllGroupDTO для запроса всех групп
 type InfAllGroupDTO struct{}
 
+type InfAllGroupAndSubjectDTO struct {
+	SwitchSubject bool `json:"Switch"`
+}
+
 // CreateGroupDTO для создания группы
 type CreateGroupDTO struct {
 	Course     byte   `json:"course"`

@@ -8,6 +8,12 @@ type EinfGroup struct {
 	Number     int
 }
 
-type Subject struct {
-	Name []string
+type InFGroupAndSubject struct {
+	Id         int
+	Course     byte
+	Spesiality string
+	Groduates  byte
+	Number     int
+
+	Subject DisciplinesBySemester
 }

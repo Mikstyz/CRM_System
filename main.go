@@ -39,8 +39,8 @@ func main() {
 
 // 	//test "CRM_System/Backend/internal/utils"
 
-// 	"CRM_System/internal/Test"
 // 	"CRM_System/internal/db"
+// 	routes "CRM_System/internal/routes"
 // 	"fmt"
 
 // 	_ "modernc.org/sqlite"
@@ -51,19 +51,36 @@ func main() {
 
 // 	db.Init()
 
-// 	_, _, err, Groups := Test.Test_InfAllGroup()
+// 	FastTestInf_AllGroupAndSubject()
+
+// }
+
+// func FastTestInf_AllGroupAndSubject() {
+// 	data, err := routes.Inf_AllGroupAndSubject()
 // 	if err != nil {
-// 		fmt.Println(err)
+// 		fmt.Println("Ошибка при получении данных:", err)
 // 		return
 // 	}
 
-// 	for _, i := range Groups {
-// 		fmt.Printf("----------")
-// 		fmt.Printf("Id: %v\n", i.Id)
-// 		fmt.Printf("Course: %v\n", i.Course)
-// 		fmt.Printf("Speciality: %v\n", i.Speciality)
-// 		fmt.Printf("Groudates: %v\n", i.Groudates)
-// 		fmt.Printf("Number: %v\n", i.Number)
+// 	for _, group := range data {
+// 		fmt.Println("Группа:")
+// 		fmt.Printf(" ID: %d\n", group.Id)
+// 		fmt.Printf(" Курс: %d\n", group.Course)
+// 		fmt.Printf(" Специальность: %s\n", group.Spesiality)
+// 		fmt.Printf(" Годы обучения: %d\n", group.Groduates)
+// 		fmt.Printf(" Номер группы: %d\n", group.Number)
+
+// 		fmt.Println(" Предметы 1 семестра:")
+// 		for _, subj := range group.Subject.FirstSemester {
+// 			fmt.Printf("  ID: %d, Название: %s\n", subj.Id, subj.Title)
+// 		}
+
+// 		fmt.Println(" Предметы 2 семестра:")
+// 		for _, subj := range group.Subject.SecondSemester {
+// 			fmt.Printf("  ID: %d, Название: %s\n", subj.Id, subj.Title)
+// 		}
+
+// 		fmt.Println("---------------------------------")
 // 	}
 // }
 

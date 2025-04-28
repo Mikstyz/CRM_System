@@ -156,7 +156,42 @@ func (a *App) InfAllGroup(dto dtos.InfAllGroupDTO) models.AppInf_AllGroup {
 	if err != nil {
 		return models.AppInf_AllGroup{Code: 500, Error: err.Error()}
 	}
+
+	if groups == nil {
+		groups = []models.EinfGroup{}
+	}
 	return models.AppInf_AllGroup{Code: 200, Groups: groups}
+}
+
+// ----------------- AppInFGroupAndSubject -------------------
+func (a *App) AppInFGroupAndSubject(dto dtos.InfAllGroupAndSubjectDTO) models.AppInFGroupAndSubject {
+
+	if dto.SwitchSubject {
+		groupsAndSubj, err := routes.Inf_AllGroupAndSubject()
+
+		if err != nil {
+			return models.AppInFGroupAndSubject{Code: 500, Error: err.Error()}
+		}
+
+		if groupsAndSubj == nil {
+			groupsAndSubj = []models.InFGroupAndSubject{}
+		}
+
+		return models.AppInFGroupAndSubject{Code: 200, GroupsAndSubject: groupsAndSubj}
+
+	} else {
+		groups, err := routes.Inf_AllGroup()
+
+		if err != nil {
+			return models.AppInFGroupAndSubject{Code: 500, Error: err.Error()}
+		}
+
+		if groups == nil {
+			groups = []models.EinfGroup{}
+		}
+
+		return models.AppInFGroupAndSubject{Code: 200, Groups: groups}
+	}
 }
 
 // ----------------------------------- Create_Group -----------------------------------

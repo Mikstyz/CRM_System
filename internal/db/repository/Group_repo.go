@@ -71,6 +71,94 @@ func InfGroupById(GroupId int) (*models.EinfGroup, error) {
 	return &Group, nil
 }
 
+func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
+	const query = `
+		SELECT 
+			g.Id, g.Course, g.Speciality, g.Groudates, g.GroupNum,
+			gs.id, gs.subject_name, gs.semester
+		FROM einf_groups g
+		LEFT JOIN group_subject gs ON gs.group_id = g.Id
+		ORDER BY g.Course, g.Speciality, g.GroupNum, gs.semester
+	`
+
+	db.Init()
+
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		log.Printf("Ошибка при получении групп с предметами: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	groupMap := make(map[int]*models.InFGroupAndSubject)
+
+	for rows.Next() {
+		var (
+			groupID     int
+			course      byte
+			speciality  string
+			groudates   byte
+			groupNum    int
+			subjectID   sql.NullInt64
+			subjectName sql.NullString
+			semester    sql.NullInt64
+		)
+
+		if err := rows.Scan(
+			&groupID,
+			&course,
+			&speciality,
+			&groudates,
+			&groupNum,
+			&subjectID,
+			&subjectName,
+			&semester,
+		); err != nil {
+			log.Printf("Ошибка при сканировании строки: %v", err)
+			continue
+		}
+
+		if _, ok := groupMap[groupID]; !ok {
+			groupMap[groupID] = &models.InFGroupAndSubject{
+				Id:         groupID,
+				Course:     course,
+				Spesiality: speciality,
+				Groduates:  groudates,
+				Number:     groupNum,
+				Subject: models.DisciplinesBySemester{
+					FirstSemester:  []models.SemesterDiscipline{},
+					SecondSemester: []models.SemesterDiscipline{},
+				},
+			}
+		}
+
+		if subjectID.Valid && subjectName.Valid && semester.Valid {
+			discipline := models.SemesterDiscipline{
+				Id:    int(subjectID.Int64),
+				Title: subjectName.String,
+			}
+
+			if semester.Int64 == 1 {
+				groupMap[groupID].Subject.FirstSemester = append(groupMap[groupID].Subject.FirstSemester, discipline)
+			} else if semester.Int64 == 2 {
+				groupMap[groupID].Subject.SecondSemester = append(groupMap[groupID].Subject.SecondSemester, discipline)
+			}
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Ошибка при чтении строк: %v", err)
+		return nil, err
+	}
+
+	var result []models.InFGroupAndSubject
+	for _, grp := range groupMap {
+		result = append(result, *grp)
+	}
+
+	return result, nil
+}
+
 func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
 	const query = `
 		SELECT COALESCE(MAX(GroupNum), 0)
