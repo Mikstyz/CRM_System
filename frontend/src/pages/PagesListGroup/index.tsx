@@ -31,9 +31,10 @@ class ModalErrorBoundary extends Component<
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
 import { selectFilteredGroups } from "@/entities/group/selectors";
 import { Group } from "@/entities/group/types";
-import { closeBlank, selectBlank } from "@/entities/blank/store/blankSlice";
 import { getGroupsThunks } from "@/entities/group/store/thunks.ts";
 import { clearErrors } from "@/entities/group/store";
+import { selectBlank } from "@/entities/blank/store/selectors.ts";
+import { closeBlank } from "@/entities/blank/store";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();

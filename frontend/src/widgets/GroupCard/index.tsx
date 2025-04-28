@@ -4,13 +4,13 @@ import { ListChildComponentProps } from "react-window";
 import { EditableTitle } from "@/shared/ui/EditableTitle";
 import { memo, useState } from "react";
 import { SemesterDisciplines } from "@/features/SemesterDisciplines";
-import { openBlank } from "@/entities/blank/store/blankSlice";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
 import { Group } from "@/entities/group/types";
 import { headerDeleteGroup } from "@/widgets/GroupCard/headers/deleteGroup.ts";
 import { handleTitleGroupSave } from "@/widgets/GroupCard/headers/titleGroupSave.ts";
 import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup.ts";
 import { Discipline } from "@/entities/discipline/types";
+import { openBlank } from "@/entities/blank/store";
 
 interface DisciplineItemProps {
   discipline: Discipline;

@@ -8,14 +8,7 @@ import {
 } from "@/entities/group/types";
 import { Id } from "@/shared/types";
 import { Discipline, Semester } from "@/entities/discipline/types";
-import {
-  AddSubjectByGroupID,
-  CreateGroup,
-  DeleteGroupByID,
-  DeleteSubjectByID,
-  DuplicateGroupAllData,
-  InfAllGroup,
-} from "@wails/go/main/App";
+import { InfAllGroup } from "@wails/go/main/App";
 
 interface ThunkConfig {
   rejectValue: string;

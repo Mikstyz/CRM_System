@@ -3,7 +3,7 @@ import { groupsReducer } from "@/entities/group/store/reducers.ts";
 import { groupInitialState } from "@/entities/group/store/initialState.ts";
 import { groupsExtraReducers } from "@/entities/group/store/extraReducers.ts";
 
-export const slice = createSlice({
+const slice = createSlice({
   name: "groups",
   initialState: groupInitialState,
   reducers: groupsReducer,

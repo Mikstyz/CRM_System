@@ -5,10 +5,11 @@ import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
-import { selectBlank, setStudent } from "@/entities/blank/store/blankSlice.ts";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
 import { useEffect } from "react";
 import { Id } from "@/shared/types";
+import { selectBlank } from "@/entities/blank/store/selectors.ts";
+import { setStudent } from "@/entities/blank/store";
 
 export function BlankPage({
   groupId,
