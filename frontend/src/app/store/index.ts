@@ -1,7 +1,7 @@
-import { blankReducer } from "@/entities/blank/store/blankSlice";
 import { groupFiltersReducer } from "@/features/FilterGroup/store/groupFiltersSlice.ts";
 import { groupReducer } from "@/entities/group/store/slice.ts";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { blankReducer } from "@/entities/blank/store";
 
 const rootReducer = combineReducers({
   groups: groupReducer,
