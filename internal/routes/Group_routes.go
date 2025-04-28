@@ -70,7 +70,7 @@ func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, gr
 	return result, nil
 }
 
-func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) (int, error) {
+func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) (int, error) { 
 	GroupIdOne, err := repo.GetGroupIDByParams(Course, Groduates, Speciality, GroupNum)
 	if err != nil {
 		return 0, err

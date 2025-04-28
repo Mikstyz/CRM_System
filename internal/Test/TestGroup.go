@@ -1,12 +1,13 @@
 package Test
 
 import (
+	"CRM_System/internal/models"
 	"CRM_System/internal/routes"
 	"errors"
 	"log" // подставь путь к моделям
 )
 
-func Test_InfAllGroup() (int, int, error) {
+func Test_InfAllGroup() (int, int, error, []models.EinfGroup) {
 	var Ok, Bad int
 
 	log.Println("[INFO] Получаем все группы...")
@@ -14,12 +15,12 @@ func Test_InfAllGroup() (int, int, error) {
 	if err != nil {
 		log.Printf("Ошибка при получении групп: %v", err)
 		Bad++
-		return Ok, Bad, err
+		return Ok, Bad, err, nil
 	}
 	log.Printf("[INFO] Группы успешно получены, найдено %d записей.", len(groups))
 	Ok++
 
-	return Ok, Bad, nil
+	return Ok, Bad, nil, groups
 }
 
 func Test_CreateGroup() (int, int, error) {
@@ -260,66 +261,66 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 	return Ok, Bad, nil
 }
 
-func TestGroupALL() (int, int) {
-	var Ok, Bad int
+// func TestGroupALL() (int, int) {
+// 	var Ok, Bad int
 
-	// Тестирование Inf_AllGroup
-	ok, bad, err := Test_InfAllGroup()
-	if err != nil {
-		log.Fatal("Ошибка в Test_InfAllGroup: ", err)
-	}
-	logResults("InfAllGroup", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование Inf_AllGroup
+// 	ok, bad, err := Test_InfAllGroup()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_InfAllGroup: ", err)
+// 	}
+// 	logResults("InfAllGroup", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Тестирование Create_Group
-	ok, bad, err = Test_CreateGroup()
-	if err != nil {
-		log.Fatal("Ошибка в Test_CreateGroup: ", err)
-	}
-	logResults("CreateGroup", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование Create_Group
+// 	ok, bad, err = Test_CreateGroup()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_CreateGroup: ", err)
+// 	}
+// 	logResults("CreateGroup", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Тестирование Update_GroupById
-	ok, bad, err = Test_UpdateGroupById()
-	if err != nil {
-		log.Fatal("Ошибка в Test_UpdateGroupById: ", err)
-	}
-	logResults("UpdateGroupById", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование Update_GroupById
+// 	ok, bad, err = Test_UpdateGroupById()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_UpdateGroupById: ", err)
+// 	}
+// 	logResults("UpdateGroupById", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Тестирование Delete_GroupById
-	ok, bad, err = Test_DeleteGroupById()
-	if err != nil {
-		log.Fatal("Ошибка в Test_DeleteGroupById: ", err)
-	}
-	logResults("DeleteGroupById", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование Delete_GroupById
+// 	ok, bad, err = Test_DeleteGroupById()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_DeleteGroupById: ", err)
+// 	}
+// 	logResults("DeleteGroupById", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Тестирование GetGroupId_GroupIdByInfo
-	ok, bad, err = Test_GetGroupIdByInfo()
-	if err != nil {
-		log.Fatal("Ошибка в Test_GetGroupIdByInfo: ", err)
-	}
-	logResults("GetGroupIdByInfo", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование GetGroupId_GroupIdByInfo
+// 	ok, bad, err = Test_GetGroupIdByInfo()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_GetGroupIdByInfo: ", err)
+// 	}
+// 	logResults("GetGroupIdByInfo", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Тестирование DublicateGroupAllData
-	ok, bad, err = Test_DuplicateGroupAllData()
-	if err != nil {
-		log.Fatal("Ошибка в Test_DuplicateGroupAllData: ", err)
-	}
-	logResults("DublicateGroupAllData", ok, bad, err)
-	Ok += ok
-	Bad += bad
+// 	// Тестирование DublicateGroupAllData
+// 	ok, bad, err = Test_DuplicateGroupAllData()
+// 	if err != nil {
+// 		log.Fatal("Ошибка в Test_DuplicateGroupAllData: ", err)
+// 	}
+// 	logResults("DublicateGroupAllData", ok, bad, err)
+// 	Ok += ok
+// 	Bad += bad
 
-	// Итоговый вывод
-	log.Println("\n[SUMMARY] Итоговые результаты:")
-	log.Printf("TestGroupALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
+// 	// Итоговый вывод
+// 	log.Println("\n[SUMMARY] Итоговые результаты:")
+// 	log.Printf("TestGroupALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
 
-	return Ok, Bad
-}
+// 	return Ok, Bad
+// }

@@ -5,7 +5,6 @@ type EinfGroup struct {
 	Course     byte
 	Speciality string
 	Groudates  byte
-	Semester   byte
 	Number     int
 }
 

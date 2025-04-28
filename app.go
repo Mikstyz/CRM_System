@@ -173,7 +173,6 @@ func (a *App) CreateGroup(dto dtos.CreateGroupDTO) models.AppCrtOutGroupApi {
 		Groudates:  dto.Graduates,
 		Speciality: dto.Speciality,
 		Number:     dto.Number,
-		Semester:   1,
 	}
 
 	return models.AppCrtOutGroupApi{Code: 200, Group: Group}
@@ -234,7 +233,6 @@ func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppCrtOut
 		Groudates:  dto.Graduates,
 		Speciality: dto.Speciality,
 		Number:     dto.Number,
-		Semester:   1,
 	}
 
 	return models.AppCrtOutGroupApi{Code: 200, Group: Group}

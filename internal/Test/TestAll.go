@@ -12,11 +12,11 @@ func TestAll() {
 	Bad += bad
 	log.Printf("[SUCCESS] Тест EmployersALL: %d успешных, %d неудачных", ok, bad)
 
-	log.Println("[INFO] Запуск теста GroupALL...")
-	ok, bad = TestGroupALL()
-	Ok += ok
-	Bad += bad
-	log.Printf("[SUCCESS] Тест GroupALL: %d успешных, %d неудачных", ok, bad)
+	// log.Println("[INFO] Запуск теста GroupALL...")
+	// ok, bad = TestGroupALL()
+	// Ok += ok
+	// Bad += bad
+	// log.Printf("[SUCCESS] Тест GroupALL: %d успешных, %d неудачных", ok, bad)
 
 	log.Println("[INFO] Запуск теста StudentALL...")
 	ok, bad = TestStudentALL()

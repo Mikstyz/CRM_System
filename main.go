@@ -36,10 +36,11 @@ func main() {
 }
 
 // import (
-// 	"CRM_System/internal/Test"
-// 	"CRM_System/internal/db"
 
 // 	//test "CRM_System/Backend/internal/utils"
+
+// 	"CRM_System/internal/Test"
+// 	"CRM_System/internal/db"
 // 	"fmt"
 
 // 	_ "modernc.org/sqlite"
@@ -50,5 +51,20 @@ func main() {
 
 // 	db.Init()
 
-// 	Test.TestAll()
+// 	_, _, err, Groups := Test.Test_InfAllGroup()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return
+// 	}
+
+// 	for _, i := range Groups {
+// 		fmt.Printf("----------")
+// 		fmt.Printf("Id: %v\n", i.Id)
+// 		fmt.Printf("Course: %v\n", i.Course)
+// 		fmt.Printf("Speciality: %v\n", i.Speciality)
+// 		fmt.Printf("Groudates: %v\n", i.Groudates)
+// 		fmt.Printf("Number: %v\n", i.Number)
+// 	}
 // }
+
+//Test.TestAll()
