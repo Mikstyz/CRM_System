@@ -281,6 +281,11 @@ func (a *App) InfSubjectByGroupID(dto dtos.InfSubjectDTO) models.AppInf_Subject 
 	if err != nil {
 		return models.AppInf_Subject{Code: 500, Error: err.Error()}
 	}
+
+	if subjects == nil {
+		subjects = []string{}
+	}
+
 	return models.AppInf_Subject{Code: 200, Subject: subjects}
 }
 
