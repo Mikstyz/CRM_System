@@ -38,6 +38,12 @@ type AppCrtOutGroupApi struct {
 	Error string    `json:"error,omitempty"`
 }
 
+type AppDunlOutGroupApi struct {
+	Code       int                  `json:"code"`
+	GrpAndSUbj []InFGroupAndSubject `json:"GrpAndSUbj,omitempty"`
+	Error      string               `json:"error,omitempty"`
+}
+
 // AppUpdateOutGroupApi для возврата данных при обновлении группы
 type AppUpdateOutGroupApi struct {
 	Code       int    `json:"code"`

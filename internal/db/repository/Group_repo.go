@@ -159,6 +159,95 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	return result, nil
 }
 
+func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
+	const query = `
+		SELECT 
+			g.Id, g.Course, g.Speciality, g.Groudates, g.GroupNum,
+			gs.id, gs.subject_name, gs.semester
+		FROM einf_groups g
+		LEFT JOIN group_subject gs ON gs.group_id = g.Id
+		WHERE g.Id = $1
+		ORDER BY g.Course, g.Speciality, g.GroupNum, gs.semester
+	`
+
+	db.Init()
+
+	rows, err := db.DB.Query(query, groupId)
+	if err != nil {
+		log.Printf("Ошибка при получении группы с предметами: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	groupMap := make(map[int]*models.InFGroupAndSubject)
+
+	for rows.Next() {
+		var (
+			groupID     int
+			course      byte
+			speciality  string
+			groudates   byte
+			groupNum    int
+			subjectID   sql.NullInt64
+			subjectName sql.NullString
+			semester    sql.NullInt64
+		)
+
+		if err := rows.Scan(
+			&groupID,
+			&course,
+			&speciality,
+			&groudates,
+			&groupNum,
+			&subjectID,
+			&subjectName,
+			&semester,
+		); err != nil {
+			log.Printf("Ошибка при сканировании строки: %v", err)
+			continue
+		}
+
+		if _, ok := groupMap[groupID]; !ok {
+			groupMap[groupID] = &models.InFGroupAndSubject{
+				Id:         groupID,
+				Course:     course,
+				Spesiality: speciality,
+				Groduates:  groudates,
+				Number:     groupNum,
+				Subject: models.DisciplinesBySemester{
+					FirstSemester:  []models.SemesterDiscipline{},
+					SecondSemester: []models.SemesterDiscipline{},
+				},
+			}
+		}
+
+		if subjectID.Valid && subjectName.Valid && semester.Valid {
+			discipline := models.SemesterDiscipline{
+				Id:    int(subjectID.Int64),
+				Title: subjectName.String,
+			}
+
+			if semester.Int64 == 1 {
+				groupMap[groupID].Subject.FirstSemester = append(groupMap[groupID].Subject.FirstSemester, discipline)
+			} else if semester.Int64 == 2 {
+				groupMap[groupID].Subject.SecondSemester = append(groupMap[groupID].Subject.SecondSemester, discipline)
+			}
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("Ошибка при чтении строк: %v", err)
+		return nil, err
+	}
+
+	var result []models.InFGroupAndSubject
+	for _, grp := range groupMap {
+		result = append(result, *grp)
+	}
+
+	return result, nil
+}
+
 func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
 	const query = `
 		SELECT COALESCE(MAX(GroupNum), 0)
@@ -221,22 +310,28 @@ func UpdateGrp(groupId int, newCourse byte, newGroudates byte, newSpeciality str
 }
 
 // DelGrp удаляет группу по параметрам.
-func DelGrp(course byte, graduates byte, speciality string, groupNum int) (bool, error) {
-	const query = `DELETE FROM einf_groups WHERE Course = ? AND Groudates = ? AND Speciality = ? AND GroupNum = ? RETURNING Id`
+func DelGrp(GroupId int) (bool, error) {
+	const query = `DELETE FROM einf_groups WHERE Id = ?`
 
-	log.Printf("Удаляем группу: Course=%v, Groudates=%v, Speciality=%s, GroupNum=%v", course, graduates, speciality, groupNum)
+	log.Printf("Удаляем группу: GroupId=%v", GroupId)
 
 	db.Init()
 
-	var deletedId int
-	err := db.DB.QueryRow(query, course, graduates, speciality, groupNum).Scan(&deletedId)
-	if err == sql.ErrNoRows {
-		log.Println("Группа не найдена")
-		return false, nil
-	}
+	res, err := db.DB.Exec(query, GroupId)
 	if err != nil {
 		log.Printf("Ошибка при удалении группы: %v", err)
 		return false, err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Ошибка при получении количества удалённых строк: %v", err)
+		return false, err
+	}
+
+	if rowsAffected == 0 {
+		log.Println("Группа не найдена")
+		return false, nil
 	}
 
 	return true, nil

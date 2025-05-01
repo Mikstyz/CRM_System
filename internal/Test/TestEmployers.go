@@ -7,7 +7,6 @@ import (
 )
 
 // Вспомогательная функция для проверки, что поле не nil и равно ожидаемому значению
-
 func checkField(field *string, expected, fieldName string) error {
 	if field == nil {
 		return errors.New(fieldName + " не должно быть nil")
@@ -155,7 +154,7 @@ func Test_InfEmpByStudentId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -302,7 +301,7 @@ func Test_CreateEmployers() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -471,7 +470,7 @@ func Test_UpdateEmpByStudentId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -612,7 +611,7 @@ func Test_DeleteEmpByStudentId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -646,7 +645,7 @@ func TestEmployersALL() (int, int) {
 	Ok += ok
 	Bad += bad
 
-	// Тестирование Update_EmpByStudentId DRAMAT
+	// Тестирование Update_EmpByStudentId
 	ok, bad, err = Test_UpdateEmpByStudentId()
 	if err != nil {
 		log.Fatal("Ошибка в Test_UpdateEmpByStudentId: ", err)
@@ -668,5 +667,5 @@ func TestEmployersALL() (int, int) {
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestEmployersALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
 
-	return ok, bad
+	return Ok, Bad
 }

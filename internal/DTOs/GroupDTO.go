@@ -26,10 +26,7 @@ type UpdateGroupDTO struct {
 
 // DeleteGroupDTO для удаления группы
 type DeleteGroupDTO struct {
-	Course     byte   `json:"course"`
-	Graduates  byte   `json:"groudates"` // Исправлено groduates
-	Speciality string `json:"speciality"`
-	Number     int    `json:"group_num"`
+	GroupId int `json:"group_id"`
 }
 
 // GetGroupIdByInfoDTO для получения ID группы

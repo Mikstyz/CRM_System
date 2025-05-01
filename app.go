@@ -237,7 +237,7 @@ func (a *App) UpdateGroupByID(dto dtos.UpdateGroupDTO) models.AppUpdateOutGroupA
 // ----------------------------------- Delete_GroupById -----------------------------------
 // Delete_GroupById удаляет группу по данным
 func (a *App) DeleteGroupByID(dto dtos.DeleteGroupDTO) models.AppRemove {
-	_, err := routes.Delete_GroupById(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	_, err := routes.Delete_GroupById(dto.GroupId)
 	if err != nil {
 		return models.AppRemove{Code: 500, Error: err.Error()}
 	}
@@ -256,21 +256,13 @@ func (a *App) GetGroupIDByInfo(dto dtos.GetGroupIdByInfoDTO) models.AppGetId {
 
 // ----------------------------------- DublicateGroupAllData -----------------------------------
 // DublicateGroupAllData дублирует данные группы
-func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppCrtOutGroupApi {
-	id, err := routes.DublicateGroupAllData(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppDunlOutGroupApi {
+	GrpAndSUbj, err := routes.DublicateGroupAllData(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
 	if err != nil {
-		return models.AppCrtOutGroupApi{Code: 500, Error: err.Error()}
+		return models.AppDunlOutGroupApi{Code: 500, Error: err.Error()}
 	}
 
-	Group := models.EinfGroup{
-		Id:         id,
-		Course:     dto.Course,
-		Groudates:  dto.Graduates,
-		Speciality: dto.Speciality,
-		Number:     dto.Number,
-	}
-
-	return models.AppCrtOutGroupApi{Code: 200, Group: Group}
+	return models.AppDunlOutGroupApi{Code: 200, GrpAndSUbj: GrpAndSUbj}
 }
 
 // ----------------- Subject -----------------

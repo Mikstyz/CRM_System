@@ -12,6 +12,7 @@ import (
 
 // Test_Inf_DisciplinesByGroupData тестирует получение дисциплин по данным группы.
 // Test_Inf_DisciplinesByGroupData тестирует получение дисциплин по данным группы.
+// Test_Inf_DisciplinesByGroupData тестирует получение списка предметов по данным группы.
 func Test_Inf_DisciplinesByGroupData() (int, int, error) {
 	var Ok, Bad int
 
@@ -163,7 +164,7 @@ func Test_Inf_DisciplinesByGroupData() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err := routes.Delete_GroupById(course, grads, speciality, groupNum)
+	ok, err := routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -313,7 +314,7 @@ func Test_InfSubjectByGroupId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err := routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err := routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -433,7 +434,7 @@ func Test_AddSubjectByGroupId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err := routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err := routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -537,7 +538,7 @@ func Test_UpdateSubjectById() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -623,7 +624,7 @@ func Test_DeleteSubjectById() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
@@ -749,7 +750,7 @@ func Test_DeleteAllSubjectByGroupId() (int, int, error) {
 
 	// Удаляем группу
 	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(course, graduates, speciality, groupNum)
+	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
 		log.Printf("[ERROR] Ошибка при удалении тестовой группы: %v", err)
 		Bad++
