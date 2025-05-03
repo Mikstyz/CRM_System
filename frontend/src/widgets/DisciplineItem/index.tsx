@@ -4,12 +4,10 @@ import { Discipline } from "@/entities/discipline/types";
 interface DisciplineItemProps {
   discipline: Discipline;
   onDelete: () => void;
+  handleTitleSave: (newValue: string) => void;
 }
 
-export function DisciplineItem({ discipline, onDelete }: DisciplineItemProps) {
-  const handleTitleSave = (newValue: string) => {
-    console.log("Сохранённое название DisciplineItem:", newValue);
-  };
+export function DisciplineItem({ discipline, onDelete, handleTitleSave }: DisciplineItemProps) {
   return (
     <div className="border rounded-lg p-2 flex justify-between items-center">
       <EditableTitle

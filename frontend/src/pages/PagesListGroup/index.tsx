@@ -40,7 +40,9 @@ export function PagesListGroup() {
   const dispatch = useAppDispatch();
   const { isOpen, groupId } = useAppSelector(selectBlank);
   const groups = useAppSelector(selectFilteredGroups);
-
+  useEffect(() => {
+    console.log("groups", groups);
+  }, [groups]);
   const currentGroupName = groups.find((g) => g.id === groupId)?.name ?? "";
 
   useEffect(() => {

@@ -4,7 +4,7 @@ type ParseSuccess = { status: "fulfilled"; dateNameGroup: DateNameGroup };
 type ParseError = { status: "rejected"; errors: string[] };
 type ParseResult = ParseSuccess | ParseError;
 
-const NAME_RE = /^([1-4])([A-Za-z]{2,})(9|11)-(\d+)$/;
+const NAME_RE = /^([1-4])(\p{L}{2,})(9|11)-(\d+)$/u;
 
 /**
  * Парсит строку формата `${course}${specialty}${graduates}-${groupNumber}`
@@ -28,6 +28,10 @@ export function parseDateNameGroup(name: string): ParseResult {
       },
     };
   }
+  console.log("match", match);
+  console.log("name", name);
+
+  // TODO Добвыть обработку ошибок: - неизменять, если ошибка, - показавать ошибки.
 
   const errors: string[] = [];
   // 1. курс
@@ -51,9 +55,7 @@ export function parseDateNameGroup(name: string): ParseResult {
   // 4. specialty
   const specMatch = name.match(/^[1-4]([A-Za-z]{2,})/);
   if (!specMatch) {
-    errors.push(
-      "specialty должен состоять минимум из двух латинских букв после course",
-    );
+    errors.push("specialty должен состоять минимум из двух букв после course");
   }
 
   // 5. groupNumber

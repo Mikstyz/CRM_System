@@ -3,8 +3,12 @@ import { Discipline, Semester } from "@/entities/discipline/types";
 import { DisciplineItem } from "@/widgets/DisciplineItem";
 import { Id } from "@/shared/types";
 import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
-import { headerDeleteDiscipline } from "@/features/SemesterDisciplines/heanders/deleteDiscipline.ts";
-import { headerAddDiscipline } from "@/features/SemesterDisciplines/heanders/addDiscipline.ts";
+import {
+  headerAddDiscipline,
+  headerDeleteDiscipline,
+  headerUpdateDiscipline
+} from "@/features/SemesterDisciplines/heanders";
+
 
 interface Props {
   semester: Semester;
@@ -18,6 +22,13 @@ export const SemesterDisciplines = ({ semester, items, groupId }: Props) => {
     discipline: d,
     onDelete: () =>
       headerDeleteDiscipline({ dispatch, groupId, semester, discId: d.id }),
+    handleTitleSave: (newValue: string) => headerUpdateDiscipline({
+      dispatch,
+      groupId,
+      semester,
+      newTitle: newValue,
+      discId: d.id
+    })
   }));
 
   return (
@@ -52,10 +63,10 @@ export const SemesterDisciplines = ({ semester, items, groupId }: Props) => {
             itemData={itemData}
           >
             {({ style, index, data }) => {
-              const { discipline, onDelete } = data[index];
+              const { discipline, onDelete, handleTitleSave } = data[index];
               return (
                 <div style={style}>
-                  <DisciplineItem discipline={discipline} onDelete={onDelete} />
+                  <DisciplineItem discipline={discipline} onDelete={onDelete} handleTitleSave={(newValue: string) => handleTitleSave(newValue)}/>
                 </div>
               );
             }}

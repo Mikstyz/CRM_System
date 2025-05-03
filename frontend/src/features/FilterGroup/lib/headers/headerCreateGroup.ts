@@ -38,7 +38,7 @@ export const headerCreateGroup = async ({
           course: validCourse,
           specialty,
           graduates,
-          groupNumber,
+          groupNumber: Number(groupNumber),
         },
       }),
     );

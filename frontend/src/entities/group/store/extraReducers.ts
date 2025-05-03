@@ -4,7 +4,6 @@ import {
   deleteDisciplinesThunks,
   deleteGroupsThunks,
   duplicateGroupThunks,
-  getDisciplinesThunks,
   getGroupsThunks,
   updateDisciplinesThunks,
   updateGroupsThunks,
@@ -45,7 +44,9 @@ export const groupsExtraReducers = (
     .addCase(updateGroupsThunks.fulfilled, (state, action) => {
       state.loading = false;
       state.list = state.list.map((group) =>
-        group.id === action.payload.id ? action.payload : group,
+        group.id === action.payload.id
+          ? { ...group, ...action.payload }
+          : group,
       );
     })
     .addCase(updateGroupsThunks.rejected, handleRejected<GroupsState>);
@@ -81,12 +82,14 @@ export const groupsExtraReducers = (
   // ========= disciplines =========
 
   // GET DISCIPLINES
-  builder
-    .addCase(getDisciplinesThunks.pending, handlePending<GroupsState>)
-    .addCase(getDisciplinesThunks.fulfilled, (state, action) => {
-      state.loading = false;
-    })
-    .addCase(getDisciplinesThunks.rejected, handleRejected<GroupsState>);
+  // builder
+  //   .addCase(getDisciplinesThunks.pending, handlePending<GroupsState>)
+  //   .addCase(getDisciplinesThunks.fulfilled, (state, action) => {
+  //     state.loading = false;
+  //     const g = state.list.find((gr) => gr.id === action.payload.groupId);
+  //     if (g) g.disciplines[action.payload].push(action.payload.);
+  //   })
+  //   .addCase(getDisciplinesThunks.rejected, handleRejected<GroupsState>);
 
   // ADD DISCIPLINE
   builder
@@ -94,7 +97,9 @@ export const groupsExtraReducers = (
     .addCase(addDisciplinesThunks.fulfilled, (state, action) => {
       state.loading = false;
       const g = state.list.find((gr) => gr.id === action.payload.groupId);
-      if (g) g.disciplines[action.payload.semester].push(action.payload.disc);
+      if (g) {
+        g.disciplines[action.payload.semester].unshift(action.payload.disc);
+      }
     })
     .addCase(addDisciplinesThunks.rejected, handleRejected<GroupsState>);
 
@@ -103,6 +108,14 @@ export const groupsExtraReducers = (
     .addCase(updateDisciplinesThunks.pending, handlePending<GroupsState>)
     .addCase(updateDisciplinesThunks.fulfilled, (state, action) => {
       state.loading = false;
+      const g = state.list.find((gr) => gr.id === action.payload.groupId);
+      if (g) {
+        g.disciplines[action.payload.semester] = g.disciplines[
+          action.payload.semester
+        ].map((d) =>
+          d.id === action.payload.disc.id ? action.payload.disc : d,
+        );
+      }
     })
     .addCase(updateDisciplinesThunks.rejected, handleRejected<GroupsState>);
 

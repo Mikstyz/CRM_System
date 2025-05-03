@@ -17,6 +17,7 @@ import { ErrorMassage } from "@/shared/ui/ErrorMassage";
 import { clearErrors } from "@/entities/group/store";
 import { Course, Graduates } from "@/entities/group/types";
 
+// TODO:BAG Не работает фильтрация по Курс GraduatesToggle
 export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s: RootState) => s.groupFilters);

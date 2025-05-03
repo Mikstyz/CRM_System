@@ -1,33 +1,15 @@
-import { DisciplineItem } from "../DisciplineItem";
 import { PanelGroupCard } from "@/features/PanelGroupCard";
-import { ListChildComponentProps } from "react-window";
 import { EditableTitle } from "@/shared/ui/EditableTitle";
-import { memo, useState } from "react";
+import { useState } from "react";
 import { SemesterDisciplines } from "@/features/SemesterDisciplines";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
 import { Group } from "@/entities/group/types";
 import { headerDeleteGroup } from "@/widgets/GroupCard/headers/deleteGroup.ts";
 import { handleTitleGroupSave } from "@/widgets/GroupCard/headers/titleGroupSave.ts";
 import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup.ts";
-import { Discipline } from "@/entities/discipline/types";
 import { openBlank } from "@/entities/blank/store";
+import { useConfirm } from "@/shared/ui/ConfirmDialog";
 
-interface DisciplineItemProps {
-  discipline: Discipline;
-  onDelete: () => void;
-}
-
-const Row = memo(
-  ({ data, index, style }: ListChildComponentProps<DisciplineItemProps[]>) => {
-    const { discipline, onDelete } = data[index];
-    return (
-      <div style={style}>
-        <DisciplineItem discipline={discipline} onDelete={onDelete} />
-      </div>
-    );
-  },
-);
-Row.displayName = "Row";
 
 interface Props {
   group: Group;
@@ -36,6 +18,7 @@ interface Props {
 export function GroupCard({ group }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
+  const confirm = useConfirm();
 
   return (
     <section className="border-2 rounded-xl p-4">
@@ -52,7 +35,7 @@ export function GroupCard({ group }: Props) {
         <PanelGroupCard
           onToggleExpand={() => setIsExpanded((prev) => !prev)}
           onDeleteGroup={() =>
-            headerDeleteGroup({ dispatch, groupId: group.id })
+            headerDeleteGroup({ dispatch, confirm, groupId: group.id })
           }
           onDuplicateGroup={() =>
             headerDuplicateGroup({ dispatch, groupId: group.id })

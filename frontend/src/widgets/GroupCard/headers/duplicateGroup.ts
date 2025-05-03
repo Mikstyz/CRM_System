@@ -8,8 +8,5 @@ interface Props {
 }
 
 export const headerDuplicateGroup = ({ dispatch, groupId }: Props) => {
-  const isConfirmed = confirm("Вы уверены, что хотите дублировать группу?");
-  if (isConfirmed) {
-    dispatch(duplicateGroupThunks(groupId));
-  }
+  dispatch(duplicateGroupThunks(groupId));
 };
