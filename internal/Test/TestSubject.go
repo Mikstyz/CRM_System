@@ -10,9 +10,6 @@ import (
 	"sort"
 )
 
-// Test_Inf_DisciplinesByGroupData тестирует получение дисциплин по данным группы.
-// Test_Inf_DisciplinesByGroupData тестирует получение дисциплин по данным группы.
-// Test_Inf_DisciplinesByGroupData тестирует получение списка предметов по данным группы.
 func Test_Inf_DisciplinesByGroupData() (int, int, error) {
 	var Ok, Bad int
 

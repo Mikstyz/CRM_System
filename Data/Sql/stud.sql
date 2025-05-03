@@ -1,11 +1,18 @@
--- Создание таблицы студентов
+-- Создание таблицы групп
+CREATE TABLE IF NOT EXISTS einf_groups (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Course INTEGER NOT NULL,
+    Speciality TEXT NOT NULL,
+    Groudates INTEGER NOT NULL,
+    GroupNum INTEGER NOT NULL
+);
+
+-- Создание таблицы студентов (обновлённая версия)
 CREATE TABLE IF NOT EXISTS students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     FullName TEXT NOT NULL,
-    Speciality TEXT NOT NULL,
-    GroupNum INTEGER NOT NULL,
-    Course INTEGER NOT NULL,
-    Groudates INTEGER NOT NULL DEFAULT 1
+    GroupId INTEGER NOT NULL,
+    FOREIGN KEY (GroupId) REFERENCES einf_groups(Id) ON DELETE CASCADE
 );
 
 -- Создание таблицы работодателей
@@ -15,15 +22,6 @@ CREATE TABLE IF NOT EXISTS employers (
     workstartdate TEXT NULL,
     jobtitle TEXT NULL,
     FOREIGN KEY (studid) REFERENCES students(id) ON DELETE CASCADE
-);
-
--- Создание таблицы групп
-CREATE TABLE IF NOT EXISTS einf_groups (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Course INTEGER NOT NULL,
-    Speciality TEXT NOT NULL,
-    Groudates INTEGER NOT NULL,
-    GroupNum INTEGER NOT NULL
 );
 
 -- Создание таблицы связи группа-учебный предмет
@@ -38,38 +36,8 @@ CREATE TABLE IF NOT EXISTS group_subject (
 -- Индекс на столбец group_id для ускорения поиска
 CREATE INDEX IF NOT EXISTS idx_group_subject_group_id ON group_subject(group_id);
 
--- Индекс на столбцы Speciality, GroupNum, Course для ускорения поиска
-CREATE INDEX IF NOT EXISTS idx_students_group_data ON students (Speciality, GroupNum, Course);
-
--- Триггер для удаления студентов при удалении группы
-CREATE TRIGGER IF NOT EXISTS trigger_delete_students_for_group
-AFTER DELETE ON einf_groups
-FOR EACH ROW
-BEGIN
-    DELETE FROM students 
-    WHERE Speciality = OLD.Speciality 
-    AND GroupNum = OLD.GroupNum 
-    AND Course = OLD.Course;
-END;
-
--- Триггер для обновления данных студентов при изменении группы
-CREATE TRIGGER IF NOT EXISTS trigger_update_student_group_data
-AFTER UPDATE ON einf_groups
-FOR EACH ROW
-WHEN (OLD.Speciality != NEW.Speciality 
-    OR OLD.GroupNum != NEW.GroupNum 
-    OR OLD.Course != NEW.Course 
-    OR OLD.Groudates != NEW.Groudates)
-BEGIN
-    UPDATE students 
-    SET Speciality = NEW.Speciality, 
-        GroupNum = NEW.GroupNum, 
-        Course = NEW.Course, 
-        Groudates = NEW.Groudates 
-    WHERE Speciality = OLD.Speciality 
-    AND GroupNum = OLD.GroupNum 
-    AND Course = OLD.Course;
-END;
+-- Индекс на столбец GroupId в students
+CREATE INDEX IF NOT EXISTS idx_students_group_id ON students(GroupId);
 
 -- Триггер создаёт пустую запись в таблице employers для нового студента
 CREATE TRIGGER IF NOT EXISTS trigger_create_empty_employer

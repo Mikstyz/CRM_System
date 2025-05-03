@@ -50,7 +50,7 @@ func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID
 
 // ----------------------------------- Inf_StudentByGroup -----------------------------------
 func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_StudentByGroup {
-	students, err := routes.Inf_StudentByGroup(dto.Course, dto.Speciality, dto.GroupNum)
+	students, err := routes.Inf_StudentByGroup(dto.GroupId)
 	if err != nil {
 		return models.AppInf_StudentByGroup{Code: 500, Error: err.Error()}
 	}
@@ -59,35 +59,30 @@ func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_Stude
 
 // ----------------------------------- Create_Student -----------------------------------
 func (a *App) CreateStudent(dto dtos.Create_Student) models.AppCreate_Student {
-	id, err := routes.Create_Student(dto.FullName, dto.Course, dto.Graduates, dto.Speciality, dto.GroupNum)
+	id, err := routes.Create_Student(dto.FullName, dto.GroupId)
 	if err != nil {
 		return models.AppCreate_Student{Code: 500, Error: err.Error()}
 	}
+
 	return models.AppCreate_Student{
-		Code:       200,
-		Id:         id,
-		FullName:   dto.FullName,
-		Course:     dto.Course,
-		Graduates:  dto.Graduates,
-		Speciality: dto.Speciality,
-		GroupNum:   dto.GroupNum,
+		Code:     200,
+		Id:       id,
+		FullName: dto.FullName,
+		GroupId:  dto.GroupId,
 	}
 }
 
 // ----------------------------------- Update_StudentById -----------------------------------
 func (a *App) UpdateStudentByID(dto dtos.Update_StudentById) models.AppUpdate_StudentById {
-	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewCourse, dto.NewGraduates, dto.NewSpeciality, dto.NewNumber)
+	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewGroupId)
 	if err != nil || !status {
 		return models.AppUpdate_StudentById{Code: 500, Error: err.Error()}
 	}
 	return models.AppUpdate_StudentById{
-		Code:          200,
-		NewId:         dto.StudId,
-		NewFullName:   dto.NewFullName,
-		NewCourse:     dto.NewCourse,
-		NewGraduates:  dto.NewGraduates,
-		NewSpeciality: dto.NewSpeciality,
-		NewGroupNum:   dto.NewNumber,
+		Code:        200,
+		NewId:       dto.StudId,
+		NewFullName: dto.NewFullName,
+		NewGroupId:  dto.NewGroupId,
 	}
 }
 
@@ -257,7 +252,7 @@ func (a *App) GetGroupIDByInfo(dto dtos.GetGroupIdByInfoDTO) models.AppGetId {
 // ----------------------------------- DublicateGroupAllData -----------------------------------
 // DublicateGroupAllData дублирует данные группы
 func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppDunlOutGroupApi {
-	GrpAndSUbj, err := routes.DublicateGroupAllData(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	GrpAndSUbj, err := routes.DublicateGroupAllData(dto.GroupId)
 	if err != nil {
 		return models.AppDunlOutGroupApi{Code: 500, Error: err.Error()}
 	}

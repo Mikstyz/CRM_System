@@ -102,25 +102,19 @@ type AppInf_StudentByGroup struct {
 }
 
 type AppCreate_Student struct {
-	Code       int    `json:"code"`
-	Id         int    `json:"Id"`
-	FullName   string `json:"FullName"`
-	Course     byte   `json:"Course"`
-	Graduates  byte   `json:"Groduates"`
-	Speciality string `json:"Speciality"`
-	GroupNum   int    `json:"Number"`
-	Error      string `json:"error,omitempty"`
+	Code     int    `json:"code"`
+	Id       int    `json:"Id,omitempty""`
+	FullName string `json:"FullName,omitempty""`
+	GroupId  int    `json:"GroupId,omitempty""`
+	Error    string `json:"error,omitempty"`
 }
 
 type AppUpdate_StudentById struct {
-	Code          int    `json:"code"`
-	NewId         int    `json:"Id"`
-	NewFullName   string `json:"NewFullName"`
-	NewCourse     byte   `json:"NewCourse"`
-	NewGraduates  byte   `json:"NewGroduates"`
-	NewSpeciality string `json:"NewSpeciality"`
-	NewGroupNum   int    `json:"NewNumber"`
-	Error         string `json:"error,omitempty"`
+	Code        int    `json:"code"`
+	NewId       int    `json:"Id"`
+	NewFullName string `json:"NewFullName"`
+	NewGroupId  int    `json:"NEwGroupId"`
+	Error       string `json:"error,omitempty"`
 }
 
 type AppDelete_Student struct {

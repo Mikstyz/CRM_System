@@ -251,8 +251,8 @@ func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
 func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
 	const query = `
 		SELECT COALESCE(MAX(GroupNum), 0)
-		FROM groups
-		WHERE Course = ? AND GroupDates = ? AND Speciality = ?
+		FROM einf_groups
+		WHERE Course = ? AND Groudates = ? AND Speciality = ?
 	`
 
 	db.Init()

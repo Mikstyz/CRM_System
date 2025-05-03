@@ -30,8 +30,8 @@ func Inf_StudentByID(studentID int) (models.Student, error) {
 	return result, nil
 }
 
-func Inf_StudentByGroup(course byte, speciality string, groupNum int) ([]models.Student, error) {
-	result, err := repo.GetStudentByGroup(course, speciality, groupNum)
+func Inf_StudentByGroup(groupId int) ([]models.Student, error) {
+	result, err := repo.GetStudentByGroup(groupId)
 
 	if err != nil {
 		fmt.Println("Ошибка при получении студентов группы")
@@ -42,8 +42,8 @@ func Inf_StudentByGroup(course byte, speciality string, groupNum int) ([]models.
 	return result, nil
 }
 
-func Create_Student(fullName string, course byte, groduates byte, speciality string, groupNum int) (int, error) {
-	result, err := repo.CreateStudentWithEmptyEmployment(fullName, course, groduates, speciality, groupNum)
+func Create_Student(fullName string, groupId int) (int, error) {
+	result, err := repo.CreateStudentWithEmptyEmployment(fullName, groupId)
 
 	if err != nil {
 		fmt.Printf("Ошибка при создании студента %v: %v\n", fullName, err)
@@ -54,8 +54,8 @@ func Create_Student(fullName string, course byte, groduates byte, speciality str
 	return result, nil
 }
 
-func Update_StudentById(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newNumber int) (bool, error) {
-	result, err := repo.UpdateStd(studId, newFullName, newGroudates, newCourse, newSpeciality, newNumber)
+func Update_StudentById(studId int, newFullName string, newGroupId int) (bool, error) {
+	result, err := repo.UpdateStd(studId, newFullName, newGroupId)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении данных студента с ID %d: %v\n", studId, err)

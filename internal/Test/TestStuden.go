@@ -27,8 +27,8 @@ func Test_InfStudentByID() (int, int, error) {
 
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
@@ -40,7 +40,7 @@ func Test_InfStudentByID() (int, int, error) {
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
 	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
+	studentID, err := routes.Create_Student(fullName, groupId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -57,8 +57,8 @@ func Test_InfStudentByID() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != fullName {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, получено=%v", studentID, fullName, student)
+	if student.FullName != fullName || student.GroupId != groupId {
+		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, fullName, groupId, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные студента")
 	}
@@ -95,8 +95,8 @@ func Test_CreateStudent() (int, int, error) {
 
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
@@ -108,7 +108,7 @@ func Test_CreateStudent() (int, int, error) {
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
 	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
+	studentID, err := routes.Create_Student(fullName, groupId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -130,8 +130,8 @@ func Test_CreateStudent() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != fullName {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, получено=%v", studentID, fullName, student)
+	if student.FullName != fullName || student.GroupId != groupId {
+		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, fullName, groupId, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные студента")
 	}
@@ -168,20 +168,32 @@ func Test_UpdateStudentById() (int, int, error) {
 
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с Id %d", groupId)
+	log.Printf("Группа создана с ID %d", groupId)
+	Ok++
+
+	// Создаём вторую группу для обновления
+	log.Println("[INFO] Создаём вторую тестовую группу...")
+	newCourse, newGroduates, newSpeciality, newGroupNum := byte(2), byte(5), "Кибербезопасность", 102
+	newGroupId, err := routes.Create_Group(newCourse, newGroduates, newSpeciality, newGroupNum)
+	if err != nil {
+		log.Printf("Ошибка при создании второй группы: %v", err)
+		Bad++
+		return Ok, Bad, err
+	}
+	log.Printf("Вторая группа создана с ID %d", newGroupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
 	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
+	studentID, err := routes.Create_Student(fullName, groupId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -192,8 +204,8 @@ func Test_UpdateStudentById() (int, int, error) {
 
 	// Обновляем студента
 	log.Printf("[INFO] Обновляем студента с ID=%d...", studentID)
-	newFullName, newCourse, newGraduates, newSpeciality, newNumber := "Пётр Петров", byte(2), byte(5), "Кибербезопасность", 102
-	ok, err := routes.Update_StudentById(studentID, newFullName, newCourse, newGraduates, newSpeciality, newNumber)
+	newFullName := "Пётр Петров"
+	ok, err := routes.Update_StudentById(studentID, newFullName, newGroupId)
 	if err != nil || !ok {
 		log.Printf("Ошибка при обновлении студента: %v", err)
 		Bad++
@@ -210,8 +222,8 @@ func Test_UpdateStudentById() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != newFullName || student.Speciality != newSpeciality {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, специальность=%s, получено=%v", studentID, newFullName, newSpeciality, student)
+	if student.FullName != newFullName || student.GroupId != newGroupId {
+		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, newFullName, newGroupId, student)
 		Bad++
 		return Ok, Bad, errors.New("неверные данные обновлённого студента")
 	}
@@ -229,7 +241,7 @@ func Test_UpdateStudentById() (int, int, error) {
 	log.Println("[INFO] Студент успешно удалён.")
 	Ok++
 
-	// Удаляем группу
+	// Удаляем группы
 	log.Println("[INFO] Удаляем тестовую группу...")
 	ok, err = routes.Delete_GroupById(groupId)
 	if err != nil || !ok {
@@ -240,6 +252,16 @@ func Test_UpdateStudentById() (int, int, error) {
 	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
+	log.Println("[INFO] Удаляем вторую тестовую группу...")
+	ok, err = routes.Delete_GroupById(newGroupId)
+	if err != nil || !ok {
+		log.Printf("Ошибка при удалении второй тестовой группы: %v", err)
+		Bad++
+		return Ok, Bad, errors.New("ошибка удаления второй тестовой группы")
+	}
+	log.Println("[INFO] Вторая тестовая группа успешно удалена.")
+	Ok++
+
 	return Ok, Bad, nil
 }
 
@@ -248,8 +270,8 @@ func Test_DeleteStudent() (int, int, error) {
 
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
@@ -261,7 +283,7 @@ func Test_DeleteStudent() (int, int, error) {
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
 	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
+	studentID, err := routes.Create_Student(fullName, groupId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
@@ -311,8 +333,8 @@ func Test_InfStudentByGroup() (int, int, error) {
 
 	// Создаём группу для теста
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, graduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
+	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
 	if err != nil {
 		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
@@ -321,12 +343,12 @@ func Test_InfStudentByGroup() (int, int, error) {
 	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
-	// Создаём двух студентов для 1-го семестра
-	log.Println("[INFO] Создаём тестовых студентов для 1-го семестра...")
+	// Создаём двух студентов
+	log.Println("[INFO] Создаём тестовых студентов...")
 	studentNames := []string{"Иван Иванов", "Пётр Петров"}
 	studentIDs := make([]int, 0, len(studentNames))
 	for _, fullName := range studentNames {
-		studentID, err := routes.Create_Student(fullName, course, graduates, speciality, groupNum)
+		studentID, err := routes.Create_Student(fullName, groupId)
 		if err != nil {
 			log.Printf("Ошибка при создании студента %s: %v", fullName, err)
 			Bad++
@@ -338,8 +360,8 @@ func Test_InfStudentByGroup() (int, int, error) {
 	}
 
 	// Получаем студентов по группе
-	log.Println("[INFO] Получаем студентов по группе для 1-го семестра...")
-	students, err := routes.Inf_StudentByGroup(course, speciality, groupNum)
+	log.Println("[INFO] Получаем студентов по группе...")
+	students, err := routes.Inf_StudentByGroup(groupId)
 	if err != nil {
 		log.Printf("Ошибка при получении студентов группы: %v", err)
 		Bad++
@@ -351,8 +373,8 @@ func Test_InfStudentByGroup() (int, int, error) {
 		return Ok, Bad, errors.New("неверное количество студентов")
 	}
 	for i, student := range students {
-		if student.FullName != studentNames[i] {
-			log.Printf("Ошибка: неверные данные студента, ожидалось имя=%s, получено=%s", studentNames[i], student.FullName)
+		if student.FullName != studentNames[i] || student.GroupId != groupId {
+			log.Printf("Ошибка: неверные данные студента, ожидалось имя=%s, GroupId=%d, получено=%v", studentNames[i], groupId, student)
 			Bad++
 			return Ok, Bad, errors.New("неверные данные студента")
 		}

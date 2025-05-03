@@ -11,9 +11,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// InfStdByGroup возвращает список всех студентов.
+// InfStdByGroup возвращает список всех студентов с их GroupId.
 func InfStdByGroup() ([]models.Student, error) {
-	const query = `SELECT id, FullName, Groudates, Course, Speciality, GroupNum FROM students`
+	const query = `
+		SELECT s.id, s.FullName, s.GroupId, g.Groudates, g.Course, g.Speciality, g.GroupNum
+		FROM students s
+		JOIN einf_groups g ON s.GroupId = g.Id`
 
 	db.Init()
 
@@ -26,7 +29,8 @@ func InfStdByGroup() ([]models.Student, error) {
 	var students []models.Student
 	for rows.Next() {
 		var s models.Student
-		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
+
+		err := rows.Scan(&s.ID, &s.FullName, &s.GroupId, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
 		if err != nil {
 			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
@@ -75,9 +79,14 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	return students, nil
 }
 
-// GetIdByNameByGroup возвращает ID студента по имени и параметрам группы.
+// GetIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
 func GetIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
-	const query = `SELECT Id FROM students WHERE FullName = ? AND Course = ? AND Speciality = ? AND Groudates = ? AND GroupNum = ?`
+	const query = `
+	SELECT s.Id
+	FROM students s
+	JOIN einf_groups g ON s.GroupId = g.Id
+	WHERE s.FullName = ? AND g.Course = ? AND g.Speciality = ? AND g.Groudates = ? AND g.GroupNum = ?
+	`
 
 	db.Init()
 
@@ -99,15 +108,17 @@ func GetStudentByID(studentID int) (models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
-		SELECT FullName, Speciality, GroupNum, Groudates, Course
-		FROM students
-		WHERE id = ?`
+		SELECT s.FullName, s.GroupId, g.Speciality, g.GroupNum, g.Groudates, g.Course
+		FROM students s
+		JOIN einf_groups g ON s.GroupId = g.Id
+		WHERE s.id = ?`
 
 	db.Init()
 
 	var student models.Student
 	err := db.DB.QueryRow(query, studentID).Scan(
 		&student.FullName,
+		&student.GroupId,
 		&student.Speciality,
 		&student.GroupNum,
 		&student.Groudates,
@@ -121,16 +132,17 @@ func GetStudentByID(studentID int) (models.Student, error) {
 	return student, nil
 }
 
-// GetStudentByGroup возвращает студентов по параметрам группы.
-func GetStudentByGroup(course byte, speciality string, groupNum int) ([]models.Student, error) {
+// GetStudentByGroup возвращает студентов по GroupId.
+func GetStudentByGroup(groupId int) ([]models.Student, error) {
 	const query = `
-		SELECT id, FullName, Groudates, Course, Speciality, GroupNum
-		FROM students 
-		WHERE Course = ? AND Speciality = ? AND GroupNum = ?`
+		SELECT s.id, s.FullName, s.GroupId, g.Groudates, g.Course, g.Speciality, g.GroupNum
+		FROM students s
+		JOIN einf_groups g ON s.GroupId = g.Id
+		WHERE s.GroupId = ?`
 
 	db.Init()
 
-	rows, err := db.DB.Query(query, course, speciality, groupNum)
+	rows, err := db.DB.Query(query, groupId)
 	if err != nil {
 		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
 	}
@@ -139,7 +151,7 @@ func GetStudentByGroup(course byte, speciality string, groupNum int) ([]models.S
 	var students []models.Student
 	for rows.Next() {
 		var s models.Student
-		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
+		err := rows.Scan(&s.ID, &s.FullName, &s.GroupId, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
 		if err != nil {
 			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
@@ -154,18 +166,18 @@ func GetStudentByGroup(course byte, speciality string, groupNum int) ([]models.S
 }
 
 // CrtStd создаёт нового студента.
-func CrtStd(fullName string, Course byte, Groudates byte, speciality string, groupNum int) (int, error) {
+func CrtStd(fullName string, groupId int) (int, error) {
 	log.Println("Создаю нового студента...")
 
-	const query = `
-		INSERT INTO students (FullName, Groudates, Course, Speciality, GroupNum)
-		VALUES (?, ?, ?, ?, ?)
+	const insertStudentQuery = `
+		INSERT INTO students (FullName, GroupId)
+		VALUES (?, ?)
 		RETURNING id`
 
 	db.Init()
 
 	var studentId int
-	err := db.DB.QueryRow(query, fullName, Groudates, Course, speciality, groupNum).Scan(&studentId)
+	err := db.DB.QueryRow(insertStudentQuery, fullName, groupId).Scan(&studentId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
@@ -176,19 +188,19 @@ func CrtStd(fullName string, Course byte, Groudates byte, speciality string, gro
 }
 
 // UpdateStd обновляет данные студента.
-func UpdateStd(studId int, newFullName string, newCourse byte, newGroudates byte, newSpeciality string, newGroupNum int) (bool, error) {
+func UpdateStd(studId int, newFullName string, newGroupId int) (bool, error) {
 	log.Printf("Обновляю данные студента с ID=%d...", studId)
 
-	const query = `
+	const updateQuery = `
 		UPDATE students 
-		SET FullName = ?, Groudates = ?, Course = ?, Speciality = ?, GroupNum = ?
+		SET FullName = ?, GroupId = ?
 		WHERE id = ?
 		RETURNING id`
 
 	db.Init()
 
 	var updatedId int
-	err := db.DB.QueryRow(query, newFullName, newGroudates, newCourse, newSpeciality, newGroupNum, studId).Scan(&updatedId)
+	err := db.DB.QueryRow(updateQuery, newFullName, newGroupId, studId).Scan(&updatedId)
 	if err == sql.ErrNoRows {
 		log.Printf("Студент с ID=%d не найден", studId)
 		return false, nil
@@ -225,8 +237,8 @@ func DelStd(studId int) (bool, error) {
 	return true, nil
 }
 
-// CreateStudentWithEmptyEmployment создаёт студента и пустую запись о трудоустройстве.
-func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates byte, speciality string, groupNum int) (int, error) {
+// CreateStudentWithEmptyEmployment создаёт студента и пустую запись о трудоустройстве (в транзакции).
+func CreateStudentWithEmptyEmployment(fullName string, groupId int) (int, error) {
 	log.Println("Создаю нового студента и пустую запись о трудоустройстве (в транзакции)...")
 
 	db.Init()
@@ -238,23 +250,23 @@ func CreateStudentWithEmptyEmployment(fullName string, Course byte, Groudates by
 	}
 
 	const insertStudent = `
-		INSERT INTO students (FullName, Groudates, Course, Speciality, GroupNum)
-		VALUES (?, ?, ?, ?, ?)
+		INSERT INTO students (FullName, GroupId)
+		VALUES (?, ?)
 		RETURNING id`
 
 	var studentID int
-	err = tx.QueryRow(insertStudent, fullName, Groudates, Course, speciality, groupNum).Scan(&studentID)
+	err = tx.QueryRow(insertStudent, fullName, groupId).Scan(&studentID)
 	if err != nil {
 		tx.Rollback()
 		log.Printf("Ошибка при создании студента: %v", err)
 		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
 	}
 
-	const insertEmployer = `
+	const insertEmployment = `
 		INSERT INTO employers (studid, enterprise, workstartdate, jobtitle)
 		VALUES (?, NULL, NULL, NULL)`
 
-	_, err = tx.Exec(insertEmployer, studentID)
+	_, err = tx.Exec(insertEmployment, studentID)
 	if err != nil {
 		tx.Rollback()
 		log.Printf("Ошибка при создании записи о трудоустройстве: %v", err)

@@ -7,26 +7,18 @@ type Inf_StudentByID struct {
 }
 
 type Inf_StudentByGroup struct {
-	Course     byte   `json:"Course"`
-	Speciality string `json:"Speciality"`
-	GroupNum   int    `json:"Number"`
+	GroupId int `json:"GroupId"`
 }
 
 type Create_Student struct {
-	FullName   string `json:"FullName"`
-	Course     byte   `json:"Course"`
-	Graduates  byte   `json:"Groduates"`
-	Speciality string `json:"Speciality"`
-	GroupNum   int    `json:"Number"`
+	FullName string `json:"FullName"`
+	GroupId  int    `josn:"GroupId"`
 }
 
 type Update_StudentById struct {
-	StudId        int    `json:"StudId"`
-	NewFullName   string `json:"NewFullName"`
-	NewCourse     byte   `json:"NewCourse"`
-	NewGraduates  byte   `json:"NewGroudates"`
-	NewSpeciality string `json:"NewSpeciality"`
-	NewNumber     int    `json:"NewNumber"`
+	StudId      int    `json:"StudId"`
+	NewFullName string `json:"NewFullName"`
+	NewGroupId  int    `josn:"NewGroupId"`
 }
 
 type Delete_Student struct {
