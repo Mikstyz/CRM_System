@@ -40,8 +40,5 @@ type GetGroupIdByInfoDTO struct {
 
 // DublicateGroupDTO для дублирования группы
 type DublicateGroupDTO struct {
-	Course     byte   `json:"course"`
-	Graduates  byte   `json:"groudates"` // Исправлено groduates
-	Speciality string `json:"speciality"`
-	Number     int    `json:"group_num"`
+	GroupId int `json:"GroupId"`
 }

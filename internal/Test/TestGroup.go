@@ -220,7 +220,7 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 
 	// Дублируем группу
 	log.Println("[INFO] Дублируем группу...")
-	duplicatedData, err := routes.DublicateGroupAllData(course, graduates, speciality, groupNum)
+	duplicatedData, err := routes.DublicateGroupAllData(groupId)
 	if err != nil {
 		log.Printf("Ошибка при дублировании группы: %v", err)
 		Bad++

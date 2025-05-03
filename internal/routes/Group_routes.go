@@ -80,23 +80,23 @@ func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, gr
 	return result, nil
 }
 
-func DublicateGroupAllData(Course byte, Groduates byte, Speciality string, GroupNum int) ([]models.InFGroupAndSubject, error) {
-	GroupIdOne, err := repo.GetGroupIDByParams(Course, Groduates, Speciality, GroupNum)
+func DublicateGroupAllData(GroupId int) ([]models.InFGroupAndSubject, error) {
+	Group, err := repo.InfGroupById(GroupId)
 	if err != nil {
 		return nil, err
 	}
 
-	NewNumber, err := repo.MaxNumberByParams(Course, Groduates, Speciality)
+	NewNumber, err := repo.MaxNumberByParams(Group.Course, Group.Groudates, Group.Speciality)
 	if err != nil {
 		return nil, err
 	}
 
-	newGroupIds, err := repo.CrtGrp(Course, Groduates, Speciality, NewNumber+1)
+	newGroupIds, err := repo.CrtGrp(Group.Course, Group.Groudates, Group.Speciality, NewNumber+1)
 	if err != nil {
 		return nil, err
 	}
 
-	err = repo.CopyDisciplinesBetweenGroups(GroupIdOne, newGroupIds)
+	err = repo.CopyDisciplinesBetweenGroups(GroupId, newGroupIds)
 	if err != nil {
 		return nil, err
 	}
