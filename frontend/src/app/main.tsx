@@ -9,6 +9,7 @@ import { ConfirmProvider } from "@/shared/ui/ConfirmDialog";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
+      {/* для отображения Confirm перед действием */}
       <ConfirmProvider>
         <PagesListGroup />
       </ConfirmProvider>
