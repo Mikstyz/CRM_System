@@ -103,9 +103,9 @@ type AppInf_StudentByGroup struct {
 
 type AppCreate_Student struct {
 	Code     int    `json:"code"`
-	Id       int    `json:"Id,omitempty""`
-	FullName string `json:"FullName,omitempty""`
-	GroupId  int    `json:"GroupId,omitempty""`
+	Id       int    `json:"Id,omitempty"`
+	FullName string `json:"FullName,omitempty"`
+	GroupId  int    `json:"GroupId,omitempty"`
 	Error    string `json:"error,omitempty"`
 }
 
