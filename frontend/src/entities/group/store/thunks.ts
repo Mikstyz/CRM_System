@@ -13,6 +13,7 @@ import {
   CreateGroup,
   DeleteGroupByID,
   DeleteSubjectByID,
+  DuplicateGroupAllData,
   UpdateGroupByID,
   UpdateSubjectByID,
 } from "@wails/go/main/App";
@@ -175,30 +176,31 @@ export const duplicateGroupThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/duplicateGroup", async (groupId, { rejectWithValue }) => {
   try {
-    // const res = await DuplicateGroupAllData({ groupId });
-    // const resGroup = res.Group;
-    // // if (res?.code === 200 && resGroup?.Id) {
-    // //   return {
-    // //     id: resGroup.Id,
-    // //     name: `${resGroup.Course}${resGroup.Speciality}${resGroup.Groudates}-${resGroup.Number}`,
-    // //     dateNameGroup: {
-    // //       course: String(resGroup.Course) as Course,
-    // //       specialty: resGroup.Speciality,
-    // //       graduates: String(resGroup.Groudates) as Graduates,
-    // //       groupNumber: resGroup.Number,
-    // //     },
-    // //     disciplines: {
-    // //       "1": resGroup.Subject.firstSemester,
-    // //       "2": resGroup.Subject.secondSemester,
-    // //     },
-    // //   };
+    const res = await DuplicateGroupAllData({ GroupId: groupId });
+    const resGroup = res.GrpAndSUbj;
+    console.log("resGroup", resGroup);
+    // if (res?.code === 200 && resGroup?.Id) {
+    //   return {
+    //     id: resGroup.Id,
+    //     name: `${resGroup.Course}${resGroup.Speciality}${resGroup.Groudates}-${resGroup.Number}`,
+    //     dateNameGroup: {
+    //       course: String(resGroup.Course) as Course,
+    //       specialty: resGroup.Speciality,
+    //       graduates: String(resGroup.Groudates) as Graduates,
+    //       groupNumber: resGroup.Number,
+    //     },
+    //     disciplines: {
+    //       "1": resGroup.Subject.firstSemester,
+    //       "2": resGroup.Subject.secondSemester,
+    //     },
+    //   };
     // } else {
     //   console.error("Ошибка дублирования группы", res?.error);
     //   return rejectWithValue(
     //     `Failed to duplicate group: ${res?.error || "Unknown error"}`,
     //   );
     // }
-    return rejectWithValue(`Failed to duplicate group: Unknown error`);
+    return rejectWithValue("Ошибка при дублировании группы");
   } catch (error) {
     console.error("Error duplicating group:", error);
     return rejectWithValue(
@@ -378,7 +380,7 @@ export const deleteDisciplinesThunks = createAsyncThunk<
       if (res?.code === 200) {
         return { groupId, semester, discId };
       } else {
-        console.log("Ошибка удаления дисциплины", res?.error);
+        console.error("Ошибка удаления дисциплины", res?.error);
         return rejectWithValue(
           `Failed to delete discipline: ${res?.error || "Unknown error"}`,
         );

@@ -65,17 +65,9 @@ export const groupsExtraReducers = (
     .addCase(duplicateGroupThunks.pending, handlePending<GroupsState>)
     .addCase(duplicateGroupThunks.fulfilled, (state, action) => {
       state.loading = false;
-      state.list = [action.payload, ...state.list];
-      ////////////////////////////////
-      // const srcIndex = state.list.findIndex((g) => g.id === action.payload.id);
-      // if (srcIndex === -1) return;
-      // const src = state.list[srcIndex];
-      // const duplicatedGroup = {
-      //   ...JSON.parse(JSON.stringify(src)),
-      //   id: crypto.randomUUID(),
-      //   name: src.name + "0",
-      // };
-      // state.list.splice(srcIndex + 1, 0, duplicatedGroup);
+      const srcIndex = state.list.findIndex((g) => g.id === action.payload.id);
+      if (srcIndex === -1) return;
+      state.list.splice(srcIndex + 1, 0, action.payload);
     })
     .addCase(duplicateGroupThunks.rejected, handleRejected<GroupsState>);
 
