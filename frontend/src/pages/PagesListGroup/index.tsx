@@ -43,7 +43,7 @@ export function PagesListGroup() {
   useEffect(() => {
     console.log("groups", groups);
   }, [groups]);
-  const currentGroupName = groups.find((g) => g.id === groupId)?.name ?? "";
+  const currentGroup = groups.find((g) => g.id === groupId);
 
   useEffect(() => {
     dispatch(clearErrors());
@@ -67,7 +67,7 @@ export function PagesListGroup() {
 
       <ModalErrorBoundary>
         <ModalWrapper isOpen={isOpen} onClose={() => dispatch(closeBlank())}>
-          <BlankPage groupId={groupId} groupName={currentGroupName} />
+          <BlankPage group={currentGroup} />
         </ModalWrapper>
       </ModalErrorBoundary>
     </>

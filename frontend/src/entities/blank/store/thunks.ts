@@ -1,105 +1,154 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { InfAllStudent, InfStudentByID } from "@wails/go/main/App";
-import { DateNameGroup } from "@/entities/group/types";
 import { Student } from "@/entities/student/types";
 import { Id } from "@/shared/types";
+import {
+  CreateStudent,
+  DeleteStudent,
+  InfStudentByGroup,
+  UpdateStudentByID,
+} from "@wails/go/main/App";
 
 interface ThunkConfig {
   rejectValue: string;
 }
 
-//////////
-
 // GET AllStudentGroup
-type GetAllStudentGroupResponse = DateNameGroup;
-type GetAllStudentGroupParams = Student[];
+type GetAllStudentGroupResponse = Student[];
+type GetAllStudentGroupParams = Id;
 export const getAllStudentGroupThunks = createAsyncThunk<
-  GetAllStudentGroupParams,
   GetAllStudentGroupResponse,
+  GetAllStudentGroupParams,
   ThunkConfig
->("userFiles/getAllStudent", async (_, { rejectWithValue }) => {
+>("userFiles/getAllStudentGroup", async (groupId, { rejectWithValue }) => {
   try {
-    const res = await InfAllStudent({});
-    const studentsAll = res.students;
-
-    if (res.code === 200 && Array.isArray(studentsAll)) {
-      // return studentsAll.map((g): Group => {
-      //   return {
-      //     id: g.Id,
-      //     name: `${g.Course}${g.Speciality}${g.Groudates}-${g.Number}`,
-      //     dateNameGroup: {
-      //       course: String(g.Course) as Course,
-      //       specialty: g.Speciality,
-      //       graduates: String(g.Groudates) as Graduates,
-      //       groupNumber: g.Number,
-      //     },
-      //     disciplines: {
-      //       "1": [],
-      //       "2": [],
-      //     },
-      //   };
-      // });
-      return [];
-    } else {
-      console.error("Ошибка при получнии студентов", res?.error);
-      return rejectWithValue("Ошибка при получении студентов");
-    }
-  } catch (error) {
-    console.error("Error fetching groups:", error);
-    return rejectWithValue(
-      `шибка при получении студентов: ${(error as Error).message || "Unknown error"}`,
-    );
-  }
-});
-
-// GET InfStudentID
-type GetInfStudentIDResponse = Id;
-type GetInfStudentIDParams = Student[];
-export const getInfStudentIDThunks = createAsyncThunk<
-  GetInfStudentIDParams,
-  GetInfStudentIDResponse,
-  ThunkConfig
->("userFiles/getInfStudent", async (studentId, { rejectWithValue }) => {
-  try {
-    const res = await InfStudentByID({
-      StudentID: studentId,
+    const res = await InfStudentByGroup({
+      GroupId: groupId,
     });
-    const student = res.Student;
-    if (res.code === 200 && student?.id) {
+    const studentsAll = res.Student;
+    if (res.code === 200 && Array.isArray(studentsAll)) {
+      // return studentsAll.map((s) => {
+      //   return {
+      //     id: s.id,
+      //     fullName: s.full_name,
+      //     company: s.speciality,
+      //     startDateWork: s.startDateWork,
+      //     position: s.speciality
+      //   }
+      // })
       return [];
     } else {
-      console.error("Ошибка при получнии студентов", res?.error);
+      console.error("Ошибка при получении студентов", res?.error);
       return rejectWithValue("Ошибка при получении студентов");
     }
   } catch (error) {
-    console.error("Error fetching groups:", error);
+    console.error("Error:", error);
     return rejectWithValue(
-      `шибка при получении студентов: ${(error as Error).message || "Unknown error"}`,
+      `Ошибка при получении студентов: ${(error as Error).message || "Unknown error"}`,
     );
   }
 });
 
 // CreateStudent
-// type CreateStudentThunksParams = Student[]
-// type CreateStudentThunksResponse = Id
-// export const createStudentThunks = createAsyncThunk<
-//   CreateStudentThunksParams,
-//   CreateStudentThunksResponse,
-//   ThunkConfig
-// >("userFiles/getAllStudent", async (_, { rejectWithValue }) => {
-//   try {
-// const res = await InfStudentByID({});
-// const studentsAll = res.students;
-//     if (res.code === 200 && Array.isArray(studentsAll)) {
-//       return []
-//     } else {
-//       console.error("Ошибка при получнии студентов", res?.error);
-//       return rejectWithValue("Ошибка при получении студентов");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching groups:", error);
-//     return rejectWithValue(
-//       `шибка при получении студентов: ${(error as Error).message || "Unknown error"}`,
-//     );
-//   }
-// });
+type CreateStudentThunksParams = {
+  student: Student;
+  groupId: Id;
+};
+type CreateStudentThunksResponse = Student;
+export const createStudentThunks = createAsyncThunk<
+  CreateStudentThunksResponse,
+  CreateStudentThunksParams,
+  ThunkConfig
+>(
+  "userFiles/createStudent",
+  async ({ student, groupId }, { rejectWithValue }) => {
+    try {
+      const res = await CreateStudent({
+        FullName: student.fullName,
+        GroupId: groupId,
+      });
+      if (res.code === 200 && res.Id) {
+        return {
+          id: res.Id,
+          fullName: student.fullName,
+          company: student.company,
+          startDateWork: student.startDateWork,
+          position: student.position,
+        };
+      } else {
+        console.error("Ошибка при сохранении студента", res?.error);
+        return rejectWithValue("Ошибка при сохранении студента");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return rejectWithValue(
+        `Ошибка при сохранении студента: ${(error as Error).message || "Unknown error"}`,
+      );
+    }
+  },
+);
+
+// UpdateStudentByID
+type UpdateStudentThunksParams = {
+  student: Student;
+  groupId: Id;
+};
+type UpdateStudentThunksResponse = Student;
+export const updateStudentThunks = createAsyncThunk<
+  UpdateStudentThunksResponse,
+  UpdateStudentThunksParams,
+  ThunkConfig
+>(
+  "userFiles/updateStudent",
+  async ({ student, groupId }, { rejectWithValue }) => {
+    try {
+      const res = await UpdateStudentByID({
+        StudId: student.id,
+        NewFullName: student.fullName,
+        NewGroupId: groupId,
+      });
+      if (res.code === 200 && res.Id) {
+        return {
+          id: res.Id,
+          fullName: student.fullName,
+          company: student.company,
+          startDateWork: student.startDateWork,
+          position: student.position,
+        };
+      } else {
+        console.error("Ошибка при обновлении студента", res?.error);
+        return rejectWithValue("Ошибка при обновлении студента");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return rejectWithValue(
+        `Ошибка при обновлении студента: ${(error as Error).message || "Unknown error"}`,
+      );
+    }
+  },
+);
+
+// DeleteStudent
+type DeleteStudentThunksParams = Id;
+type DeleteStudentThunksResponse = Id;
+export const deleteStudentThunks = createAsyncThunk<
+  DeleteStudentThunksResponse,
+  DeleteStudentThunksParams,
+  ThunkConfig
+>("userFiles/deleteStudent", async (studentId, { rejectWithValue }) => {
+  try {
+    const res = await DeleteStudent({
+      StudId: studentId,
+    });
+    if (res.code === 200) {
+      return studentId;
+    } else {
+      console.error("Ошибка при удалении студента", res?.error);
+      return rejectWithValue("Ошибка при удалении студента");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return rejectWithValue(
+      `Ошибка при удалении студента: ${(error as Error).message || "Unknown error"}`,
+    );
+  }
+});

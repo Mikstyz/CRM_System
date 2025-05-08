@@ -17,10 +17,11 @@ export const blankReducers = {
     state: BlankState,
     { payload }: PayloadAction<{ id: Id; fullName: string }>,
   ) {
-    state.studentId = payload.id;
-    state.studentName = payload.fullName;
+    if (!state.selectStudent) return;
+    state.selectStudent.id = payload.id;
+    state.selectStudent.fullName = payload.fullName;
   },
   clearErrors(state: BlankState) {
-    state.error = null;
+    state.error = undefined;
   },
 };

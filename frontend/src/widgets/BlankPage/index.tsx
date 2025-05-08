@@ -1,40 +1,49 @@
-import { VirtualizedSearch } from "@/features/VirtualizedSearch";
-import { EditableTitle } from "@/shared/ui/EditableTitle";
+import {VirtualizedSearch} from "@/features/VirtualizedSearch";
+import {EditableTitle} from "@/shared/ui/EditableTitle";
 
-import { z } from "zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
-import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
-import { useEffect } from "react";
-import { Id } from "@/shared/types";
-import { selectBlank } from "@/entities/blank/store/selectors.ts";
-import { setStudent } from "@/entities/blank/store";
+import {z} from "zod";
+import {useForm, SubmitHandler} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {MIN_SEMESTER, MAX_SEMESTER} from "@/shared/const";
+import {useAppDispatch, useAppSelector} from "@/shared/lib/hooks/redux.ts";
+import {useEffect} from "react";
+import {selectBlank} from "@/entities/blank/store/selectors.ts";
+import {setStudent} from "@/entities/blank/store";
+import {Group} from "@/entities/group/types";
 
-export function BlankPage({
-  groupId,
-  groupName,
-}: {
-  groupId: Id | null;
-  groupName: string;
+import {handleTitleGroupSave} from "@/shared/lib/headers/titleGroupSave.ts";
+
+export function BlankPage({group}: {
+  group: Group | undefined
 }) {
   const dispatch = useAppDispatch();
   const {
-    studentId,
-    studentName,
-    semester,
-    company,
-    startDate,
-    position,
+    selectStudent,
     studentsData,
+    semester
+
   } = useAppSelector(selectBlank);
 
-  /* ---------- 1. схема Zod ---------- */
+  /* ---------- 1. Updated Zod schema to fix resolver type mismatch ---------- */
+  const semesterEnum = ["1", "2", "3", "4"] as const;
+  type Semester = typeof semesterEnum[number];
+
+  // Updated preprocessing function with proper typing
+  const toSemesterOrUndef = (v: unknown): Semester | undefined => {
+    if (typeof v !== "string") return undefined;
+    return semesterEnum.includes(v as Semester) ? (v as Semester) : undefined;
+  };
+
+// Schema using refined preprocessing
   const schema = z.object({
-    semester: z.coerce.number().min(1).max(2, "От 1 до 2"),
-    student: z.string().min(1, "Обязательное поле"),
+    semester: z
+      .custom<Semester | undefined>(toSemesterOrUndef, {
+        message: "Invalid semester",
+      })
+      .optional(),
+    studentName: z.string().min(1, "Обязательное поле"),
     company: z.string().optional(),
-    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "YYYY‑MM‑DD"),
+    startDate: z.date(),
     position: z.string().min(2),
   });
   type FormValues = z.infer<typeof schema>;
@@ -44,29 +53,29 @@ export function BlankPage({
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: {errors},
   } = useForm<FormValues>({
     resolver: zodResolver(schema), // generic выводится автоматически
     defaultValues: {
-      semester: 1,
-      student: "",
+      semester: "1",
+      studentName: "",
       company: "",
-      startDate: "",
+      startDate: new Date(),
       position: "",
     },
   });
 
   /* ---------- 3. обработчик ---------- */
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    if (!studentId) {
+    if (!selectStudent?.id) {
       alert("Выберите студента!");
       return;
     }
 
     console.log({
-      groupId,
-      studentId, // ← настоящий id
-      student: data.student,
+      groupId: group?.id,
+      selectStudentId: selectStudent?.id,
+      studentName: data.studentName,
       semester: data.semester,
       company: data.company ?? null,
       startDate: data.startDate,
@@ -76,24 +85,35 @@ export function BlankPage({
   };
 
   useEffect(() => {
-    setValue("student", studentName); // берём прямо из slice
+    if (!selectStudent) return
+
+    setValue("studentName", selectStudent?.fullName);
+    if (selectStudent?.startDateWork) {
+      setValue("startDate", selectStudent?.startDateWork);
+    }
     setValue("semester", semester);
-    setValue("company", company ?? "");
-    setValue("startDate", startDate);
-    setValue("position", position);
-  }, [setValue, studentName, semester, company, startDate, position]);
+    setValue("company", selectStudent?.company ?? "");
+    setValue("position", selectStudent?.position?? "");
+  }, [setValue, semester]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 w-full">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">
+        {
+        group ?
+        (<h1 className="text-2xl font-bold">
           Группа:
           <EditableTitle
-            initialValue={groupName}
-            onSave={() => {}}
+            initialValue={group?.name}
+            onSave={(value) => handleTitleGroupSave({ dispatch, group, value })}
             className="ml-1 inline-block text-2xl font-bold"
           />
-        </h1>
+        </h1>) : (
+          <h1 className="text-2xl font-bold">
+            Группа не выбрана
+          </h1>
+        )
+        }
       </div>
 
       <div className="flex gap-4">
@@ -103,7 +123,7 @@ export function BlankPage({
             type="number"
             min={MIN_SEMESTER}
             max={MAX_SEMESTER}
-            {...register("semester", { valueAsNumber: true })}
+            {...register("semester", {valueAsNumber: true})}
             className="border rounded p-1"
           />
           {errors.semester && (
@@ -119,14 +139,14 @@ export function BlankPage({
           maxDropdownHeight={200}
           onSelect={(s) => {
             // 1) пишем ФИО в форму
-            setValue("student", s.fullName, { shouldValidate: true });
+            setValue("studentName", s.fullName, {shouldValidate: true});
             // 2) сохраняем id + ФИО в blankSlice
-            dispatch(setStudent({ id: s.id, fullName: s.fullName }));
+            dispatch(setStudent({id: s.id, fullName: s.fullName}));
           }}
         />
       </div>
-      {errors.student && (
-        <span className="text-red-500 text-xs">{errors.student.message}</span>
+      {errors.studentName && (
+        <span className="text-red-500 text-xs">{errors.studentName.message}</span>
       )}
 
       <label className="block max-w-sm">

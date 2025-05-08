@@ -1,11 +1,11 @@
 interface BaseState {
   loading: boolean;
-  error: string | null;
+  error: string | undefined;
 }
 
 export const handlePending = <S extends BaseState>(state: S): void => {
   state.loading = true;
-  state.error = null;
+  state.error = undefined;
 };
 
 export const handleRejected = <S extends BaseState>(

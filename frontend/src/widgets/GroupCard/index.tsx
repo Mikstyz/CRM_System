@@ -5,11 +5,10 @@ import { SemesterDisciplines } from "@/features/SemesterDisciplines";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
 import { Group } from "@/entities/group/types";
 import { headerDeleteGroup } from "@/widgets/GroupCard/headers/deleteGroup.ts";
-import { handleTitleGroupSave } from "@/widgets/GroupCard/headers/titleGroupSave.ts";
+import { handleTitleGroupSave } from "@/shared/lib/headers/titleGroupSave.ts";
 import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup.ts";
 import { openBlank } from "@/entities/blank/store";
 import { useConfirm } from "@/shared/ui/ConfirmDialog";
-
 
 interface Props {
   group: Group;

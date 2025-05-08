@@ -7,7 +7,11 @@ interface DisciplineItemProps {
   handleTitleSave: (newValue: string) => void;
 }
 
-export function DisciplineItem({ discipline, onDelete, handleTitleSave }: DisciplineItemProps) {
+export function DisciplineItem({
+  discipline,
+  onDelete,
+  handleTitleSave,
+}: DisciplineItemProps) {
   return (
     <div className="border rounded-lg p-2 flex justify-between items-center">
       <EditableTitle
