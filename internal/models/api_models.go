@@ -39,9 +39,9 @@ type AppCrtOutGroupApi struct {
 }
 
 type AppDunlOutGroupApi struct {
-	Code       int                  `json:"code"`
-	GrpAndSUbj []InFGroupAndSubject `json:"GrpAndSUbj,omitempty"`
-	Error      string               `json:"error,omitempty"`
+	Code       int                `json:"code"`
+	GrpAndSUbj InFGroupAndSubject `json:"GrpAndSUbj,omitempty"`
+	Error      string             `json:"error,omitempty"`
 }
 
 // AppUpdateOutGroupApi для возврата данных при обновлении группы

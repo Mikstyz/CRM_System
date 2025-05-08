@@ -215,12 +215,17 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if len(duplicatedData) == 0 {
-		log.Println("[ERROR] Ошибка: результат дублирования пустой")
+	if duplicatedData.Id == 0 {
+		log.Println("[ERROR] Ошибка: ID новой группы не должен быть 0")
 		Bad++
-		return Ok, Bad, errors.New("данные после дублирования пусты")
+		return Ok, Bad, errors.New("нулевой ID новой группы")
 	}
-	log.Printf("Группа успешно продублирована, получено %d записей", len(duplicatedData))
+	if duplicatedData.Course != course || duplicatedData.Spesiality != speciality || duplicatedData.Groduates != groduates || duplicatedData.Number != groupNum+1 {
+		log.Println("[ERROR] Ошибка: параметры новой группы не соответствуют ожидаемым")
+		Bad++
+		return Ok, Bad, errors.New("неверные параметры новой группы")
+	}
+	log.Printf("Группа успешно продублирована с ID %d", duplicatedData.Id)
 	Ok++
 
 	// Проверяем новую группу
@@ -230,6 +235,11 @@ func Test_DuplicateGroupAllData() (int, int, error) {
 		log.Printf("Ошибка: новая группа не найдена или неверный ID: %v", err)
 		Bad++
 		return Ok, Bad, errors.New("ошибка проверки новой группы")
+	}
+	if newGroupId != duplicatedData.Id {
+		log.Println("[ERROR] Ошибка: ID новой группы не совпадает с возвращённым")
+		Bad++
+		return Ok, Bad, errors.New("несоответствие ID новой группы")
 	}
 	log.Printf("Новая группа найдена с ID %d", newGroupId)
 	Ok++

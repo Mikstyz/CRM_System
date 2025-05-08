@@ -158,28 +158,28 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 
 	return result, nil
 }
-
-func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
+func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	const query = `
-		SELECT 
-			g.Id, g.Course, g.Speciality, g.Groudates, g.GroupNum,
-			gs.id, gs.subject_name, gs.semester
-		FROM einf_groups g
-		LEFT JOIN group_subject gs ON gs.group_id = g.Id
-		WHERE g.Id = $1
-		ORDER BY g.Course, g.Speciality, g.GroupNum, gs.semester
-	`
+        SELECT 
+            g.Id, g.Course, g.Speciality, g.Groudates, g.GroupNum,
+            gs.id, gs.subject_name, gs.semester
+        FROM einf_groups g
+        LEFT JOIN group_subject gs ON gs.group_id = g.Id
+        WHERE g.Id = $1
+        ORDER BY g.Course, g.Speciality, g.GroupNum, gs.semester
+    `
 
 	db.Init()
 
 	rows, err := db.DB.Query(query, groupId)
 	if err != nil {
 		log.Printf("Ошибка при получении группы с предметами: %v", err)
-		return nil, err
+		return models.InFGroupAndSubject{}, err
 	}
 	defer rows.Close()
 
-	groupMap := make(map[int]*models.InFGroupAndSubject)
+	var result models.InFGroupAndSubject
+	initialized := false
 
 	for rows.Next() {
 		var (
@@ -207,8 +207,8 @@ func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
 			continue
 		}
 
-		if _, ok := groupMap[groupID]; !ok {
-			groupMap[groupID] = &models.InFGroupAndSubject{
+		if !initialized {
+			result = models.InFGroupAndSubject{
 				Id:         groupID,
 				Course:     course,
 				Spesiality: speciality,
@@ -219,6 +219,7 @@ func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
 					SecondSemester: []models.SemesterDiscipline{},
 				},
 			}
+			initialized = true
 		}
 
 		if subjectID.Valid && subjectName.Valid && semester.Valid {
@@ -228,21 +229,20 @@ func InfGrpWithSubjectsById(groupId int) ([]models.InFGroupAndSubject, error) {
 			}
 
 			if semester.Int64 == 1 {
-				groupMap[groupID].Subject.FirstSemester = append(groupMap[groupID].Subject.FirstSemester, discipline)
+				result.Subject.FirstSemester = append(result.Subject.FirstSemester, discipline)
 			} else if semester.Int64 == 2 {
-				groupMap[groupID].Subject.SecondSemester = append(groupMap[groupID].Subject.SecondSemester, discipline)
+				result.Subject.SecondSemester = append(result.Subject.SecondSemester, discipline)
 			}
 		}
 	}
 
 	if err := rows.Err(); err != nil {
 		log.Printf("Ошибка при чтении строк: %v", err)
-		return nil, err
+		return models.InFGroupAndSubject{}, err
 	}
 
-	var result []models.InFGroupAndSubject
-	for _, grp := range groupMap {
-		result = append(result, *grp)
+	if !initialized {
+		return models.InFGroupAndSubject{}, fmt.Errorf("группа с ID %d не найдена", groupId)
 	}
 
 	return result, nil

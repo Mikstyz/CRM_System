@@ -14,31 +14,60 @@ import (
 // InfStdByGroup возвращает список всех студентов с их GroupId.
 func InfStdByGroup() ([]models.Student, error) {
 	const query = `
-		SELECT s.id, s.FullName, s.GroupId, g.Groudates, g.Course, g.Speciality, g.GroupNum
-		FROM students s
-		JOIN einf_groups g ON s.GroupId = g.Id`
+        SELECT 
+            s.id, s.FullName, s.GroupId,
+            e.enterprise, e.workstartdate, e.jobtitle
+        FROM students s
+        JOIN einf_groups g ON s.GroupId = g.Id
+        LEFT JOIN employers e ON s.id = e.studid`
 
 	db.Init()
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
+		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
 	}
 	defer rows.Close()
 
 	var students []models.Student
 	for rows.Next() {
-		var s models.Student
+		var (
+			s             models.Student
+			enterprise    sql.NullString
+			workStartDate sql.NullString
+			jobTitle      sql.NullString
+		)
 
-		err := rows.Scan(&s.ID, &s.FullName, &s.GroupId, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
+		err := rows.Scan(
+			&s.ID,
+			&s.FullName,
+			&s.GroupId,
+			&enterprise,
+			&workStartDate,
+			&jobTitle,
+		)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
+			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
+
+		s.Enterprise = nil
+		if enterprise.Valid {
+			s.Enterprise = &enterprise.String
+		}
+		s.WorkStartDate = nil
+		if workStartDate.Valid {
+			s.WorkStartDate = &workStartDate.String
+		}
+		s.JobTitle = nil
+		if jobTitle.Valid {
+			s.JobTitle = &jobTitle.String
+		}
+
 		students = append(students, s)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка после чтения строк: %v", err)
+		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
 	}
 
 	return students, nil
@@ -49,31 +78,61 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	log.Printf("Получение студентов по группе ID=%d", GroupId)
 
 	const query = `
-		SELECT s.id, s.FullName, s.Groudates, s.Course, s.Speciality, s.GroupNum
-		FROM students s 
-		JOIN einf_groups eg ON s.Course = eg.Course AND s.Speciality = eg.Speciality AND s.GroupNum = eg.GroupNum
-		WHERE eg.Id = ?`
+        SELECT 
+            s.id, s.FullName, s.GroupId,
+            e.enterprise, e.workstartdate, e.jobtitle
+        FROM students s
+        JOIN einf_groups g ON s.GroupId = g.Id
+        LEFT JOIN employers e ON s.id = e.studid
+        WHERE g.Id = ?`
 
 	db.Init()
 
 	rows, err := db.DB.Query(query, GroupId)
 	if err != nil {
-		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
+		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
 	}
 	defer rows.Close()
 
 	var students []models.Student
 	for rows.Next() {
-		var s models.Student
-		err := rows.Scan(&s.ID, &s.FullName, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
+		var (
+			s             models.Student
+			enterprise    sql.NullString
+			workStartDate sql.NullString
+			jobTitle      sql.NullString
+		)
+
+		err := rows.Scan(
+			&s.ID,
+			&s.FullName,
+			&s.GroupId,
+			&enterprise,
+			&workStartDate,
+			&jobTitle,
+		)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
+			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
+
+		s.Enterprise = nil
+		if enterprise.Valid {
+			s.Enterprise = &enterprise.String
+		}
+		s.WorkStartDate = nil
+		if workStartDate.Valid {
+			s.WorkStartDate = &workStartDate.String
+		}
+		s.JobTitle = nil
+		if jobTitle.Valid {
+			s.JobTitle = &jobTitle.String
+		}
+
 		students = append(students, s)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка после чтения строк: %v", err)
+		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
 	}
 
 	return students, nil
@@ -108,25 +167,47 @@ func GetStudentByID(studentID int) (models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
-		SELECT s.FullName, s.GroupId, g.Speciality, g.GroupNum, g.Groudates, g.Course
-		FROM students s
-		JOIN einf_groups g ON s.GroupId = g.Id
-		WHERE s.id = ?`
+        SELECT 
+            s.id, s.FullName, s.GroupId,
+            e.enterprise, e.workstartdate, e.jobtitle
+        FROM students s
+        JOIN einf_groups g ON s.GroupId = g.Id
+        LEFT JOIN employers e ON s.id = e.studid
+        WHERE s.id = ?`
 
 	db.Init()
 
-	var student models.Student
+	var (
+		student       models.Student
+		enterprise    sql.NullString
+		workStartDate sql.NullString
+		jobTitle      sql.NullString
+	)
+
 	err := db.DB.QueryRow(query, studentID).Scan(
+		&student.ID,
 		&student.FullName,
 		&student.GroupId,
-		&student.Speciality,
-		&student.GroupNum,
-		&student.Groudates,
-		&student.Course,
+		&enterprise,
+		&workStartDate,
+		&jobTitle,
 	)
 	if err != nil {
 		log.Printf("Ошибка при получении студента: %v", err)
 		return models.Student{}, err
+	}
+
+	student.Enterprise = nil
+	if enterprise.Valid {
+		student.Enterprise = &enterprise.String
+	}
+	student.WorkStartDate = nil
+	if workStartDate.Valid {
+		student.WorkStartDate = &workStartDate.String
+	}
+	student.JobTitle = nil
+	if jobTitle.Valid {
+		student.JobTitle = &jobTitle.String
 	}
 
 	return student, nil
@@ -135,31 +216,61 @@ func GetStudentByID(studentID int) (models.Student, error) {
 // GetStudentByGroup возвращает студентов по GroupId.
 func GetStudentByGroup(groupId int) ([]models.Student, error) {
 	const query = `
-		SELECT s.id, s.FullName, s.GroupId, g.Groudates, g.Course, g.Speciality, g.GroupNum
-		FROM students s
-		JOIN einf_groups g ON s.GroupId = g.Id
-		WHERE s.GroupId = ?`
+        SELECT 
+            s.id, s.FullName, s.GroupId,
+            e.enterprise, e.workstartdate, e.jobtitle
+        FROM students s
+        JOIN einf_groups g ON s.GroupId = g.Id
+        LEFT JOIN employers e ON s.id = e.studid
+        WHERE s.GroupId = ?`
 
 	db.Init()
 
 	rows, err := db.DB.Query(query, groupId)
 	if err != nil {
-		return nil, fmt.Errorf("не удалось получить студентов: %v", err)
+		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
 	}
 	defer rows.Close()
 
 	var students []models.Student
 	for rows.Next() {
-		var s models.Student
-		err := rows.Scan(&s.ID, &s.FullName, &s.GroupId, &s.Groudates, &s.Course, &s.Speciality, &s.GroupNum)
+		var (
+			s             models.Student
+			enterprise    sql.NullString
+			workStartDate sql.NullString
+			jobTitle      sql.NullString
+		)
+
+		err := rows.Scan(
+			&s.ID,
+			&s.FullName,
+			&s.GroupId,
+			&enterprise,
+			&workStartDate,
+			&jobTitle,
+		)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при чтении строки: %v", err)
+			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
 		}
+
+		s.Enterprise = nil
+		if enterprise.Valid {
+			s.Enterprise = &enterprise.String
+		}
+		s.WorkStartDate = nil
+		if workStartDate.Valid {
+			s.WorkStartDate = &workStartDate.String
+		}
+		s.JobTitle = nil
+		if jobTitle.Valid {
+			s.JobTitle = &jobTitle.String
+		}
+
 		students = append(students, s)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка после чтения строк: %v", err)
+		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
 	}
 
 	return students, nil
