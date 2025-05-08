@@ -10,7 +10,6 @@ import { headerDuplicateGroup } from "@/widgets/GroupCard/headers/duplicateGroup
 import { openBlank } from "@/entities/blank/store";
 import { useConfirm } from "@/shared/ui/ConfirmDialog";
 
-
 interface Props {
   group: Group;
 }

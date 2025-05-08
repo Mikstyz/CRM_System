@@ -6,9 +6,8 @@ import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
 import {
   headerAddDiscipline,
   headerDeleteDiscipline,
-  headerUpdateDiscipline
+  headerUpdateDiscipline,
 } from "@/features/SemesterDisciplines/heanders";
-
 
 interface Props {
   semester: Semester;
@@ -22,13 +21,14 @@ export const SemesterDisciplines = ({ semester, items, groupId }: Props) => {
     discipline: d,
     onDelete: () =>
       headerDeleteDiscipline({ dispatch, groupId, semester, discId: d.id }),
-    handleTitleSave: (newValue: string) => headerUpdateDiscipline({
-      dispatch,
-      groupId,
-      semester,
-      newTitle: newValue,
-      discId: d.id
-    })
+    handleTitleSave: (newValue: string) =>
+      headerUpdateDiscipline({
+        dispatch,
+        groupId,
+        semester,
+        newTitle: newValue,
+        discId: d.id,
+      }),
   }));
 
   return (
@@ -66,7 +66,13 @@ export const SemesterDisciplines = ({ semester, items, groupId }: Props) => {
               const { discipline, onDelete, handleTitleSave } = data[index];
               return (
                 <div style={style}>
-                  <DisciplineItem discipline={discipline} onDelete={onDelete} handleTitleSave={(newValue: string) => handleTitleSave(newValue)}/>
+                  <DisciplineItem
+                    discipline={discipline}
+                    onDelete={onDelete}
+                    handleTitleSave={(newValue: string) =>
+                      handleTitleSave(newValue)
+                    }
+                  />
                 </div>
               );
             }}
