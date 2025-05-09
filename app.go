@@ -158,8 +158,8 @@ func (a *App) InfAllGroup(dto dtos.InfAllGroupDTO) models.AppInf_AllGroup {
 	return models.AppInf_AllGroup{Code: 200, Groups: groups}
 }
 
-// ----------------- AppInFGroupAndSubject -------------------
-func (a *App) AppInFGroupAndSubject(dto dtos.InfAllGroupAndSubjectDTO) models.AppInFGroupAndSubject {
+// ----------------- AppInfGroupAndSubject -------------------
+func (a *App) AppInfGroupAndSubject(dto dtos.InfAllGroupAndSubjectDTO) models.AppInFGroupAndSubject {
 
 	if dto.SwitchSubject {
 		groupsAndSubj, err := routes.Inf_AllGroupAndSubject()
@@ -172,7 +172,7 @@ func (a *App) AppInFGroupAndSubject(dto dtos.InfAllGroupAndSubjectDTO) models.Ap
 			groupsAndSubj = []models.InFGroupAndSubject{}
 		}
 
-		return models.AppInFGroupAndSubject{Code: 200, GroupsAndSubject: groupsAndSubj}
+		return models.AppInFGroupAndSubject{Code: 200, GroupsAndSubject: groupsAndSubj, Groups: nil}
 
 	} else {
 		groups, err := routes.Inf_AllGroup()
@@ -185,7 +185,7 @@ func (a *App) AppInFGroupAndSubject(dto dtos.InfAllGroupAndSubjectDTO) models.Ap
 			groups = []models.EinfGroup{}
 		}
 
-		return models.AppInFGroupAndSubject{Code: 200, Groups: groups}
+		return models.AppInFGroupAndSubject{Code: 200, Groups: groups, GroupsAndSubject: nil}
 	}
 }
 

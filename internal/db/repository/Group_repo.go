@@ -158,6 +158,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 
 	return result, nil
 }
+
 func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	const query = `
         SELECT 

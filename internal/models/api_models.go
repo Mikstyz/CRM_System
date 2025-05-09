@@ -26,8 +26,8 @@ type AppInf_AllGroup struct {
 
 type AppInFGroupAndSubject struct {
 	Code             int                  `json:"code"`
-	GroupsAndSubject []InFGroupAndSubject `json:"groupsAndSubject,omitempty"`
-	Groups           []EinfGroup          `json:"groups,omitempty"`
+	GroupsAndSubject []InFGroupAndSubject `json:"groupsAndSubject"`
+	Groups           []EinfGroup          `json:"groups"`
 	Error            string               `json:"error,omitempty"`
 }
 
