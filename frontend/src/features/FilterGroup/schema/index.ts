@@ -7,13 +7,13 @@ const toNumOrUndef = (v: unknown) => {
 };
 
 export const filterSchema = z.object({
-  course: z.preprocess(toNumOrUndef, z.enum(["1", "2", "3", "4"]).optional()),
+  course: z.enum(["1", "2", "3", "4"]).optional(),
   specialty: z
     .string()
     .trim()
     .transform((s) => (s === "" ? undefined : s.toUpperCase()))
     .refine((v) => v === undefined || v.length >= 2, {
-      message: "Минимум 2 символа",
+      message: "Минимум 2 символа",
     })
     .optional(),
   graduates: z.preprocess(

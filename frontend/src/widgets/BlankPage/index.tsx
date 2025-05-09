@@ -1,32 +1,26 @@
-import {VirtualizedSearch} from "@/features/VirtualizedSearch";
-import {EditableTitle} from "@/shared/ui/EditableTitle";
+import { VirtualizedSearch } from "@/features/VirtualizedSearch";
+import { EditableTitle } from "@/shared/ui/EditableTitle";
 
-import {z} from "zod";
-import {useForm, SubmitHandler} from "react-hook-form";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {MIN_SEMESTER, MAX_SEMESTER} from "@/shared/const";
-import {useAppDispatch, useAppSelector} from "@/shared/lib/hooks/redux.ts";
-import {useEffect} from "react";
-import {selectBlank} from "@/entities/blank/store/selectors.ts";
-import {setStudent} from "@/entities/blank/store";
-import {Group} from "@/entities/group/types";
+import { z } from "zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
+import { useEffect, useState } from "react";
+import { selectBlank } from "@/entities/blank/store/selectors.ts";
+import { setStudent } from "@/entities/blank/store";
+import { Group } from "@/entities/group/types";
 
-import {handleTitleGroupSave} from "@/shared/lib/headers/titleGroupSave.ts";
+import { handleTitleGroupSave } from "@/shared/lib/headers/titleGroupSave.ts";
 
-export function BlankPage({group}: {
-  group: Group | undefined
-}) {
+export function BlankPage({ group }: { group: Group | undefined }) {
+  const [err, setErr] = useState<string | null>(null);
   const dispatch = useAppDispatch();
-  const {
-    selectStudent,
-    studentsData,
-    semester
-
-  } = useAppSelector(selectBlank);
+  const { selectStudent, studentsData, semester } = useAppSelector(selectBlank);
 
   /* ---------- 1. Updated Zod schema to fix resolver type mismatch ---------- */
   const semesterEnum = ["1", "2", "3", "4"] as const;
-  type Semester = typeof semesterEnum[number];
+  type Semester = (typeof semesterEnum)[number];
 
   // Updated preprocessing function with proper typing
   const toSemesterOrUndef = (v: unknown): Semester | undefined => {
@@ -34,7 +28,7 @@ export function BlankPage({group}: {
     return semesterEnum.includes(v as Semester) ? (v as Semester) : undefined;
   };
 
-// Schema using refined preprocessing
+  // Schema using refined preprocessing
   const schema = z.object({
     semester: z
       .custom<Semester | undefined>(toSemesterOrUndef, {
@@ -53,7 +47,7 @@ export function BlankPage({group}: {
     register,
     handleSubmit,
     setValue,
-    formState: {errors},
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema), // generic выводится автоматически
     defaultValues: {
@@ -85,7 +79,7 @@ export function BlankPage({group}: {
   };
 
   useEffect(() => {
-    if (!selectStudent) return
+    if (!selectStudent) return;
 
     setValue("studentName", selectStudent?.fullName);
     if (selectStudent?.startDateWork) {
@@ -93,27 +87,33 @@ export function BlankPage({group}: {
     }
     setValue("semester", semester);
     setValue("company", selectStudent?.company ?? "");
-    setValue("position", selectStudent?.position?? "");
+    setValue("position", selectStudent?.position ?? "");
   }, [setValue, semester]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 w-full">
       <div className="flex items-center justify-between">
-        {
-        group ?
-        (<h1 className="text-2xl font-bold">
-          Группа:
-          <EditableTitle
-            initialValue={group?.name}
-            onSave={(value) => handleTitleGroupSave({ dispatch, group, value })}
-            className="ml-1 inline-block text-2xl font-bold"
-          />
-        </h1>) : (
+        {group ? (
           <h1 className="text-2xl font-bold">
-            Группа не выбрана
+            Группа:
+            <EditableTitle
+              key={group?.name}
+              initialValue={group?.name}
+              onSave={async (value) => {
+                const ok = await handleTitleGroupSave({
+                  dispatch,
+                  group,
+                  value,
+                });
+                setErr(ok ? null : "Неверный формат имени");
+              }}
+              className="ml-1 inline-block text-2xl font-bold"
+              error={err || undefined}
+            />
           </h1>
-        )
-        }
+        ) : (
+          <h1 className="text-2xl font-bold">Группа не выбрана</h1>
+        )}
       </div>
 
       <div className="flex gap-4">
@@ -123,7 +123,7 @@ export function BlankPage({group}: {
             type="number"
             min={MIN_SEMESTER}
             max={MAX_SEMESTER}
-            {...register("semester", {valueAsNumber: true})}
+            {...register("semester", { valueAsNumber: true })}
             className="border rounded p-1"
           />
           {errors.semester && (
@@ -139,14 +139,16 @@ export function BlankPage({group}: {
           maxDropdownHeight={200}
           onSelect={(s) => {
             // 1) пишем ФИО в форму
-            setValue("studentName", s.fullName, {shouldValidate: true});
+            setValue("studentName", s.fullName, { shouldValidate: true });
             // 2) сохраняем id + ФИО в blankSlice
-            dispatch(setStudent({id: s.id, fullName: s.fullName}));
+            dispatch(setStudent({ id: s.id, fullName: s.fullName }));
           }}
         />
       </div>
       {errors.studentName && (
-        <span className="text-red-500 text-xs">{errors.studentName.message}</span>
+        <span className="text-red-500 text-xs">
+          {errors.studentName.message}
+        </span>
       )}
 
       <label className="block max-w-sm">

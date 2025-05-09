@@ -2,6 +2,8 @@ import { parseDateNameGroup } from "@/shared/lib/helpers/parseDateNameGroup.ts";
 import { AppDispatch } from "@/app/store";
 import { updateGroupsThunks } from "@/entities/group/store/thunks.ts";
 import { Group } from "@/entities/group/types";
+import { clearFilters } from "@/features/FilterGroup/store/groupFiltersSlice.ts";
+import { groupsActions } from "@/entities/group/store";
 
 interface Props {
   dispatch: AppDispatch;
@@ -22,8 +24,10 @@ export const handleTitleGroupSave = async ({
         dateNameGroup: resParseDateName.dateNameGroup,
       }),
     );
-    console.log(`Group[${group.id}] → ${value}, `, { resParseDateName });
+    dispatch(clearFilters());
+    return true;
   } else {
-    console.log("errors", resParseDateName.errors);
+    dispatch(groupsActions.setError(resParseDateName.errors.join("; ")));
+    return false;
   }
 };

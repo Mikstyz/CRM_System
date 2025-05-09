@@ -35,6 +35,7 @@ import { getGroupsThunks } from "@/entities/group/store/thunks.ts";
 import { clearErrors } from "@/entities/group/store";
 import { selectBlank } from "@/entities/blank/store/selectors.ts";
 import { closeBlank } from "@/entities/blank/store";
+import { ErrorToast } from "@/shared/ui/ErrorToast";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
@@ -70,6 +71,7 @@ export function PagesListGroup() {
           <BlankPage group={currentGroup} />
         </ModalWrapper>
       </ModalErrorBoundary>
+      <ErrorToast />
     </>
   );
 }

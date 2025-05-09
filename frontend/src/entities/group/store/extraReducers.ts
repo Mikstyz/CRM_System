@@ -14,6 +14,7 @@ import {
 } from "@/shared/lib/helpers/StoreHandlers.ts";
 import { GroupsState } from "@/entities/group/store/initialState.ts";
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
+import { Id } from "@/shared/types";
 
 export const groupsExtraReducers = (
   builder: ActionReducerMapBuilder<GroupsState>,
@@ -65,23 +66,27 @@ export const groupsExtraReducers = (
     .addCase(duplicateGroupThunks.pending, handlePending<GroupsState>)
     .addCase(duplicateGroupThunks.fulfilled, (state, action) => {
       state.loading = false;
-      const srcIndex = state.list.findIndex((g) => g.id === action.payload.id);
-      if (srcIndex === -1) return;
-      state.list.splice(srcIndex + 1, 0, action.payload);
+      const originalId = action.meta.arg as Id;
+      const srcIndex = state.list.findIndex((g) => g.id === originalId);
+      if (srcIndex === -1) {
+        state.list.unshift(action.payload);
+        return;
+      }
+      const exists = state.list.some((g) => g.id === action.payload.id);
+      if (!exists) {
+        state.list.splice(srcIndex + 1, 0, action.payload);
+      }
+      // const already = state.list.find((g) => g.id === action.payload.id);
+      // if (!already) {
+      //   state.list.unshift(action.payload);
+      // }
+      // const srcIndex = state.list.findIndex((g) => g.id === action.payload.id);
+      // if (srcIndex === -1) return;
+      // state.list.splice(srcIndex + 1, 0, action.payload);
     })
     .addCase(duplicateGroupThunks.rejected, handleRejected<GroupsState>);
 
   // ========= disciplines =========
-
-  // GET DISCIPLINES
-  // builder
-  //   .addCase(getDisciplinesThunks.pending, handlePending<GroupsState>)
-  //   .addCase(getDisciplinesThunks.fulfilled, (state, action) => {
-  //     state.loading = false;
-  //     const g = state.list.find((gr) => gr.id === action.payload.groupId);
-  //     if (g) g.disciplines[action.payload].push(action.payload.);
-  //   })
-  //   .addCase(getDisciplinesThunks.rejected, handleRejected<GroupsState>);
 
   // ADD DISCIPLINE
   builder
