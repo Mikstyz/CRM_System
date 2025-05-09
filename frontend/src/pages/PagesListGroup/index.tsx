@@ -36,6 +36,7 @@ import { clearErrors } from "@/entities/group/store";
 import { selectBlank } from "@/entities/blank/store/selectors.ts";
 import { closeBlank } from "@/entities/blank/store";
 import { ErrorToast } from "@/shared/ui/ErrorToast";
+import {FixedSizeList} from "react-window";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
@@ -57,13 +58,28 @@ export function PagesListGroup() {
         <h1 className="text-xl font-bold">Управление группами</h1>
       </header>
 
-      <main className="p-4 space-y-4">
-        <FilterGroup groupsLength={groups.length} />
+      <main className="p-4 flex flex-col gap-4 h-[calc(100vh-72px)]">
+        <FilterGroup groupsLength={groups.length}/>
 
-        {groups.length > 0 &&
-          groups.map((group: Group) => (
-            <GroupCard key={group.id} group={group} />
-          ))}
+        {groups.length > 0 && (
+          <FixedSizeList
+            /** высота либо 70 % viewport, либо ровно под список */
+            height={Math.min(window.innerHeight * 0.7, groups.length * 280)}
+            itemCount={groups.length}
+            itemSize={80}
+            width="100%"
+            itemData={groups}
+          >
+            {({index, style, data}) => {
+              const group: Group = data[index];
+              return (
+                <div style={style}>
+                  <GroupCard key={group.id} group={group}/>
+                </div>
+              );
+            }}
+          </FixedSizeList>
+        )}
       </main>
 
       <ModalErrorBoundary>
