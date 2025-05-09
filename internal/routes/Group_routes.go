@@ -25,7 +25,7 @@ func Inf_AllGroupAndSubject() ([]models.InFGroupAndSubject, error) {
 		return nil, err
 	}
 
-	return Data, []models.InFGroupAndSubject{}
+	return Data, nil
 }
 
 func Create_Group(course byte, groduates byte, speciality string, groupNum int) (int, error) {
