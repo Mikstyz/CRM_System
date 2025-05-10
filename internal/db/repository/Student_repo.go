@@ -11,15 +11,15 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+// ----------------------information--------------------------
 // InfStdByGroup возвращает список всех студентов с их GroupId.
 func InfStdByGroup() ([]models.Student, error) {
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
-            e.enterprise, e.workstartdate, e.jobtitle
+            s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
-        JOIN einf_groups g ON s.GroupId = g.Id
-        LEFT JOIN employers e ON s.id = e.studid`
+        JOIN einf_groups g ON s.GroupId = g.Id`
 
 	db.Init()
 
@@ -80,10 +80,9 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
-            e.enterprise, e.workstartdate, e.jobtitle
+            s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
         JOIN einf_groups g ON s.GroupId = g.Id
-        LEFT JOIN employers e ON s.id = e.studid
         WHERE g.Id = ?`
 
 	db.Init()
@@ -138,8 +137,8 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	return students, nil
 }
 
-// GetIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
-func GetIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
+// InfIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
+func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
 	const query = `
 	SELECT s.Id
 	FROM students s
@@ -162,17 +161,16 @@ func GetIdByNameByGroup(StudentName string, Course byte, Speciality string, Grod
 	return studentId, nil
 }
 
-// GetStudentByID возвращает данные студента по его ID.
-func GetStudentByID(studentID int) (models.Student, error) {
+// InfStudentByID возвращает данные студента по его ID.
+func InfStudentByID(studentID int) (models.Student, error) {
 	log.Println("Получение информации о студенте по ID")
 
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
-            e.enterprise, e.workstartdate, e.jobtitle
+            s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
         JOIN einf_groups g ON s.GroupId = g.Id
-        LEFT JOIN employers e ON s.id = e.studid
         WHERE s.id = ?`
 
 	db.Init()
@@ -218,10 +216,9 @@ func GetStudentByGroup(groupId int) ([]models.Student, error) {
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
-            e.enterprise, e.workstartdate, e.jobtitle
+            s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
         JOIN einf_groups g ON s.GroupId = g.Id
-        LEFT JOIN employers e ON s.id = e.studid
         WHERE s.GroupId = ?`
 
 	db.Init()
@@ -276,19 +273,20 @@ func GetStudentByGroup(groupId int) ([]models.Student, error) {
 	return students, nil
 }
 
-// CrtStd создаёт нового студента.
-func CrtStd(fullName string, groupId int) (int, error) {
+// ----------------------Manager--------------------------
+// CrtStd создаёт нового студента с пустыми полями трудоустройства.
+func CrtStd(fullName string, groupId int, enterprise string, workstartdate string, jobtitle string) (int, error) {
 	log.Println("Создаю нового студента...")
 
 	const insertStudentQuery = `
-		INSERT INTO students (FullName, GroupId)
-		VALUES (?, ?)
+		INSERT INTO students (FullName, GroupId, enterprise, workstartdate, jobtitle)
+		VALUES (?, ?, ?, ?, ?)
 		RETURNING id`
 
 	db.Init()
 
 	var studentId int
-	err := db.DB.QueryRow(insertStudentQuery, fullName, groupId).Scan(&studentId)
+	err := db.DB.QueryRow(insertStudentQuery, fullName, groupId, enterprise, workstartdate, jobtitle).Scan(&studentId)
 	if err != nil {
 		log.Printf("Ошибка при создании студента: %v", err)
 		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
@@ -298,20 +296,20 @@ func CrtStd(fullName string, groupId int) (int, error) {
 	return studentId, nil
 }
 
-// UpdateStd обновляет данные студента.
-func UpdateStd(studId int, newFullName string, newGroupId int) (bool, error) {
+// UpdateStd обновляет данные студента, включая поля трудоустройства.
+func UpdateStd(studId int, newFullName string, newGroupId int, newEnterprise string, newWorkStartDate string, newJobTitle string) (bool, error) {
 	log.Printf("Обновляю данные студента с ID=%d...", studId)
 
 	const updateQuery = `
 		UPDATE students 
-		SET FullName = ?, GroupId = ?
+		SET FullName = ?, GroupId = ?, enterprise = ?, workstartdate = ?, jobtitle = ?
 		WHERE id = ?
 		RETURNING id`
 
 	db.Init()
 
 	var updatedId int
-	err := db.DB.QueryRow(updateQuery, newFullName, newGroupId, studId).Scan(&updatedId)
+	err := db.DB.QueryRow(updateQuery, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle, studId).Scan(&updatedId)
 	if err == sql.ErrNoRows {
 		log.Printf("Студент с ID=%d не найден", studId)
 		return false, nil
@@ -346,49 +344,4 @@ func DelStd(studId int) (bool, error) {
 
 	log.Printf("Студент с ID=%d успешно удалён", studId)
 	return true, nil
-}
-
-// CreateStudentWithEmptyEmployment создаёт студента и пустую запись о трудоустройстве (в транзакции).
-func CreateStudentWithEmptyEmployment(fullName string, groupId int) (int, error) {
-	log.Println("Создаю нового студента и пустую запись о трудоустройстве (в транзакции)...")
-
-	db.Init()
-
-	tx, err := db.DB.Begin()
-	if err != nil {
-		log.Printf("Ошибка при начале транзакции: %v", err)
-		return 0, fmt.Errorf("не удалось начать транзакцию: %v", err)
-	}
-
-	const insertStudent = `
-		INSERT INTO students (FullName, GroupId)
-		VALUES (?, ?)
-		RETURNING id`
-
-	var studentID int
-	err = tx.QueryRow(insertStudent, fullName, groupId).Scan(&studentID)
-	if err != nil {
-		tx.Rollback()
-		log.Printf("Ошибка при создании студента: %v", err)
-		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
-	}
-
-	const insertEmployment = `
-		INSERT INTO employers (studid, enterprise, workstartdate, jobtitle)
-		VALUES (?, NULL, NULL, NULL)`
-
-	_, err = tx.Exec(insertEmployment, studentID)
-	if err != nil {
-		tx.Rollback()
-		log.Printf("Ошибка при создании записи о трудоустройстве: %v", err)
-		return 0, fmt.Errorf("не удалось вставить запись о трудоустройстве: %v", err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		log.Printf("Ошибка при коммите транзакции: %v", err)
-		return 0, fmt.Errorf("не удалось завершить транзакцию: %v", err)
-	}
-
-	log.Printf("Студент с ID=%d и пустое трудоустройство успешно созданы", studentID)
-	return studentID, nil
 }

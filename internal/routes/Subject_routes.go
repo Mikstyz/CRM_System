@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+// ----------------------information--------------------------
 func Inf_SubjectByGroupId(groupId int, Semester byte) ([]string, error) {
 	result, err := repo.InfDisciplinesByGroup(groupId, Semester)
 
@@ -30,6 +31,7 @@ func Inf_DisciplinesByGroupData(Speciality string, GroupNum int, Course int, Gro
 	return result, nil
 }
 
+// ----------------------Manager--------------------------
 func Add_SubjectByGroupId(groupId int, newSubject string, Semester byte) (int, error) {
 	result, err := repo.AddDisciplinesInGroup(groupId, newSubject, Semester)
 

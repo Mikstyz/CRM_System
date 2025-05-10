@@ -4,6 +4,7 @@ import (
 	dtos "CRM_System/internal/DTOs"
 	models "CRM_System/internal/models"
 	routes "CRM_System/internal/routes"
+	"CRM_System/internal/utils"
 	"context"
 	"fmt"
 )
@@ -59,7 +60,7 @@ func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_Stude
 
 // ----------------------------------- Create_Student -----------------------------------
 func (a *App) CreateStudent(dto dtos.Create_Student) models.AppCreate_Student {
-	id, err := routes.Create_Student(dto.FullName, dto.GroupId)
+	id, err := routes.Create_Student(dto.FullName, dto.GroupId, dto.Enterprise, dto.WorkStartDate, dto.JobTitle)
 	if err != nil {
 		return models.AppCreate_Student{Code: 500, Error: err.Error()}
 	}
@@ -74,7 +75,7 @@ func (a *App) CreateStudent(dto dtos.Create_Student) models.AppCreate_Student {
 
 // ----------------------------------- Update_StudentById -----------------------------------
 func (a *App) UpdateStudentByID(dto dtos.Update_StudentById) models.AppUpdate_StudentById {
-	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewGroupId)
+	status, err := routes.Update_StudentById(dto.StudId, dto.NewFullName, dto.NewGroupId, dto.NewEnterprise, dto.NewWorkStartDate, dto.NewJobTitle)
 	if err != nil || !status {
 		return models.AppUpdate_StudentById{Code: 500, Error: err.Error()}
 	}
@@ -93,54 +94,6 @@ func (a *App) DeleteStudent(dto dtos.Delete_Student) models.AppDelete_Student {
 		return models.AppDelete_Student{Code: 500, Error: err.Error()}
 	}
 	return models.AppDelete_Student{Code: 200}
-}
-
-// ----------------- Employers --------------
-// ----------------------------------- Inf_EmpByStudentId -----------------------------------
-func (a *App) InfEmpByStudentID(dto dtos.Inf_EmpByStudentId) models.AppInf_EmpByStudentId {
-	employers, err := routes.Inf_EmpByStudentId(dto.StudentId)
-	if err != nil {
-		return models.AppInf_EmpByStudentId{Code: 500, Error: err.Error()}
-	}
-	return models.AppInf_EmpByStudentId{Code: 200, Employers: employers}
-}
-
-// ----------------------------------- Create_Employers -----------------------------------
-// func (a *App) Create_Employers(dto dtos.Create_Employers) models.AppCreate_Employers {
-// 	var res models.AppCreate_Employers
-// 	_, err := routes.Create_Employers()
-
-// 	code := 200
-// 	if err != nil {
-// 		code = 500
-// 		res.Error = err.Error()
-// 	}
-// 	res.Code = code
-// 	return res
-// }
-
-// ----------------------------------- Update_EmpbyStudentId -----------------------------------
-func (a *App) UpdateEmpByStudentID(dto dtos.Update_EmpbyStudentId) models.AppUpdate_EmpbyStudentId {
-	status, err := routes.Update_EmpbyStudentId(dto.StudId, dto.NewEnterprise, dto.NewWorkStartDate, dto.NewJobTitle)
-	if err != nil || !status {
-		return models.AppUpdate_EmpbyStudentId{Code: 500, Error: err.Error()}
-	}
-	return models.AppUpdate_EmpbyStudentId{
-		Code:             200,
-		StudId:           dto.StudId,
-		NewEnterprise:    dto.NewEnterprise,
-		NewWorkStartDate: dto.NewWorkStartDate,
-		NewJobTitle:      dto.NewJobTitle,
-	}
-}
-
-// ----------------------------------- Delete_EmpbyStudentId -----------------------------------
-func (a *App) DeleteEmpByStudentID(dto dtos.Delete_EmpbyStudentId) models.AppDelete_EmpbyStudentId {
-	status, err := routes.Delete_EmpbyStudentId(dto.StudId)
-	if err != nil || !status {
-		return models.AppDelete_EmpbyStudentId{Code: 500, Error: err.Error()}
-	}
-	return models.AppDelete_EmpbyStudentId{Code: 200}
 }
 
 // ----------------- Group -------------------
@@ -242,7 +195,7 @@ func (a *App) DeleteGroupByID(dto dtos.DeleteGroupDTO) models.AppRemove {
 // ----------------------------------- GetGroupId_GroupIdByInfo -----------------------------------
 // GetGroupId_GroupIdByInfo получает ID группы по данным
 func (a *App) GetGroupIDByInfo(dto dtos.GetGroupIdByInfoDTO) models.AppGetId {
-	id, err := routes.GetGroupId_GroupIdByInfo(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
+	id, err := routes.InfGroupId_GroupIdByInfo(dto.Course, dto.Graduates, dto.Speciality, dto.Number)
 	if err != nil {
 		return models.AppGetId{Code: 500, Error: err.Error()}
 	}
@@ -344,7 +297,7 @@ func (a *App) DeleteAllSubjectsByGroupID(dto dtos.DeleteAllSubjectByGroupDTO) mo
 // ----------------- PDF ----------------------
 // ----------------------------------- GenerateFilledPDF -----------------------------------
 func (a *App) GenerateFilledPDF(dockDATA models.GeneratePDF) models.AppPdfDock {
-	file, err := routes.GenerateFilledPDF(dockDATA)
+	file, err := utils.GenerateFiledPDF(dockDATA)
 	if err != nil {
 		return models.AppPdfDock{Code: 500, Error: err.Error()}
 	}

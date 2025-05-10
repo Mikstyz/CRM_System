@@ -129,30 +129,3 @@ type AppPdfDock struct {
 	File  []byte `json:"File,omitempty"`
 	Error string `json:"error,omitempty"`
 }
-
-// -------------------- [ Employers / Данные работодателя ] --------------------
-
-type AppInf_EmpByStudentId struct {
-	Code      int     `json:"code"`
-	Employers EInfEmp `json:"Employers"`
-	Error     string  `json:"error,omitempty"`
-}
-
-// type AppCreate_Employers struct {
-// 	Code  int    `json:"code"`
-// 	Error string `json:"error,omitempty"`
-// }
-
-type AppUpdate_EmpbyStudentId struct {
-	Code             int    `json:"code"`
-	StudId           int    `json:"StudId"`
-	NewEnterprise    string `json:"NewEnterprise"`
-	NewWorkStartDate string `json:"NewWorkStartDate"`
-	NewJobTitle      string `json:"NewJobTitle"`
-	Error            string `json:"error,omitempty"`
-}
-
-type AppDelete_EmpbyStudentId struct {
-	Code  int    `json:"code"`
-	Error string `json:"error,omitempty"`
-}

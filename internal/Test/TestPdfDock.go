@@ -18,10 +18,6 @@ func Test_GenerateFilledPDF() (int, int, error) {
 		Enterprise:    "ООО Ромашка",
 		WorkStartDate: "2025-04-27",
 		JobTitle:      "Программист",
-		Course:        1,
-		Speciality:    "1",
-		Groduates:     1,
-		Number:        1,
 	}
 
 	pdfBytes, err := routes.GenerateFilledPDF(dataPdf)

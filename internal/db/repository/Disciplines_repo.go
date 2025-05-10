@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// ----------------------information--------------------------
 // InfDisciplinesByGroup возвращает список всех предметов для группы по её ID.
 func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
 	log.Println("Получение предметов группы")
@@ -107,6 +108,7 @@ func InfDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Grou
 	return result, nil
 }
 
+// ----------------------Manager--------------------------
 // AddDisciplinesInGroup добавляет новый предмет в группу.
 func AddDisciplinesInGroup(groupId int, newSubject string, semester byte) (int, error) {
 	log.Println("Добавление предмета в группу")

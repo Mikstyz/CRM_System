@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+// ----------------------information--------------------------
 func Inf_AllStudent() ([]models.Student, error) {
 	result, err := repo.InfStdByGroup()
 
@@ -19,7 +20,7 @@ func Inf_AllStudent() ([]models.Student, error) {
 }
 
 func Inf_StudentByID(studentID int) (models.Student, error) {
-	result, err := repo.GetStudentByID(studentID)
+	result, err := repo.InfStudentByID(studentID)
 
 	if err != nil {
 		fmt.Printf("Ошибка при получении информации о студенте с ID %d: %v\n", studentID, err)
@@ -42,8 +43,9 @@ func Inf_StudentByGroup(groupId int) ([]models.Student, error) {
 	return result, nil
 }
 
-func Create_Student(fullName string, groupId int) (int, error) {
-	result, err := repo.CreateStudentWithEmptyEmployment(fullName, groupId)
+// ----------------------Manager--------------------------
+func Create_Student(fullName string, groupId int, enterprise string, workstartdate string, jobtitle string) (int, error) {
+	result, err := repo.CrtStd(fullName, groupId, enterprise, workstartdate, jobtitle)
 
 	if err != nil {
 		fmt.Printf("Ошибка при создании студента %v: %v\n", fullName, err)
@@ -54,8 +56,8 @@ func Create_Student(fullName string, groupId int) (int, error) {
 	return result, nil
 }
 
-func Update_StudentById(studId int, newFullName string, newGroupId int) (bool, error) {
-	result, err := repo.UpdateStd(studId, newFullName, newGroupId)
+func Update_StudentById(studId int, newFullName string, newGroupId int, newEnterprise string, newWorkStartDate string, newJobTitle string) (bool, error) {
+	result, err := repo.UpdateStd(studId, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle)
 
 	if err != nil {
 		fmt.Printf("Ошибка при обновлении данных студента с ID %d: %v\n", studId, err)

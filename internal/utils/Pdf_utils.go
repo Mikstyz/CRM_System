@@ -24,7 +24,7 @@ func init() {
 	log.Printf("Рабочая директория для шрифтов: %s", FontDir)
 }
 
-func GenerateFilledPDF(Data models.PdfDoc) ([]byte, error) {
+func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, error) {
 	log.Println("Формирование PDF документа")
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
@@ -50,7 +50,7 @@ func GenerateFilledPDF(Data models.PdfDoc) ([]byte, error) {
 	pdf.MultiCell(190, 7, "Справка о результатах освоения профессиональной образовательной программы по индивидуальному учебному плану\nна базе трудоустройства обучающегося", "", "C", false)
 	pdf.Ln(5)
 
-	pdf.MultiCell(190, 7, fmt.Sprintf("Сотрудник %s работает на предприятии %s с %s по настоящее время в должности %s", Data.Name, Data.Enterprise, Data.WorkStartDate, Data.JobTitle), "", "L", false)
+	pdf.MultiCell(190, 7, fmt.Sprintf("Сотрудник %s работает на предприятии %s с %s по настоящее время в должности %s", Data.StudentName, Data.Enterprise, Data.WorkStartDate, Data.JobTitle), "", "L", false)
 	pdf.Ln(5)
 
 	pdf.Cell(0, 7, "за указанный период выполнил следующие виды работ:")
@@ -100,7 +100,7 @@ func GenerateFilledPDF(Data models.PdfDoc) ([]byte, error) {
 		return nil, err
 	}
 
-	fileName := fmt.Sprintf("Бланк работодателя для студента %s.PDF", Data.Name)
+	fileName := fmt.Sprintf("Бланк работодателя для студента %s.PDF", Data.StudentName)
 	err = SavePDFToFile(buf.Bytes(), fileName)
 	if err != nil {
 		fmt.Printf("Ошибка при сохранении файла: %v", err)

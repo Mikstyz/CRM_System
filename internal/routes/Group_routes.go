@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+// ----------------------information--------------------------
 func Inf_AllGroup() ([]models.EinfGroup, error) {
 	result, err := repo.InfAllGrp()
 
@@ -28,6 +29,20 @@ func Inf_AllGroupAndSubject() ([]models.InFGroupAndSubject, error) {
 	return Data, nil
 }
 
+func InfGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, groupNum int) (int, error) {
+	result, err := repo.GetGroupIDByParams(course, groduates, speciality, groupNum)
+
+	if err != nil {
+		fmt.Printf("Ошибка при получении ID группы с параметрами: course=%d, groduates=%d, speciality=%s, groupNum=%d: %v\n", course, groduates, speciality, groupNum, err)
+		return 0, err
+	} else {
+		fmt.Println("Успешное получение ID группы")
+	}
+
+	return result, nil
+}
+
+// ----------------------Manager--------------------------
 func Create_Group(course byte, groduates byte, speciality string, groupNum int) (int, error) {
 	Id, err := repo.CrtGrp(course, groduates, speciality, groupNum)
 
@@ -62,19 +77,6 @@ func Delete_GroupById(GroupId int) (bool, error) {
 		return false, err
 	} else {
 		fmt.Printf("Успешное удаление группы")
-	}
-
-	return result, nil
-}
-
-func GetGroupId_GroupIdByInfo(course byte, groduates byte, speciality string, groupNum int) (int, error) {
-	result, err := repo.GetGroupIDByParams(course, groduates, speciality, groupNum)
-
-	if err != nil {
-		fmt.Printf("Ошибка при получении ID группы с параметрами: course=%d, groduates=%d, speciality=%s, groupNum=%d: %v\n", course, groduates, speciality, groupNum, err)
-		return 0, err
-	} else {
-		fmt.Println("Успешное получение ID группы")
 	}
 
 	return result, nil

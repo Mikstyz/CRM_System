@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+// ----------------------information--------------------------
 // InfAllGrp возвращает список всех групп.
 func InfAllGrp() ([]models.EinfGroup, error) {
 	const query = `
@@ -71,6 +72,7 @@ func InfGroupById(GroupId int) (*models.EinfGroup, error) {
 	return &Group, nil
 }
 
+// InfAllGrp возвращает список всех групп и их предметов.
 func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	const query = `
 		SELECT 
@@ -159,6 +161,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	return result, nil
 }
 
+// InfAllGrp возвращает инфу о группе и ее предметы.
 func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	const query = `
         SELECT 
@@ -166,7 +169,7 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
             gs.id, gs.subject_name, gs.semester
         FROM einf_groups g
         LEFT JOIN group_subject gs ON gs.group_id = g.Id
-        WHERE g.Id = $1
+        WHERE g.Id = ?
         ORDER BY g.Course, g.Speciality, g.GroupNum, gs.semester
     `
 
@@ -267,6 +270,7 @@ func MaxNumberByParams(course byte, groudates byte, speciality string) (int, err
 	return maxGroupNum, nil
 }
 
+// ----------------------Manager--------------------------
 // CrtGrp создаёт новую группу.
 func CrtGrp(course byte, groudates byte, speciality string, groupNum int) (int, error) {
 	const query = `
