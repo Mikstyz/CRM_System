@@ -2,7 +2,7 @@ package Test
 
 import (
 	"CRM_System/internal/models"
-	"CRM_System/internal/routes"
+	"CRM_System/internal/utils"
 	"errors"
 	"log"
 )
@@ -20,7 +20,7 @@ func Test_GenerateFilledPDF() (int, int, error) {
 		JobTitle:      "Программист",
 	}
 
-	pdfBytes, err := routes.GenerateFilledPDF(dataPdf)
+	pdfBytes, err := utils.GenerateFiledPDF(dataPdf)
 	if err != nil {
 		log.Printf("[ERROR] Ошибка при генерации PDF: %v", err)
 		Bad++
@@ -45,7 +45,7 @@ func Test_GenerateFilledPDF() (int, int, error) {
 		JobTitle:      "Программист",
 	}
 
-	pdfBytes, err = routes.GenerateFilledPDF(dataPdfInvalid)
+	pdfBytes, err = utils.GenerateFiledPDF(dataPdfInvalid)
 	if err == nil {
 		log.Printf("[ERROR] Ожидалась ошибка при пустом имени, но PDF сгенерирован, размер: %d байт", len(pdfBytes))
 		Bad++

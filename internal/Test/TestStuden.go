@@ -1,10 +1,75 @@
 package Test
 
 import (
+	"CRM_System/internal/models"
 	"CRM_System/internal/routes"
 	"errors"
 	"log"
 )
+
+// Хелпер для создания тестовой группы
+func createTestGroup(course, graduates byte, speciality string, groupNum int) (int, error) {
+	groupId, err := routes.Create_Group(course, graduates, speciality, groupNum)
+	if err != nil {
+		log.Printf("Ошибка при создании группы: %v", err)
+		return 0, err
+	}
+	log.Printf("Группа создана с ID %d", groupId)
+	return groupId, nil
+}
+
+// Хелпер для создания тестового студента
+func createTestStudent(fullName string, groupId int, enterprise, workStartDate, jobTitle string) (int, error) {
+	studentID, err := routes.Create_Student(fullName, groupId, enterprise, workStartDate, jobTitle)
+	if err != nil {
+		log.Printf("Ошибка при создании студента: %v", err)
+		return 0, err
+	}
+	log.Printf("Студент создан с ID=%d", studentID)
+	return studentID, nil
+}
+
+// Хелпер для проверки данных студента
+func checkStudentData(student models.Student, expectedFullName string, expectedGroupId int, expectedEnterprise, expectedWorkStartDate, expectedJobTitle string) error {
+	if student.FullName != expectedFullName ||
+		student.GroupId != expectedGroupId ||
+		student.Enterprise == nil || *student.Enterprise != expectedEnterprise ||
+		student.WorkStartDate == nil || *student.WorkStartDate != expectedWorkStartDate ||
+		student.JobTitle == nil || *student.JobTitle != expectedJobTitle {
+		return errors.New("неверные данные студента")
+	}
+	return nil
+}
+
+// Хелпер для удаления студента
+func deleteTestStudent(studentID int) error {
+	ok, err := routes.Delete_Student(studentID)
+	if err != nil || !ok {
+		log.Printf("Ошибка при удалении студента: %v", err)
+		return errors.New("ошибка удаления студента")
+	}
+	log.Println("[INFO] Студент успешно удалён.")
+	return nil
+}
+
+// Хелпер для удаления группы
+func deleteTestGroup(groupId int) error {
+	ok, err := routes.Delete_GroupById(groupId)
+	if err != nil || !ok {
+		log.Printf("Ошибка при удалении группы: %v", err)
+		return errors.New("ошибка удаления группы")
+	}
+	log.Println("[INFO] Группа успешно удалена.")
+	return nil
+}
+
+// Хелпер для логирования результатов
+func logTestResult(testName string, ok, bad int, err error) {
+	log.Printf("[RESULT] %s: ok=%d, bad=%d", testName, ok, bad)
+	if err != nil {
+		log.Printf("[ERROR] %s: %v", testName, err)
+	}
+}
 
 func Test_InfAllStudent() (int, int, error) {
 	var Ok, Bad int
@@ -25,28 +90,23 @@ func Test_InfAllStudent() (int, int, error) {
 func Test_InfStudentByID() (int, int, error) {
 	var Ok, Bad int
 
-	// Создаём группу для теста
+	// Создаём группу
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
+	groupId, err := createTestGroup(1, 4, "Информатика", 101)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, groupId)
+	fullName, enterprise, workStartDate, jobTitle := "Иван Иванов", "Tech Corp", "2023-06-01", "Developer"
+	studentID, err := createTestStudent(fullName, groupId, enterprise, workStartDate, jobTitle)
 	if err != nil {
-		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Студент создан с ID=%d", studentID)
 	Ok++
 
 	// Получаем студента по ID
@@ -57,34 +117,24 @@ func Test_InfStudentByID() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != fullName || student.GroupId != groupId {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, fullName, groupId, student)
+	if err := checkStudentData(student, fullName, groupId, enterprise, workStartDate, jobTitle); err != nil {
+		log.Printf("Ошибка: %v, получено=%v", err, student)
 		Bad++
-		return Ok, Bad, errors.New("неверные данные студента")
+		return Ok, Bad, err
 	}
 	log.Println("[INFO] Студент успешно получен по ID.")
 	Ok++
 
-	// Удаляем студента
-	log.Printf("[INFO] Удаляем студента с ID=%d...", studentID)
-	ok, err := routes.Delete_Student(studentID)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении студента: %v", err)
+	// Удаляем данные
+	if err := deleteTestStudent(studentID); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления студента")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Студент успешно удалён.")
 	Ok++
-
-	// Удаляем группу
-	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(groupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении тестовой группы: %v", err)
+	if err := deleteTestGroup(groupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
 	return Ok, Bad, nil
@@ -93,24 +143,20 @@ func Test_InfStudentByID() (int, int, error) {
 func Test_CreateStudent() (int, int, error) {
 	var Ok, Bad int
 
-	// Создаём группу для теста
+	// Создаём группу
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
+	groupId, err := createTestGroup(1, 4, "Информатика", 101)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, groupId)
+	fullName, enterprise, workStartDate, jobTitle := "Иван Иванов", "Tech Corp", "2023-06-01", "Developer"
+	studentID, err := createTestStudent(fullName, groupId, enterprise, workStartDate, jobTitle)
 	if err != nil {
-		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
@@ -119,7 +165,6 @@ func Test_CreateStudent() (int, int, error) {
 		Bad++
 		return Ok, Bad, errors.New("нулевой ID студента")
 	}
-	log.Printf("Студент создан с ID=%d", studentID)
 	Ok++
 
 	// Проверяем создание
@@ -130,34 +175,24 @@ func Test_CreateStudent() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != fullName || student.GroupId != groupId {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, fullName, groupId, student)
+	if err := checkStudentData(student, fullName, groupId, enterprise, workStartDate, jobTitle); err != nil {
+		log.Printf("Ошибка: %v", err)
 		Bad++
-		return Ok, Bad, errors.New("неверные данные студента")
+		return Ok, Bad, err
 	}
 	log.Println("[INFO] Студент успешно создан и проверен.")
 	Ok++
 
-	// Удаляем студента
-	log.Printf("[INFO] Удаляем студента с ID=%d...", studentID)
-	ok, err := routes.Delete_Student(studentID)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении студента: %v", err)
+	// Удаляем данные
+	if err := deleteTestStudent(studentID); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления студента")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Студент успешно удалён.")
 	Ok++
-
-	// Удаляем группу
-	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(groupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении тестовой группы: %v", err)
+	if err := deleteTestGroup(groupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
 	return Ok, Bad, nil
@@ -166,46 +201,38 @@ func Test_CreateStudent() (int, int, error) {
 func Test_UpdateStudentById() (int, int, error) {
 	var Ok, Bad int
 
-	// Создаём группу для теста
+	// Создаём первую группу
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
+	groupId, err := createTestGroup(1, 4, "Информатика", 101)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
-	// Создаём вторую группу для обновления
+	// Создаём вторую группу
 	log.Println("[INFO] Создаём вторую тестовую группу...")
-	newCourse, newGroduates, newSpeciality, newGroupNum := byte(2), byte(5), "Кибербезопасность", 102
-	newGroupId, err := routes.Create_Group(newCourse, newGroduates, newSpeciality, newGroupNum)
+	newGroupId, err := createTestGroup(2, 5, "Кибербезопасность", 102)
 	if err != nil {
-		log.Printf("Ошибка при создании второй группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Вторая группа создана с ID %d", newGroupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, groupId)
+	fullName, enterprise, workStartDate, jobTitle := "Иван Иванов", "Tech Corp", "2023-06-01", "Developer"
+	studentID, err := createTestStudent(fullName, groupId, enterprise, workStartDate, jobTitle)
 	if err != nil {
-		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Студент создан с ID=%d", studentID)
 	Ok++
 
 	// Обновляем студента
 	log.Printf("[INFO] Обновляем студента с ID=%d...", studentID)
-	newFullName := "Пётр Петров"
-	ok, err := routes.Update_StudentById(studentID, newFullName, newGroupId)
+	newFullName, newEnterprise, newWorkStartDate, newJobTitle := "Пётр Петров", "New Corp", "2024-01-01", "Senior Developer"
+	ok, err := routes.Update_StudentById(studentID, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle)
 	if err != nil || !ok {
 		log.Printf("Ошибка при обновлении студента: %v", err)
 		Bad++
@@ -222,44 +249,29 @@ func Test_UpdateStudentById() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if student.FullName != newFullName || student.GroupId != newGroupId {
-		log.Printf("Ошибка: неверные данные студента с ID=%d, ожидалось имя=%s, GroupId=%d, получено=%v", studentID, newFullName, newGroupId, student)
+	if err := checkStudentData(student, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle); err != nil {
+		log.Printf("Ошибка: %v", err)
 		Bad++
-		return Ok, Bad, errors.New("неверные данные обновлённого студента")
+		return Ok, Bad, err
 	}
 	log.Println("[INFO] Обновление студента подтверждено.")
 	Ok++
 
-	// Удаляем студента
-	log.Printf("[INFO] Удаляем студента с ID=%d...", studentID)
-	ok, err = routes.Delete_Student(studentID)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении студента: %v", err)
+	// Удаляем данные
+	if err := deleteTestStudent(studentID); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления студента")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Студент успешно удалён.")
 	Ok++
-
-	// Удаляем группы
-	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(groupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении тестовой группы: %v", err)
+	if err := deleteTestGroup(groupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
-
-	log.Println("[INFO] Удаляем вторую тестовую группу...")
-	ok, err = routes.Delete_GroupById(newGroupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении второй тестовой группы: %v", err)
+	if err := deleteTestGroup(newGroupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления второй тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Вторая тестовая группа успешно удалена.")
 	Ok++
 
 	return Ok, Bad, nil
@@ -268,39 +280,31 @@ func Test_UpdateStudentById() (int, int, error) {
 func Test_DeleteStudent() (int, int, error) {
 	var Ok, Bad int
 
-	// Создаём группу для теста
+	// Создаём группу
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
+	groupId, err := createTestGroup(1, 4, "Информатика", 101)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
 	// Создаём студента
 	log.Println("[INFO] Создаём тестового студента...")
-	fullName := "Иван Иванов"
-	studentID, err := routes.Create_Student(fullName, groupId)
+	fullName, enterprise, workStartDate, jobTitle := "Иван Иванов", "Tech Corp", "2023-06-01", "Developer"
+	studentID, err := createTestStudent(fullName, groupId, enterprise, workStartDate, jobTitle)
 	if err != nil {
-		log.Printf("Ошибка при создании студента: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Студент создан с ID=%d", studentID)
 	Ok++
 
 	// Удаляем студента
 	log.Printf("[INFO] Удаляем студента с ID=%d...", studentID)
-	ok, err := routes.Delete_Student(studentID)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении студента: %v", err)
+	if err := deleteTestStudent(studentID); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления студента")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Студент успешно удалён.")
 	Ok++
 
 	// Проверяем удаление
@@ -315,14 +319,10 @@ func Test_DeleteStudent() (int, int, error) {
 	Ok++
 
 	// Удаляем группу
-	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err = routes.Delete_GroupById(groupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении тестовой группы: %v", err)
+	if err := deleteTestGroup(groupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
 	return Ok, Bad, nil
@@ -331,30 +331,30 @@ func Test_DeleteStudent() (int, int, error) {
 func Test_InfStudentByGroup() (int, int, error) {
 	var Ok, Bad int
 
-	// Создаём группу для теста
+	// Создаём группу
 	log.Println("[INFO] Создаём тестовую группу...")
-	course, groduates, speciality, groupNum := byte(1), byte(4), "Информатика", 101
-	groupId, err := routes.Create_Group(course, groduates, speciality, groupNum)
+	groupId, err := createTestGroup(1, 4, "Информатика", 101)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
 		Bad++
 		return Ok, Bad, err
 	}
-	log.Printf("Группа создана с ID %d", groupId)
 	Ok++
 
-	// Создаём двух студентов
+	// Создаём студентов
 	log.Println("[INFO] Создаём тестовых студентов...")
-	studentNames := []string{"Иван Иванов", "Пётр Петров"}
-	studentIDs := make([]int, 0, len(studentNames))
-	for _, fullName := range studentNames {
-		studentID, err := routes.Create_Student(fullName, groupId)
+	studentData := []struct {
+		fullName, enterprise, workStartDate, jobTitle string
+	}{
+		{"Иван Иванов", "Tech Corp", "2023-06-01", "Developer"},
+		{"Пётр Петров", "New Corp", "2024-01-01", "Analyst"},
+	}
+	studentIDs := make([]int, 0, len(studentData))
+	for _, data := range studentData {
+		studentID, err := createTestStudent(data.fullName, groupId, data.enterprise, data.workStartDate, data.jobTitle)
 		if err != nil {
-			log.Printf("Ошибка при создании студента %s: %v", fullName, err)
 			Bad++
 			return Ok, Bad, err
 		}
-		log.Printf("Студент %s создан с ID=%d", fullName, studentID)
 		Ok++
 		studentIDs = append(studentIDs, studentID)
 	}
@@ -367,16 +367,16 @@ func Test_InfStudentByGroup() (int, int, error) {
 		Bad++
 		return Ok, Bad, err
 	}
-	if len(students) != len(studentNames) {
-		log.Printf("Ошибка: ожидалось %d студентов, получено %d", len(studentNames), len(students))
+	if len(students) != len(studentData) {
+		log.Printf("Ошибка: ожидалось %d студентов, получено %d", len(studentData), len(students))
 		Bad++
 		return Ok, Bad, errors.New("неверное количество студентов")
 	}
 	for i, student := range students {
-		if student.FullName != studentNames[i] || student.GroupId != groupId {
-			log.Printf("Ошибка: неверные данные студента, ожидалось имя=%s, GroupId=%d, получено=%v", studentNames[i], groupId, student)
+		if err := checkStudentData(student, studentData[i].fullName, groupId, studentData[i].enterprise, studentData[i].workStartDate, studentData[i].jobTitle); err != nil {
+			log.Printf("Ошибка: %v", err)
 			Bad++
-			return Ok, Bad, errors.New("неверные данные студента")
+			return Ok, Bad, err
 		}
 	}
 	log.Printf("[INFO] Студенты группы успешно получены, найдено %d записей.", len(students))
@@ -384,26 +384,18 @@ func Test_InfStudentByGroup() (int, int, error) {
 
 	// Удаляем студентов
 	for _, studentID := range studentIDs {
-		log.Printf("[INFO] Удаляем студента с ID=%d...", studentID)
-		ok, err := routes.Delete_Student(studentID)
-		if err != nil || !ok {
-			log.Printf("Ошибка при удалении студента: %v", err)
+		if err := deleteTestStudent(studentID); err != nil {
 			Bad++
-			return Ok, Bad, errors.New("ошибка удаления студента")
+			return Ok, Bad, err
 		}
-		log.Println("[INFO] Студент успешно удалён.")
 		Ok++
 	}
 
 	// Удаляем группу
-	log.Println("[INFO] Удаляем тестовую группу...")
-	ok, err := routes.Delete_GroupById(groupId)
-	if err != nil || !ok {
-		log.Printf("Ошибка при удалении тестовой группы: %v", err)
+	if err := deleteTestGroup(groupId); err != nil {
 		Bad++
-		return Ok, Bad, errors.New("ошибка удаления тестовой группы")
+		return Ok, Bad, err
 	}
-	log.Println("[INFO] Тестовая группа успешно удалена.")
 	Ok++
 
 	return Ok, Bad, nil
@@ -412,61 +404,28 @@ func Test_InfStudentByGroup() (int, int, error) {
 func TestStudentALL() (int, int) {
 	var Ok, Bad int
 
-	// Тестирование Inf_AllStudent
-	ok, bad, err := Test_InfAllStudent()
-	if err != nil {
-		log.Fatal("Ошибка в Test_InfAllStudent: ", err)
+	tests := []struct {
+		name string
+		fn   func() (int, int, error)
+	}{
+		{"InfAllStudent", Test_InfAllStudent},
+		{"InfStudentByID", Test_InfStudentByID},
+		{"CreateStudent", Test_CreateStudent},
+		{"UpdateStudentById", Test_UpdateStudentById},
+		{"DeleteStudent", Test_DeleteStudent},
+		{"InfStudentByGroup", Test_InfStudentByGroup},
 	}
-	logResults("InfAllStudent", ok, bad, err)
-	Ok += ok
-	Bad += bad
 
-	// Тестирование Inf_StudentByID
-	ok, bad, err = Test_InfStudentByID()
-	if err != nil {
-		log.Fatal("Ошибка в Test_InfStudentByID: ", err)
+	for _, test := range tests {
+		ok, bad, err := test.fn()
+		logTestResult(test.name, ok, bad, err)
+		Ok += ok
+		Bad += bad
+		if err != nil {
+			log.Fatal("Ошибка в ", test.name, ": ", err)
+		}
 	}
-	logResults("InfStudentByID", ok, bad, err)
-	Ok += ok
-	Bad += bad
 
-	// Тестирование Create_Student
-	ok, bad, err = Test_CreateStudent()
-	if err != nil {
-		log.Fatal("Ошибка в Test_CreateStudent: ", err)
-	}
-	logResults("CreateStudent", ok, bad, err)
-	Ok += ok
-	Bad += bad
-
-	// Тестирование Update_StudentById
-	ok, bad, err = Test_UpdateStudentById()
-	if err != nil {
-		log.Fatal("Ошибка в Test_UpdateStudentById: ", err)
-	}
-	logResults("UpdateStudentById", ok, bad, err)
-	Ok += ok
-	Bad += bad
-
-	// Тестирование Delete_Student
-	ok, bad, err = Test_DeleteStudent()
-	if err != nil {
-		log.Fatal("Ошибка в Test_DeleteStudent: ", err)
-	}
-	logResults("DeleteStudent", ok, bad, err)
-	Ok += ok
-	Bad += bad
-
-	// Тестирование Inf_StudentByGroup
-	ok, bad, err = Test_InfStudentByGroup()
-	if err != nil {
-		log.Fatal("Ошибка в Test_InfStudentByGroup: ", err)
-	}
-	logResults("InfStudentByGroup", ok, bad, err)
-	Ok += ok
-	Bad += bad
-
-	// Итоговый вывод
 	log.Println("\n[SUMMARY] Итоговые результаты:")
 	log.Printf("TestStudentALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
 

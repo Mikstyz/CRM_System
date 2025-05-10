@@ -3,7 +3,7 @@ package Test
 import (
 	"CRM_System/internal/routes"
 	"errors"
-	"log" // подставь путь к моделям
+	"log"
 )
 
 func Test_InfAllGroup() (int, int, error) {
@@ -331,4 +331,11 @@ func TestGroupALL() (int, int) {
 	log.Printf("TestGroupALL [%d\\%d]\nok: %d\nbad: %d\n", Ok, Bad, Ok, Bad)
 
 	return Ok, Bad
+}
+
+func logResults(testName string, ok, bad int, err error) {
+	log.Printf("[RESULT] %s: ok=%d, bad=%d", testName, ok, bad)
+	if err != nil {
+		log.Printf("[ERROR] %s: %v", testName, err)
+	}
 }

@@ -51,7 +51,7 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 }
 
 // InfGroupById возвращает данные группы по её ID.
-func InfGroupById(GroupId int) (*models.EinfGroup, error) {
+func InfGroupById(GroupId int) (models.EinfGroup, error) {
 	const query = `SELECT Id, Course, Speciality, Groudates, GroupNum FROM einf_groups WHERE Id = ?`
 
 	db.Init()
@@ -66,13 +66,13 @@ func InfGroupById(GroupId int) (*models.EinfGroup, error) {
 	)
 	if err != nil {
 		log.Printf("Ошибка при получении данных группы: %v", err)
-		return nil, err
+		return models.EinfGroup{}, err
 	}
 
-	return &Group, nil
+	return Group, nil
 }
 
-// InfAllGrp возвращает список всех групп и их предметов.
+// InfAllGrpWithSubjects возвращает список всех групп и их предметов.
 func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	const query = `
 		SELECT 
@@ -161,7 +161,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	return result, nil
 }
 
-// InfAllGrp возвращает инфу о группе и ее предметы.
+// InfGrpWithSubjectsById возвращает инфу о группе и ее предметы.
 func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	const query = `
         SELECT 
@@ -252,6 +252,7 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	return result, nil
 }
 
+// MaxNumberByParams возвращает максимальный Id группы.
 func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
 	const query = `
 		SELECT COALESCE(MAX(GroupNum), 0)
