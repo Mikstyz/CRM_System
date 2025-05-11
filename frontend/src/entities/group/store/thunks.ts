@@ -9,7 +9,7 @@ import { Id } from "@/shared/types";
 import { Discipline, Semester } from "@/entities/discipline/types";
 import {
   AddSubjectByGroupID,
-  AppInFGroupAndSubject,
+  AppInfGroupAndSubject,
   CreateGroup,
   DeleteGroupByID,
   DeleteSubjectByID,
@@ -34,10 +34,10 @@ export const getGroupsThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/getGroups", async (_, { rejectWithValue }) => {
   try {
-    const res = await AppInFGroupAndSubject({
+    const res = await AppInfGroupAndSubject({
       Switch: true,
     });
-    console.log("res", res);
+    console.log("res AppInFGroupAndSubject", res);
     const groupsAll = res.groupsAndSubject;
     if (res.code === 200 && Array.isArray(groupsAll)) {
       return convResDataInGroups(groupsAll);
@@ -179,28 +179,27 @@ export const duplicateGroupThunks = createAsyncThunk<
     const res = await DuplicateGroupAllData({ GroupId: groupId });
     const resGroup = res.GrpAndSUbj;
     console.log("resGroup", resGroup);
-    // if (res?.code === 200 && resGroup?.Id) {
-    //   return {
-    //     id: resGroup.Id,
-    //     name: `${resGroup.Course}${resGroup.Speciality}${resGroup.Groudates}-${resGroup.Number}`,
-    //     dateNameGroup: {
-    //       course: String(resGroup.Course) as Course,
-    //       specialty: resGroup.Speciality,
-    //       graduates: String(resGroup.Groudates) as Graduates,
-    //       groupNumber: resGroup.Number,
-    //     },
-    //     disciplines: {
-    //       "1": resGroup.Subject.firstSemester,
-    //       "2": resGroup.Subject.secondSemester,
-    //     },
-    //   };
-    // } else {
-    //   console.error("Ошибка дублирования группы", res?.error);
-    //   return rejectWithValue(
-    //     `Failed to duplicate group: ${res?.error || "Unknown error"}`,
-    //   );
-    // }
-    return rejectWithValue("Ошибка при дублировании группы");
+    if (res?.code === 200 && resGroup?.Id) {
+      return {
+        id: resGroup.Id,
+        name: `${resGroup.Course}${resGroup.Spesiality}${resGroup.Groduates}-${resGroup.Number}`,
+        dateNameGroup: {
+          course: String(resGroup.Course) as Course,
+          specialty: resGroup.Spesiality,
+          graduates: String(resGroup.Groduates) as Graduates,
+          groupNumber: resGroup.Number,
+        },
+        disciplines: {
+          "1": resGroup.Subject.firstSemester,
+          "2": resGroup.Subject.secondSemester,
+        },
+      };
+    } else {
+      console.error("Ошибка дублирования группы", res?.error);
+      return rejectWithValue(
+        `Failed to duplicate group: ${res?.error || "Unknown error"}`,
+      );
+    }
   } catch (error) {
     console.error("Error duplicating group:", error);
     return rejectWithValue(
@@ -210,50 +209,6 @@ export const duplicateGroupThunks = createAsyncThunk<
 });
 
 // ========= disciplines =========
-
-// GET DISCIPLINES
-// type GetDisciplinesParams = Id;
-// type GetDisciplinesResponse = {
-//   groupId: Id;
-//   disciplines: Disciplines;
-// };
-// export const getDisciplinesThunks = createAsyncThunk<
-//   GetDisciplinesResponse,
-//   GetDisciplinesParams,
-//   ThunkConfig
-// >("userFiles/getDisciplines", async ({groupId, newTitle, semester}, { rejectWithValue }) => {
-//   // try {
-//   //   const res = await AddSubjectByGroupID({
-//   //     group_id: groupId,
-//   //     new_subject: newTitle,
-//   //     Semester: semester
-//   //   })
-//   //   console.log("AddSubjectByGroupID", res)
-//   //   if (res?.code === 200 && res.id) {
-//   //     return {
-//   //       groupId,
-//   //       disciplineId: res.id,
-//   //       semester,
-//   //       newTitle: res.subject_name
-//   //     };
-//   //   } else {
-//   //     console.error("Ошибка при получении дисциплин", res?.error);
-//   //     return rejectWithValue(
-//   //       `Failed to get disciplines: ${res?.error || "Unknown error"}`,
-//   //     );
-//   //   }
-//   // } catch (error) {
-//   //   console.error("Error fetching DISCIPLINES:", error);
-//   // return rejectWithValue(
-//   //   `Error fetching DISCIPLINES: ${(error as Error).message || "Unknown error"}`,
-//   // );
-//   console.error("Error fetching DISCIPLINES:");
-//
-//     return rejectWithValue(
-//       `Error fetching DISCIPLINES:  || "Unknown error"}`,
-//     );
-//   // }
-// });
 
 // ADD DISCIPLINES
 type AddDisciplinesParams = {

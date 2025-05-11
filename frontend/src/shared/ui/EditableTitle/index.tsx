@@ -4,17 +4,20 @@ interface EditableTitleProps {
   initialValue?: string;
   onSave?: (newValue: string) => void;
   className?: string;
+  error?: string;
 }
 
 /**
  * Компонент, который выглядит как заголовок, но позволяет менять текст.
  * @param initialValue Стартовое значение заголовка.
  * @param onSave Колбэк, вызывается при потере фокуса или на Enter.
+ * @param className
  */
 export function EditableTitle({
   initialValue = "",
   onSave,
   className = "",
+  error,
 }: EditableTitleProps) {
   const [value, setValue] = useState(initialValue);
 
@@ -36,13 +39,17 @@ export function EditableTitle({
   };
 
   return (
-    <input
-      type="text"
-      className={`font-bold border-none outline-none focus:ring-0 ${className}`}
-      value={value}
-      onChange={handleChange}
-      onBlur={handleBlurOrEnter}
-      onKeyDown={handleKeyDown}
-    />
+    <>
+      <input
+        type="text"
+        className={`font-bold outline-none focus:ring-0 border-b
+          ${error ? "border-red-500" : "border-transparent"} ${className}`}
+        value={value}
+        onChange={handleChange}
+        onBlur={handleBlurOrEnter}
+        onKeyDown={handleKeyDown}
+      />
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </>
   );
 }

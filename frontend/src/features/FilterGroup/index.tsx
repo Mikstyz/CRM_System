@@ -13,11 +13,9 @@ import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
 import { headerCreateGroup } from "@/features/FilterGroup/lib/headers/headerCreateGroup.ts";
 import { headerCleansingForm } from "@/features/FilterGroup/lib/headers/headerCleansingForm.ts";
 import { RootState } from "@/app/store";
-import { ErrorMassage } from "@/shared/ui/ErrorMassage";
 import { clearErrors } from "@/entities/group/store";
 import { Course, Graduates } from "@/entities/group/types";
 
-// TODO:BAG Не работает фильтрация по Курс GraduatesToggle
 export function FilterGroup({ groupsLength }: { groupsLength: number }) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s: RootState) => s.groupFilters);
@@ -90,7 +88,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
             title="Курс"
             variant={["1", "2", "3", "4"]}
             onChange={(num) => {
-              setValue("course", num);
+              setValue("course", num as Course);
               setError("course", {});
             }}
             value={getValues("course")}
@@ -132,7 +130,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
           />
         </form>
       </aside>
-      <ErrorMassage error={error} className="items-start" />
+      {/*<ErrorMassage error={error} className="items-start" />*/}
       {groupsLength <= 0 && (
         <ButtonPush
           onClick={() =>

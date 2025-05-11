@@ -4,7 +4,7 @@ type ParseSuccess = { status: "fulfilled"; dateNameGroup: DateNameGroup };
 type ParseError = { status: "rejected"; errors: string[] };
 type ParseResult = ParseSuccess | ParseError;
 
-const NAME_RE = /^([1-4])(\p{L}{2,})(9|11)-(\d+)$/u;
+const NAME_RE = /^([1-4])\s*([A-Za-zА-Яа-я]{2,})\s*(9|11)\s*[--]\s*(\d+)$/u;
 
 /**
  * Парсит строку формата `${course}${specialty}${graduates}-${groupNumber}`

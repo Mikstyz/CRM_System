@@ -3,6 +3,7 @@ import { UseFormSetError } from "react-hook-form";
 import { FiltersRaw } from "@/features/FilterGroup/schema";
 import { Course, Graduates } from "@/entities/group/types";
 import { createGroupsThunks } from "@/entities/group/store/thunks.ts";
+import { clearFilters } from "@/features/FilterGroup/store/groupFiltersSlice.ts";
 
 interface Arguments {
   course: Course | null | undefined;
@@ -41,7 +42,9 @@ export const headerCreateGroup = async ({
           groupNumber: Number(groupNumber),
         },
       }),
-    );
+    )
+      .unwrap()
+      .then(() => dispatch(clearFilters()));
   } else {
     if (!course) {
       setError("course", {

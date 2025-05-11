@@ -18,6 +18,7 @@ export function GroupCard({ group }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useAppDispatch();
   const confirm = useConfirm();
+  const [err, setErr] = useState<string | null>(null);
 
   return (
     <section className="border-2 rounded-xl p-4">
@@ -25,9 +26,14 @@ export function GroupCard({ group }: Props) {
         <h2 className="text-lg font-semibold">
           Группа:
           <EditableTitle
+            key={group.name}
             initialValue={group.name}
-            onSave={(value) => handleTitleGroupSave({ dispatch, group, value })}
+            onSave={async (value) => {
+              const ok = await handleTitleGroupSave({ dispatch, group, value });
+              setErr(ok ? null : "Неверный формат имени");
+            }}
             className="ml-1 w-min"
+            error={err || undefined}
           />
         </h2>
 
