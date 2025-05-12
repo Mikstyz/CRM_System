@@ -4,9 +4,13 @@ import { Id } from "@/shared/types";
 import {
   CreateStudent,
   DeleteStudent,
+  GenerateFilledPDF,
   InfStudentByGroup,
   UpdateStudentByID,
 } from "@wails/go/main/App";
+import { Group } from "@/entities/group/types";
+import { saveAs } from "file-saver";
+import { Semester } from "@/entities/discipline/types";
 
 interface ThunkConfig {
   rejectValue: string;
@@ -21,21 +25,21 @@ export const getAllStudentGroupThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/getAllStudentGroup", async (groupId, { rejectWithValue }) => {
   try {
+    if (!groupId) return rejectWithValue("Не указан ID группы");
     const res = await InfStudentByGroup({
       GroupId: groupId,
     });
     const studentsAll = res.Student;
     if (res.code === 200 && Array.isArray(studentsAll)) {
-      // return studentsAll.map((s) => {
-      //   return {
-      //     id: s.id,
-      //     fullName: s.full_name,
-      //     company: s.speciality,
-      //     startDateWork: s.startDateWork,
-      //     position: s.speciality
-      //   }
-      // })
-      return [];
+      return studentsAll.map((s) => {
+        return {
+          id: s.id,
+          fullName: s.full_name,
+          company: s.Enterprise,
+          startDateWork: s.WorkStartDate,
+          position: s.JobTitle,
+        };
+      });
     } else {
       console.error("Ошибка при получении студентов", res?.error);
       return rejectWithValue("Ошибка при получении студентов");
@@ -62,9 +66,13 @@ export const createStudentThunks = createAsyncThunk<
   "userFiles/createStudent",
   async ({ student, groupId }, { rejectWithValue }) => {
     try {
+      if (!groupId) return rejectWithValue("Не указан ID группы");
       const res = await CreateStudent({
         FullName: student.fullName,
         GroupId: groupId,
+        // Enterprise: student.company,
+        // WorkStartDate: student.startDateWork,
+        // JobTitle: student.position,
       });
       if (res.code === 200 && res.Id) {
         return {
@@ -101,10 +109,15 @@ export const updateStudentThunks = createAsyncThunk<
   "userFiles/updateStudent",
   async ({ student, groupId }, { rejectWithValue }) => {
     try {
+      if (!groupId || !student.id)
+        return rejectWithValue("Не указан ID группы");
       const res = await UpdateStudentByID({
         StudId: student.id,
         NewFullName: student.fullName,
         NewGroupId: groupId,
+        // NewEnterprise: student.company,
+        // NewWorkStartDate: student.startDateWork,
+        // NewJobTitle: student.position,
       });
       if (res.code === 200 && res.Id) {
         return {
@@ -136,6 +149,7 @@ export const deleteStudentThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/deleteStudent", async (studentId, { rejectWithValue }) => {
   try {
+    if (!studentId) return rejectWithValue("Не указан ID student");
     const res = await DeleteStudent({
       StudId: studentId,
     });
@@ -152,3 +166,69 @@ export const deleteStudentThunks = createAsyncThunk<
     );
   }
 });
+
+/* -------- unified save OR update -------- */
+type SaveStudentArgs = { groupId: Id; student: Student };
+export const saveOrUpdateStudentThunks = createAsyncThunk<
+  Student,
+  SaveStudentArgs,
+  ThunkConfig
+>("blank/saveOrUpdate", async ({ student, groupId }, { dispatch }) => {
+  if (student.id === 0) {
+    /* новый -> create */
+    const created = await dispatch(
+      createStudentThunks({ student, groupId }),
+    ).unwrap();
+    return created;
+  }
+  /* существующий -> update */
+  const updated = await dispatch(
+    updateStudentThunks({ student, groupId }),
+  ).unwrap();
+  return updated;
+});
+
+/* -------- PDF generation (save first) -------- */
+type GeneratePdfArgs = {
+  group: Group;
+  student: Student;
+  semester: Semester;
+};
+export const generatePdfThunks = createAsyncThunk<
+  void,
+  GeneratePdfArgs,
+  ThunkConfig
+>(
+  "blank/generatePdf",
+  async ({ group, student, semester }, { rejectWithValue }) => {
+    try {
+      console.log("generatePdf", {
+        group,
+        student,
+        semester,
+      });
+      const { dateNameGroup } = group;
+      const res = await GenerateFilledPDF({
+        StudentName: student.fullName,
+        Course: Number(dateNameGroup.course),
+        Speciality: dateNameGroup.specialty,
+        Groduates: Number(dateNameGroup.graduates),
+        Number: dateNameGroup.groupNumber,
+        Enterprise: student.company || "",
+        WorkStartDate: student.startDateWork || "",
+        JobTitle: student.position || "",
+      });
+
+      if (res.code !== 200 || !res.File) {
+        throw new Error(res.error || "Ошибка генерации PDF");
+      }
+
+      const blob = new Blob([Uint8Array.from(res.File)], {
+        type: "application/pdf",
+      });
+      saveAs(blob, `${group.name}_${student.fullName}.pdf`);
+    } catch (e) {
+      return rejectWithValue((e as Error).message);
+    }
+  },
+);

@@ -56,14 +56,14 @@ export function GroupCard({ group }: Props) {
         <div className="border-t pt-4 mt-2 space-y-4">
           {/* 1‑й семестр */}
           <SemesterDisciplines
-            semester={1}
+            semester={"1"}
             items={group.disciplines[1]}
             groupId={group.id}
           />
 
           {/* 2‑й семестр */}
           <SemesterDisciplines
-            semester={2}
+            semester={"2"}
             items={group.disciplines[2]}
             groupId={group.id}
           />

@@ -6,6 +6,7 @@ interface Props {
   onChange: (value: string | undefined) => void;
   value?: string | unknown;
   variant: string[];
+  className?: string;
 }
 
 export function GraduatesToggle({
@@ -14,13 +15,14 @@ export function GraduatesToggle({
   onChange,
   value,
   error,
+  className,
 }: Props) {
   const handleClick = (num: string) => {
     onChange(value === num ? undefined : num);
   };
 
   return (
-    <div className="flex flex-col w-[48%] min-w-[120px]">
+    <div className={"flex flex-col w-[48%] min-w-[120px] " + className}>
       <span className="mb-1">{title}</span>
       <div className="flex gap-2">
         {variant.map((num, index) => (

@@ -9,7 +9,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { shallowEqual } from "react-redux";
 import { Filters, filterSchema, FiltersRaw } from "./schema";
 import { ButtonPush } from "@/shared/ui/ButtonPush";
-import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
+import { GraduatesToggle } from "src/shared/ui/GraduatesToggle";
 import { headerCreateGroup } from "@/features/FilterGroup/lib/headers/headerCreateGroup.ts";
 import { headerCleansingForm } from "@/features/FilterGroup/lib/headers/headerCleansingForm.ts";
 import { RootState } from "@/app/store";

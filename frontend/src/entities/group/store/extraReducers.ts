@@ -25,7 +25,9 @@ export const groupsExtraReducers = (
   builder
     .addCase(getGroupsThunks.pending, handlePending<GroupsState>)
     .addCase(getGroupsThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+      };
       state.list = action.payload;
     })
     .addCase(getGroupsThunks.rejected, handleRejected<GroupsState>);
@@ -34,7 +36,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(createGroupsThunks.pending, handlePending<GroupsState>)
     .addCase(createGroupsThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Группа успешно добавлена",
+      };
       state.list = [action.payload, ...state.list];
     })
     .addCase(createGroupsThunks.rejected, handleRejected<GroupsState>);
@@ -43,7 +48,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(updateGroupsThunks.pending, handlePending<GroupsState>)
     .addCase(updateGroupsThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Группа успешно обновлена",
+      };
       state.list = state.list.map((group) =>
         group.id === action.payload.id
           ? { ...group, ...action.payload }
@@ -56,7 +64,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(deleteGroupsThunks.pending, handlePending<GroupsState>)
     .addCase(deleteGroupsThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Группа успешно удалена",
+      };
       state.list = state.list.filter((group) => group.id !== action.payload);
     })
     .addCase(deleteGroupsThunks.rejected, handleRejected<GroupsState>);
@@ -65,7 +76,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(duplicateGroupThunks.pending, handlePending<GroupsState>)
     .addCase(duplicateGroupThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Группа успешно дублирована",
+      };
       const originalId = action.meta.arg as Id;
       const srcIndex = state.list.findIndex((g) => g.id === originalId);
       if (srcIndex === -1) {
@@ -76,13 +90,6 @@ export const groupsExtraReducers = (
       if (!exists) {
         state.list.splice(srcIndex + 1, 0, action.payload);
       }
-      // const already = state.list.find((g) => g.id === action.payload.id);
-      // if (!already) {
-      //   state.list.unshift(action.payload);
-      // }
-      // const srcIndex = state.list.findIndex((g) => g.id === action.payload.id);
-      // if (srcIndex === -1) return;
-      // state.list.splice(srcIndex + 1, 0, action.payload);
     })
     .addCase(duplicateGroupThunks.rejected, handleRejected<GroupsState>);
 
@@ -92,7 +99,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(addDisciplinesThunks.pending, handlePending<GroupsState>)
     .addCase(addDisciplinesThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Дисциплина успешно добавлена",
+      };
       const g = state.list.find((gr) => gr.id === action.payload.groupId);
       if (g) {
         g.disciplines[action.payload.semester].unshift(action.payload.disc);
@@ -104,7 +114,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(updateDisciplinesThunks.pending, handlePending<GroupsState>)
     .addCase(updateDisciplinesThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Дисциплина успешно обновлена",
+      };
       const g = state.list.find((gr) => gr.id === action.payload.groupId);
       if (g) {
         g.disciplines[action.payload.semester] = g.disciplines[
@@ -120,7 +133,10 @@ export const groupsExtraReducers = (
   builder
     .addCase(deleteDisciplinesThunks.pending, handlePending<GroupsState>)
     .addCase(deleteDisciplinesThunks.fulfilled, (state, action) => {
-      state.loading = false;
+      state.loading = {
+        status: "succeeded",
+        message: "Дисциплина успешно удалена",
+      };
       const g = state.list.find((gr) => gr.id === action.payload.groupId);
       if (g) {
         g.disciplines[action.payload.semester] = g.disciplines[

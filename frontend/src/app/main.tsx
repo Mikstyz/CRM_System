@@ -5,6 +5,7 @@ import "./styles/index.css";
 import { store } from "@/app/store";
 import { PagesListGroup } from "@/pages/PagesListGroup";
 import { ConfirmProvider } from "@/shared/ui/ConfirmDialog";
+import { ErrorToast } from "@/shared/ui/ErrorToast";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -13,6 +14,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ConfirmProvider>
         <PagesListGroup />
       </ConfirmProvider>
+      <ErrorToast />
     </Provider>
   </React.StrictMode>,
 );
