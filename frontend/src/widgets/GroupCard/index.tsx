@@ -54,6 +54,13 @@ export function GroupCard({ group }: Props) {
 
       {isExpanded && (
         <div className="border-t pt-4 mt-2 space-y-4">
+          {/*
+          // TODO:FISH Сделать чтобы дисциплины открывались в модалтном окне, для удобства.
+          <ModalErrorBoundary>
+        <ModalWrapper isOpen={} onClose={() => {})}>
+        </ModalWrapper>
+      </ModalErrorBoundary>
+          */}
           {/* 1‑й семестр */}
           <SemesterDisciplines
             semester={"1"}
