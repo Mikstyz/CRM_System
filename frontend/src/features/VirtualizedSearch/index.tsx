@@ -8,19 +8,14 @@ import {
 } from "react";
 import { FixedSizeList, ListChildComponentProps } from "react-window";
 import classNames from "classnames";
-import { Id } from "@/shared/types";
-
-// Тип для элемента списка
-interface Student {
-  id: Id;
-  fullName: string;
-}
+import { Student } from "@/entities/student/types";
 
 interface VirtualizedSearchProps {
   data: Student[]; // Исходный список студентов
   placeholder?: string; // Подсказка в input
   maxDropdownHeight?: number; // Высота выпадающего списка
   onSelect?: (value: Student) => void; // Колбэк при выборе элемента
+  error?: string;
 }
 
 /**
@@ -29,12 +24,14 @@ interface VirtualizedSearchProps {
  * @param placeholder Текст placeholder в поле ввода.
  * @param maxDropdownHeight Высота выпадающего списка.
  * @param onSelect Колбэк, вызывается при клике по элементу списка.
+ * @param error
  */
 export function VirtualizedSearch({
   data,
   placeholder = "Поиск...",
   maxDropdownHeight = 300,
   onSelect,
+  error,
 }: VirtualizedSearchProps) {
   const [query, setQuery] = useState("");
   const [filteredData, setFilteredData] = useState<Student[]>(data);
@@ -103,6 +100,9 @@ export function VirtualizedSearch({
     onSelect?.({
       id: Date.now(),
       fullName: e.target.value,
+      company: "",
+      startDateWork: undefined,
+      position: "",
     });
     setIsOpen(true);
   };
@@ -115,12 +115,13 @@ export function VirtualizedSearch({
   };
 
   return (
-    <div ref={containerRef} className="inline-block relative">
-      <label className="font-semibold mr-2">Студенты:</label>
-      <input
-        ref={inputRef}
-        type="text"
-        className="
+    <div ref={containerRef} className="inline-block relative ">
+      <span className="mr-1">Студенты:</span>
+      <div>
+        <input
+          ref={inputRef}
+          type="text"
+          className="
           border
           rounded
           px-3
@@ -130,17 +131,16 @@ export function VirtualizedSearch({
           focus:ring-blue-400
           w-64
         "
-        placeholder={placeholder}
-        value={query}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onFocus={() => setIsOpen(true)}
-      />
-
-      {/* Выпадающий список */}
-      {isOpen && filteredData.length > 0 && (
-        <div
-          className="
+          placeholder={placeholder}
+          value={query}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsOpen(true)}
+        />
+        {/* Выпадающий список */}
+        {isOpen && filteredData.length > 0 && (
+          <div
+            className="
             absolute
             right-0
             mt-1
@@ -151,17 +151,19 @@ export function VirtualizedSearch({
             w-full
             z-10
           "
-        >
-          <FixedSizeList
-            height={Math.min(filteredData.length * 40, maxDropdownHeight)}
-            itemCount={filteredData.length}
-            itemSize={40}
-            width={"100%"}
           >
-            {Row}
-          </FixedSizeList>
-        </div>
-      )}
+            <FixedSizeList
+              height={Math.min(filteredData.length * 40, maxDropdownHeight)}
+              itemCount={filteredData.length}
+              itemSize={40}
+              width={"100%"}
+            >
+              {Row}
+            </FixedSizeList>
+          </div>
+        )}
+      </div>
+      {error && <span className="text-red-500 text-xs">{error}</span>}
     </div>
   );
 }

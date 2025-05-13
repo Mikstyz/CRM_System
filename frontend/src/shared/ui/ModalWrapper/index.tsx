@@ -48,13 +48,8 @@ interface ModalWrapperProps {
 }
 
 export function ModalWrapper({ isOpen, onClose, children }: ModalWrapperProps) {
-  // ⛑️ SSR‑guard (если Wails/Next рендерят на сервере)
-  if (typeof document === "undefined") return null;
-
-  // гарантируем, что контейнер существует
   const modalRoot = document.getElementById("modal-root") ?? createModalRoot();
 
-  // блокируем скролл и закрываем по Esc
   useEffect(() => {
     if (!isOpen) return;
 
@@ -80,7 +75,7 @@ export function ModalWrapper({ isOpen, onClose, children }: ModalWrapperProps) {
           "bg-white rounded-xl shadow-xl p-6",
           "max-h-[90vh] overflow-y-auto",
         )}
-        onClick={(e) => e.stopPropagation()} /* внутри – не закрывать */
+        onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>

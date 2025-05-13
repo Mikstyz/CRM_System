@@ -4,4 +4,4 @@ export interface Discipline {
   id: Id;
   title: string;
 }
-export type Semester = 1 | 2;
+export type Semester = "1" | "2";

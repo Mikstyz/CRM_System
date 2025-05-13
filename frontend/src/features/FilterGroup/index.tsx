@@ -9,7 +9,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { shallowEqual } from "react-redux";
 import { Filters, filterSchema, FiltersRaw } from "./schema";
 import { ButtonPush } from "@/shared/ui/ButtonPush";
-import { GraduatesToggle } from "@/features/FilterGroup/ui/GraduatesToggle";
+import { GraduatesToggle } from "src/shared/ui/GraduatesToggle";
 import { headerCreateGroup } from "@/features/FilterGroup/lib/headers/headerCreateGroup.ts";
 import { headerCleansingForm } from "@/features/FilterGroup/lib/headers/headerCleansingForm.ts";
 import { RootState } from "@/app/store";
@@ -67,7 +67,7 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
     <>
       <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
         <div className="flex justify-between mb-1">
-          <h2 className="font-semibold mb-2">Фильтрация</h2>
+          <h2 className="font-semibold mb-2">Фильтрация/Добавление групп</h2>
           {(getValues("course") ||
             getValues("graduates") ||
             getValues("groupNumber") ||

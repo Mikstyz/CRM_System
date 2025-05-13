@@ -107,6 +107,7 @@ export const updateGroupsThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/updateGroups", async (group, { rejectWithValue }) => {
   try {
+    if (!group.id) return rejectWithValue("Нет ID группы");
     const res = await UpdateGroupByID({
       group_id: group.id,
       new_course: Number(group.dateNameGroup.course),
@@ -148,6 +149,7 @@ export const deleteGroupsThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/deleteGroups", async (groupsId, { rejectWithValue }) => {
   try {
+    if (!groupsId) return rejectWithValue("Нет ID группы");
     const res = await DeleteGroupByID({
       group_id: groupsId,
     });
@@ -176,6 +178,7 @@ export const duplicateGroupThunks = createAsyncThunk<
   ThunkConfig
 >("userFiles/duplicateGroup", async (groupId, { rejectWithValue }) => {
   try {
+    if (!groupId) return rejectWithValue("Нет ID группы");
     const res = await DuplicateGroupAllData({ GroupId: groupId });
     const resGroup = res.GrpAndSUbj;
     console.log("resGroup", resGroup);
@@ -232,10 +235,11 @@ export const addDisciplinesThunks = createAsyncThunk<
   "userFiles/addDisciplines",
   async ({ groupId, newTitle, semester }, { rejectWithValue }) => {
     try {
+      if (!groupId) return rejectWithValue("Нет ID группы");
       const res = await AddSubjectByGroupID({
         group_id: groupId,
         new_subject: newTitle,
-        Semester: semester,
+        Semester: Number(semester),
       });
       console.log("AddSubjectByGroupID", res);
       if (res?.code === 200 && res?.id) {
@@ -282,6 +286,7 @@ export const updateDisciplinesThunks = createAsyncThunk<
   "userFiles/updateDiscipline",
   async ({ groupId, semester, discId, newTitle }, { rejectWithValue }) => {
     try {
+      if (!discId) return rejectWithValue("Нет ID disc");
       const res = await UpdateSubjectByID({
         subject_id: discId,
         new_subject: newTitle,
@@ -329,6 +334,7 @@ export const deleteDisciplinesThunks = createAsyncThunk<
   "userFiles/deleteDisciplines",
   async ({ groupId, semester, discId }, { rejectWithValue }) => {
     try {
+      if (!discId) return rejectWithValue("Нет ID disc");
       const res = await DeleteSubjectByID({
         subject_id: discId,
       });

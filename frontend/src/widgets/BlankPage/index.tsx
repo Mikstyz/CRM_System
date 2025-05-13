@@ -4,7 +4,6 @@ import { EditableTitle } from "@/shared/ui/EditableTitle";
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MIN_SEMESTER, MAX_SEMESTER } from "@/shared/const";
 import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
 import { useEffect, useState } from "react";
 import { selectBlank } from "@/entities/blank/store/selectors.ts";
@@ -12,14 +11,48 @@ import { setStudent } from "@/entities/blank/store";
 import { Group } from "@/entities/group/types";
 
 import { handleTitleGroupSave } from "@/shared/lib/headers/titleGroupSave.ts";
+import { GraduatesToggle } from "@/shared/ui/GraduatesToggle";
+import { Student } from "@/entities/student/types";
+import {
+  deleteStudentThunks,
+  generatePdfThunks,
+  saveOrUpdateStudentThunks,
+} from "@/entities/blank/store/thunks.ts";
 
 export function BlankPage({ group }: { group: Group | undefined }) {
   const [err, setErr] = useState<string | null>(null);
   const dispatch = useAppDispatch();
-  const { selectStudent, studentsData, semester } = useAppSelector(selectBlank);
+  const {
+    selectStudent,
+    // studentsData,
+    semester,
+  } = useAppSelector(selectBlank);
+  const studentsData: Student[] = [
+    {
+      id: 1,
+      fullName: "Кванов Иван Иванович",
+      company: "ООО «Рога и копыта»",
+      startDateWork: new Date().toISOString().slice(0, 10),
+      position: "Стажер",
+    },
+    {
+      id: 2,
+      fullName: "Иванов Иван",
+      company: "ООО «Рога и копыта»",
+      startDateWork: new Date().toISOString().slice(0, 10),
+      position: "Стажер",
+    },
+    {
+      id: 3,
+      fullName: "Ивов Иван Иванович",
+      company: "ООО «Рога и копыта»",
+      startDateWork: new Date().toISOString().slice(0, 10),
+      position: "Стажер",
+    },
+  ];
 
   /* ---------- 1. Updated Zod schema to fix resolver type mismatch ---------- */
-  const semesterEnum = ["1", "2", "3", "4"] as const;
+  const semesterEnum = ["1", "2"] as const;
   type Semester = (typeof semesterEnum)[number];
 
   // Updated preprocessing function with proper typing
@@ -37,7 +70,7 @@ export function BlankPage({ group }: { group: Group | undefined }) {
       .optional(),
     studentName: z.string().min(1, "Обязательное поле"),
     company: z.string().optional(),
-    startDate: z.date(),
+    startDate: z.string().optional(),
     position: z.string().min(2),
   });
   type FormValues = z.infer<typeof schema>;
@@ -47,6 +80,8 @@ export function BlankPage({ group }: { group: Group | undefined }) {
     register,
     handleSubmit,
     setValue,
+    setError,
+    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema), // generic выводится автоматически
@@ -54,7 +89,7 @@ export function BlankPage({ group }: { group: Group | undefined }) {
       semester: "1",
       studentName: "",
       company: "",
-      startDate: new Date(),
+      startDate: "",
       position: "",
     },
   });
@@ -90,6 +125,35 @@ export function BlankPage({ group }: { group: Group | undefined }) {
     setValue("position", selectStudent?.position ?? "");
   }, [setValue, semester]);
 
+  const onSave = async (values: FormValues) => {
+    if (!group) return;
+    /* формируем объект */
+    const student: Student = {
+      id: selectStudent?.id ?? 0, // 0 → create
+      fullName: values.studentName,
+      company: values.company,
+      startDateWork: values.startDate,
+      position: values.position,
+    };
+
+    await dispatch(saveOrUpdateStudentThunks({ groupId: group.id, student }));
+  };
+
+  const onDownload = async (values: FormValues) => {
+    if (!group) return;
+    await onSave(values); // save OR update
+    const latest = selectStudent
+      ? { ...selectStudent, ...values }
+      : { id: 0, ...values }; // fallback (не должно случиться)
+    await dispatch(
+      generatePdfThunks({
+        group,
+        student: latest as Student,
+        semester: values.semester as Semester,
+      }),
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 w-full">
       <div className="flex items-center justify-between">
@@ -117,39 +181,47 @@ export function BlankPage({ group }: { group: Group | undefined }) {
       </div>
 
       <div className="flex gap-4">
-        <label className="flex flex-col w-24">
-          <span className="font-semibold">Семестр</span>
-          <input
-            type="number"
-            min={MIN_SEMESTER}
-            max={MAX_SEMESTER}
-            {...register("semester", { valueAsNumber: true })}
-            className="border rounded p-1"
+        <div className="col-2">
+          <GraduatesToggle
+            title="Семестр:"
+            variant={["1", "2"]}
+            onChange={(num) => {
+              setValue("semester", num as Semester);
+              setError("semester", {});
+            }}
+            value={getValues("semester")}
+            error={errors.semester?.message}
           />
-          {errors.semester && (
-            <span className="text-red-500 text-xs">
-              {errors.semester.message}
-            </span>
-          )}
-        </label>
-
-        <VirtualizedSearch
-          data={studentsData}
-          placeholder="Введите ФИО..."
-          maxDropdownHeight={200}
-          onSelect={(s) => {
-            // 1) пишем ФИО в форму
-            setValue("studentName", s.fullName, { shouldValidate: true });
-            // 2) сохраняем id + ФИО в blankSlice
-            dispatch(setStudent({ id: s.id, fullName: s.fullName }));
-          }}
-        />
+        </div>
+        <div className="col-4">
+          <VirtualizedSearch
+            data={studentsData}
+            placeholder="Введите ФИО..."
+            maxDropdownHeight={200}
+            onSelect={(s) => {
+              setValue("studentName", s.fullName, { shouldValidate: true });
+              dispatch(setStudent({ id: s.id, fullName: s.fullName }));
+              setValue("company", s.company ?? "");
+              setValue("startDate", s.startDateWork ?? "");
+              setValue("position", s.position ?? "");
+            }}
+            error={errors.studentName?.message}
+          />
+        </div>
+        {selectStudent?.id && (
+          <button
+            type="button"
+            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+            onClick={() =>
+              dispatch(deleteStudentThunks(selectStudent.id)).then(() =>
+                setValue("studentName", ""),
+              )
+            }
+          >
+            Удалить
+          </button>
+        )}
       </div>
-      {errors.studentName && (
-        <span className="text-red-500 text-xs">
-          {errors.studentName.message}
-        </span>
-      )}
 
       <label className="block max-w-sm">
         <span className="font-semibold">Предприятие</span>
@@ -193,13 +265,14 @@ export function BlankPage({ group }: { group: Group | undefined }) {
         <button
           type="submit"
           className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded"
+          onClick={handleSubmit(onSave)}
         >
           Сохранить
         </button>
         <button
           type="button"
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded"
-          onClick={() => console.log("download")}
+          onClick={handleSubmit(onDownload)}
         >
           Скачать бланк
         </button>
