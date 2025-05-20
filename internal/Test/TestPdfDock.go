@@ -18,6 +18,8 @@ func Test_GenerateFilledPDF() (int, int, error) {
 		Enterprise:    "ООО Ромашка",
 		WorkStartDate: "2025-04-27",
 		JobTitle:      "Программист",
+		GroupId:       49,
+		Semester:      1,
 	}
 
 	pdfBytes, err := utils.GenerateFiledPDF(dataPdf)
@@ -43,6 +45,8 @@ func Test_GenerateFilledPDF() (int, int, error) {
 		Enterprise:    "ООО Ромашка",
 		WorkStartDate: "2025-04-27",
 		JobTitle:      "Программист",
+		GroupId:       49,
+		Semester:      1,
 	}
 
 	pdfBytes, err = utils.GenerateFiledPDF(dataPdfInvalid)

@@ -39,9 +39,11 @@ import (
 
 	//test "CRM_System/Backend/internal/utils"
 
-	"CRM_System/internal/Test"
 	"CRM_System/internal/db"
+	models "CRM_System/internal/models"
+	"CRM_System/internal/utils"
 	"fmt"
+	"log"
 
 	_ "modernc.org/sqlite"
 )
@@ -51,8 +53,28 @@ func main() {
 
 	db.Init()
 
-	Test.TestAll()
+	//Test.Test_GenerateFilledPDF()
 
+	dataPdf := models.GeneratePDF{
+		StudentName:   "Иван Иванов",
+		Enterprise:    "ООО Ромашка",
+		WorkStartDate: "2025-04-27",
+		JobTitle:      "Программист",
+		GroupId:       49,
+		Semester:      1,
+	}
+
+	pdf, err := utils.GenerateFiledPDF(dataPdf)
+
+	if err != nil {
+		log.Print("Ошибка при генерации документа")
+	}
+
+	if len(pdf) == 0 {
+		log.Print("Документ пуст")
+	}
+
+	utils.SavePDFToFile(pdf, "pdf")
 	//FastTestInf_AllGroupAndSubject()
 
 }

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"CRM_System/internal/models"
+	"CRM_System/internal/routes"
 	"bytes"
 	"fmt"
 	"log"
@@ -26,6 +27,16 @@ func init() {
 
 func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, error) {
 	log.Println("Формирование PDF документа")
+
+	log.Println("Получение предметов группы")
+	SubjectArray, Error := routes.Inf_SubjectByGroupId(Data.GroupId, Data.Semester)
+
+	if Error != nil {
+		log.Fatal("Ошибка при получении предметов группы")
+		return nil, Error
+	}
+
+	log.Print("Получено пердметов группы %d", len(SubjectArray))
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
@@ -65,19 +76,19 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, error) {
 
 	pdf.SetFillColor(255, 255, 255)
 
-	for i := 0; i < 1; i++ {
-		pdf.CellFormat(15, 7, fmt.Sprintf("%d.", i+1), "1", 0, "R", false, 0, "")
-		pdf.CellFormat(120, 7, "_", "1", 0, "L", false, 0, "")
-		pdf.CellFormat(55, 7, "", "1", 0, "C", false, 0, "")
-		pdf.Ln(7)
-	}
-
-	// for i, subject := range Data.SubjectArray {
+	// for i := 0; i < 1; i++ {
 	// 	pdf.CellFormat(15, 7, fmt.Sprintf("%d.", i+1), "1", 0, "R", false, 0, "")
-	// 	pdf.CellFormat(120, 7, subject, "1", 0, "L", false, 0, "")
+	// 	pdf.CellFormat(120, 7, "_", "1", 0, "L", false, 0, "")
 	// 	pdf.CellFormat(55, 7, "", "1", 0, "C", false, 0, "")
 	// 	pdf.Ln(7)
 	// }
+
+	for i, subject := range SubjectArray {
+		pdf.CellFormat(15, 7, fmt.Sprintf("%d.", i+1), "1", 0, "R", false, 0, "")
+		pdf.CellFormat(120, 7, subject, "1", 0, "L", false, 0, "")
+		pdf.CellFormat(55, 7, "", "1", 0, "C", false, 0, "")
+		pdf.Ln(7)
+	}
 
 	pdf.Ln(10)
 	pdf.SetFontSize(12)
