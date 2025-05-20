@@ -127,7 +127,7 @@ func SavePDFToFile(pdfBytes []byte, fileName string) error {
 		return err
 	}
 
-	savePath := filepath.Join(wd, "Data", "Excel", fileName)
+	savePath := filepath.Join(wd, "Data", "Pdf_Document", fileName)
 
 	dir := filepath.Dir(savePath)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
