@@ -32,7 +32,7 @@ export default defineConfig({
   root: ".", // корень — frontend
   base: "./", // относительные пути в сборке
   build: {
-    outDir: "../build", // собираем в ../build
+    outDir: "./dist", // собираем в ../build
     emptyOutDir: true,
   },
 });
