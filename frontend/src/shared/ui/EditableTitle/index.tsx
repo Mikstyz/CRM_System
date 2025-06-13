@@ -12,6 +12,7 @@ interface EditableTitleProps {
  * @param initialValue Стартовое значение заголовка.
  * @param onSave Колбэк, вызывается при потере фокуса или на Enter.
  * @param className
+ * @param error
  */
 export function EditableTitle({
   initialValue = "",
