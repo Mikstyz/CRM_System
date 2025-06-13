@@ -10,12 +10,13 @@ import { selectBlank } from "@/entities/blank/store/selectors.ts";
 import { closeBlank } from "@/entities/blank/store";
 import { ModalErrorBoundary } from "@/widgets/ModalErrorBoundary";
 import { ListGroup } from "@/features/ListGroup";
+import { Group } from "@/entities/group/types";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
   const { isOpen, groupId } = useAppSelector(selectBlank);
   const groups = useAppSelector(selectFilteredGroups);
-  const currentGroup = groups.find((g) => g.id === groupId);
+  const currentGroup = groups.find((g) => g.id === groupId) as Group;
 
   useEffect(() => {
     dispatch(clearErrors());
