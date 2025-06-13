@@ -1,8 +1,9 @@
 package repository
 
 import (
-	db "CRM_System/internal/db"
-	"CRM_System/internal/models"
+	db "CRM_System/app/storage/db"
+	"CRM_System/app/storage/models"
+
 	"context"
 	"database/sql"
 	"log"
@@ -91,9 +92,9 @@ func InfDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Grou
 
 		switch semester {
 		case 1:
-			result.FirstSemester = append(result.FirstSemester, discipline)
+			result.OneSemester = append(result.OneSemester, discipline)
 		case 2:
-			result.SecondSemester = append(result.SecondSemester, discipline)
+			result.TwoSemester = append(result.TwoSemester, discipline)
 		default:
 			log.Printf("Неизвестный семестр: %d для предмета %s", semester, subjectName)
 		}
@@ -104,7 +105,7 @@ func InfDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Grou
 		return models.DisciplinesBySemester{}, err
 	}
 
-	log.Printf("Получено предметов: семестр 1 — %d шт., семестр 2 — %d шт.", len(result.FirstSemester), len(result.SecondSemester))
+	log.Printf("Получено предметов: семестр 1 — %d шт., семестр 2 — %d шт.", len(result.OneSemester), len(result.TwoSemester))
 	return result, nil
 }
 

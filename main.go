@@ -1,83 +1,83 @@
 package main
 
-// import (
-// 	"embed"
-
-// 	"github.com/wailsapp/wails/v2"
-// 	"github.com/wailsapp/wails/v2/pkg/options"
-// 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-// )
-
-// //go:embed all:frontend/dist
-// var assets embed.FS
-
-// func main() {
-// 	// Create an instance of the app structure
-// 	app := NewApp()
-
-// 	// Create application with options
-// 	err := wails.Run(&options.App{
-// 		Title:  "CRM_System",
-// 		Width:  1024,
-// 		Height: 768,
-// 		AssetServer: &assetserver.Options{
-// 			Assets: assets,
-// 		},
-// 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-// 		OnStartup:        app.startup,
-// 		Bind: []interface{}{
-// 			app,
-// 		},
-// 	})
-
-// 	if err != nil {
-// 		println("Error:", err.Error())
-// 	}
-// }
-
 import (
+	"embed"
 
-	//test "CRM_System/Backend/internal/utils"
-
-	"CRM_System/internal/db"
-	models "CRM_System/internal/models"
-	"CRM_System/internal/utils"
-	"fmt"
-	"log"
-
-	_ "modernc.org/sqlite"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
+//go:embed all:frontend/dist
+var assets embed.FS
+
 func main() {
-	fmt.Println("Ну типо запуск")
+	// Create an instance of the app structure
+	app := NewApp()
 
-	db.Init()
-
-	//Test.Test_GenerateFilledPDF()
-
-	dataPdf := models.GeneratePDF{
-		StudentName:   "Иван Иванов",
-		Enterprise:    "ООО Ромашка",
-		WorkStartDate: "2025-04-27",
-		JobTitle:      "Программист",
-		GroupId:       49,
-		Semester:      1,
-	}
-
-	pdf, err := utils.GenerateFiledPDF(dataPdf)
+	// Create application with options
+	err := wails.Run(&options.App{
+		Title:  "CRM_System",
+		Width:  1024,
+		Height: 768,
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		OnStartup:        app.startup,
+		Bind: []interface{}{
+			app,
+		},
+	})
 
 	if err != nil {
-		log.Print("Ошибка при генерации документа")
+		println("Error:", err.Error())
 	}
-
-	if len(pdf) == 0 {
-		log.Print("Документ пуст")
-	}
-
-	utils.SavePDFToFile(pdf, "pdf")
-	//FastTestInf_AllGroupAndSubject()
-
 }
+
+// import (
+
+// 	//test "CRM_System/Backend/internal/utils"
+
+// 	"CRM_System/internal/db"
+// 	models "CRM_System/internal/models"
+// 	"CRM_System/internal/utils"
+// 	"fmt"
+// 	"log"
+
+// 	_ "modernc.org/sqlite"
+// )
+
+// func main() {
+// 	fmt.Println("Ну типо запуск")
+
+// 	db.Init()
+
+// 	//Test.Test_GenerateFilledPDF()
+
+// 	dataPdf := models.GeneratePDF{
+// 		StudentName:   "Иван Иванов",
+// 		Enterprise:    "ООО Ромашка",
+// 		WorkStartDate: "2025-04-27",
+// 		JobTitle:      "Программист",
+// 		GroupId:       49,
+// 		Semester:      1,
+// 	}
+
+// 	pdf, err := utils.GenerateFiledPDF(dataPdf)
+
+// 	if err != nil {
+// 		log.Print("Ошибка при генерации документа")
+// 	}
+
+// 	if len(pdf) == 0 {
+// 		log.Print("Документ пуст")
+// 	}
+
+// 	utils.SavePDFToFile(pdf, "pdf")
+// 	//FastTestInf_AllGroupAndSubject()
+
+// }
 
 // func FastTestInf_AllGroupAndSubject() {
 // 	data, err := routes.Inf_AllGroupAndSubject()

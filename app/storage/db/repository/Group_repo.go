@@ -1,15 +1,15 @@
 package repository
 
 import (
-	"CRM_System/internal/db"
-	"CRM_System/internal/models"
+	db "CRM_System/app/storage/db"
+	"CRM_System/app/storage/models"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 )
 
-// ----------------------information--------------------------
+// --------------------------Информаия о всех группах--------------------------
 // InfAllGrp возвращает список всех групп.
 func InfAllGrp() ([]models.EinfGroup, error) {
 	const query = `
@@ -48,28 +48,6 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 	}
 
 	return groups, nil
-}
-
-// InfGroupById возвращает данные группы по её ID.
-func InfGroupById(GroupId int) (models.EinfGroup, error) {
-	const query = `SELECT Id, Course, Speciality, Groudates, GroupNum FROM einf_groups WHERE Id = ?`
-
-	db.Init()
-
-	var Group models.EinfGroup
-	err := db.DB.QueryRow(query, GroupId).Scan(
-		&Group.Id,
-		&Group.Course,
-		&Group.Speciality,
-		&Group.Groudates,
-		&Group.Number,
-	)
-	if err != nil {
-		log.Printf("Ошибка при получении данных группы: %v", err)
-		return models.EinfGroup{}, err
-	}
-
-	return Group, nil
 }
 
 // InfAllGrpWithSubjects возвращает список всех групп и их предметов.
@@ -128,8 +106,8 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 				Groduates:  groudates,
 				Number:     groupNum,
 				Subject: models.DisciplinesBySemester{
-					FirstSemester:  []models.SemesterDiscipline{},
-					SecondSemester: []models.SemesterDiscipline{},
+					OneSemester: []models.SemesterDiscipline{},
+					TwoSemester: []models.SemesterDiscipline{},
 				},
 			}
 		}
@@ -141,9 +119,9 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 			}
 
 			if semester.Int64 == 1 {
-				groupMap[groupID].Subject.FirstSemester = append(groupMap[groupID].Subject.FirstSemester, discipline)
+				groupMap[groupID].Subject.OneSemester = append(groupMap[groupID].Subject.OneSemester, discipline)
 			} else if semester.Int64 == 2 {
-				groupMap[groupID].Subject.SecondSemester = append(groupMap[groupID].Subject.SecondSemester, discipline)
+				groupMap[groupID].Subject.TwoSemester = append(groupMap[groupID].Subject.TwoSemester, discipline)
 			}
 		}
 	}
@@ -159,6 +137,29 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	}
 
 	return result, nil
+}
+
+// --------------------------Информация про группу--------------------------
+// InfGroupById возвращает данные группы по её ID.
+func InfGroupById(GroupId int) (models.EinfGroup, error) {
+	const query = `SELECT Id, Course, Speciality, Groudates, GroupNum FROM einf_groups WHERE Id = ?`
+
+	db.Init()
+
+	var Group models.EinfGroup
+	err := db.DB.QueryRow(query, GroupId).Scan(
+		&Group.Id,
+		&Group.Course,
+		&Group.Speciality,
+		&Group.Groudates,
+		&Group.Number,
+	)
+	if err != nil {
+		log.Printf("Ошибка при получении данных группы: %v", err)
+		return models.EinfGroup{}, err
+	}
+
+	return Group, nil
 }
 
 // InfGrpWithSubjectsById возвращает инфу о группе и ее предметы.
@@ -219,8 +220,8 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 				Groduates:  groudates,
 				Number:     groupNum,
 				Subject: models.DisciplinesBySemester{
-					FirstSemester:  []models.SemesterDiscipline{},
-					SecondSemester: []models.SemesterDiscipline{},
+					OneSemester: []models.SemesterDiscipline{},
+					TwoSemester: []models.SemesterDiscipline{},
 				},
 			}
 			initialized = true
@@ -233,9 +234,9 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 			}
 
 			if semester.Int64 == 1 {
-				result.Subject.FirstSemester = append(result.Subject.FirstSemester, discipline)
+				result.Subject.OneSemester = append(result.Subject.OneSemester, discipline)
 			} else if semester.Int64 == 2 {
-				result.Subject.SecondSemester = append(result.Subject.SecondSemester, discipline)
+				result.Subject.TwoSemester = append(result.Subject.TwoSemester, discipline)
 			}
 		}
 	}
@@ -252,6 +253,7 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	return result, nil
 }
 
+// --------------------------Инструменты--------------------------
 // MaxNumberByParams возвращает максимальный Id группы.
 func MaxNumberByParams(course byte, groudates byte, speciality string) (int, error) {
 	const query = `
@@ -265,10 +267,31 @@ func MaxNumberByParams(course byte, groudates byte, speciality string) (int, err
 	var maxGroupNum int
 	err := db.DB.QueryRow(query, course, groudates, speciality).Scan(&maxGroupNum)
 	if err != nil {
-		return 0, fmt.Errorf("не смогла получить максимальный GroupNum: %w", err)
+		return 0, fmt.Errorf("не получилось получить максимальный GroupNum: %w", err)
 	}
 
 	return maxGroupNum, nil
+}
+
+// GetGroupIDByParams возвращает ID группы по параметрам.
+func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum int) (int, error) {
+	const query = `
+		SELECT Id FROM einf_groups
+		WHERE Speciality = ? AND GroupNum = ? AND Course = ? AND Groudates = ?`
+
+	db.Init()
+
+	var groupID int
+	err := db.DB.QueryRow(query, speciality, groupNum, course, groudates).Scan(&groupID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, fmt.Errorf("группа с указанными параметрами не найдена")
+		}
+		log.Printf("Ошибка при получении ID группы: %v", err)
+		return 0, fmt.Errorf("ошибка при получении ID группы: %w", err)
+	}
+
+	return groupID, nil
 }
 
 // ----------------------Manager--------------------------
@@ -341,25 +364,4 @@ func DelGrp(GroupId int) (bool, error) {
 	}
 
 	return true, nil
-}
-
-// GetGroupIDByParams возвращает ID группы по параметрам.
-func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum int) (int, error) {
-	const query = `
-		SELECT Id FROM einf_groups
-		WHERE Speciality = ? AND GroupNum = ? AND Course = ? AND Groudates = ?`
-
-	db.Init()
-
-	var groupID int
-	err := db.DB.QueryRow(query, speciality, groupNum, course, groudates).Scan(&groupID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return 0, fmt.Errorf("группа с указанными параметрами не найдена")
-		}
-		log.Printf("Ошибка при получении ID группы: %v", err)
-		return 0, fmt.Errorf("ошибка при получении ID группы: %w", err)
-	}
-
-	return groupID, nil
 }

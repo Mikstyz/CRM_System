@@ -1,8 +1,8 @@
 package routes
 
 import (
-	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/models"
+	repo "CRM_System/app/storage/db/repository"
+	"CRM_System/app/storage/models"
 	"fmt"
 )
 

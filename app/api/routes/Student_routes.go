@@ -1,8 +1,8 @@
 package routes
 
 import (
-	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/models"
+	repo "CRM_System/app/storage/db/repository"
+	"CRM_System/app/storage/models"
 	"fmt"
 )
 
@@ -32,7 +32,7 @@ func Inf_StudentByID(studentID int) (models.Student, error) {
 }
 
 func Inf_StudentByGroup(groupId int) ([]models.Student, error) {
-	result, err := repo.GetStudentByGroup(groupId)
+	result, err := repo.InfStudentByGroup(groupId)
 
 	if err != nil {
 		fmt.Println("Ошибка при получении студентов группы")

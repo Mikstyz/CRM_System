@@ -6,6 +6,6 @@ type SemesterDiscipline struct {
 }
 
 type DisciplinesBySemester struct {
-	FirstSemester  []SemesterDiscipline `json:"firstSemester"`
-	SecondSemester []SemesterDiscipline `json:"secondSemester"`
+	OneSemester []SemesterDiscipline `json:"OneSemester"`
+	TwoSemester []SemesterDiscipline `json:"TwoSemester"`
 }

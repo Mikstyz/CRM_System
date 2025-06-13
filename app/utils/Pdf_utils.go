@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"CRM_System/internal/models"
-	"CRM_System/internal/routes"
+	"CRM_System/app/api/routes"
+	"CRM_System/app/storage/models"
 	"bytes"
 	"fmt"
 	"log"

@@ -5,74 +5,88 @@ import (
 	"fmt"
 	"log"
 
-	db "CRM_System/internal/db"
-	"CRM_System/internal/models"
+	db "CRM_System/app/storage/db"
+	"CRM_System/app/storage/models"
 
 	_ "modernc.org/sqlite"
 )
 
-// ----------------------information--------------------------
-// InfStdByGroup возвращает список всех студентов с их GroupId.
-func InfStdByGroup() ([]models.Student, error) {
+// ----------------------Информация о студенте----------------------
+// InfStudentByID возвращает данные студента по его ID.
+func InfStudentByID(studentID int) (models.Student, error) {
+	log.Println("Получение информации о студенте по ID")
+
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
             s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
-        JOIN einf_groups g ON s.GroupId = g.Id`
+        JOIN einf_groups g ON s.GroupId = g.Id
+        WHERE s.id = ?`
 
 	db.Init()
 
-	rows, err := db.DB.Query(query)
+	var (
+		student       models.Student
+		enterprise    sql.NullString
+		workStartDate sql.NullString
+		jobTitle      sql.NullString
+	)
+
+	err := db.DB.QueryRow(query, studentID).Scan(
+		&student.ID,
+		&student.FullName,
+		&student.GroupId,
+		&enterprise,
+		&workStartDate,
+		&jobTitle,
+	)
 	if err != nil {
-		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
-	}
-	defer rows.Close()
-
-	var students []models.Student
-	for rows.Next() {
-		var (
-			s             models.Student
-			enterprise    sql.NullString
-			workStartDate sql.NullString
-			jobTitle      sql.NullString
-		)
-
-		err := rows.Scan(
-			&s.ID,
-			&s.FullName,
-			&s.GroupId,
-			&enterprise,
-			&workStartDate,
-			&jobTitle,
-		)
-		if err != nil {
-			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
-		}
-
-		s.Enterprise = nil
-		if enterprise.Valid {
-			s.Enterprise = &enterprise.String
-		}
-		s.WorkStartDate = nil
-		if workStartDate.Valid {
-			s.WorkStartDate = &workStartDate.String
-		}
-		s.JobTitle = nil
-		if jobTitle.Valid {
-			s.JobTitle = &jobTitle.String
-		}
-
-		students = append(students, s)
+		log.Printf("Ошибка при получении студента: %v", err)
+		return models.Student{}, err
 	}
 
-	if err := rows.Err(); err != nil {
-		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
+	student.Enterprise = nil
+	if enterprise.Valid {
+		student.Enterprise = &enterprise.String
+	}
+	student.WorkStartDate = nil
+	if workStartDate.Valid {
+		student.WorkStartDate = &workStartDate.String
+	}
+	student.JobTitle = nil
+	if jobTitle.Valid {
+		student.JobTitle = &jobTitle.String
 	}
 
-	return students, nil
+	return student, nil
 }
 
+// InfIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
+func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
+	const query = `
+	SELECT s.Id
+	FROM students s
+	JOIN einf_groups g ON s.GroupId = g.Id
+	WHERE s.FullName = ? AND g.Course = ? AND g.Speciality = ? AND g.Groudates = ? AND g.GroupNum = ?
+	`
+
+	db.Init()
+
+	var studentId int
+	err := db.DB.QueryRow(query, StudentName, Course, Speciality, Groduates, Number).Scan(&studentId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("студент не найден по указанным данным")
+		}
+		log.Printf("Ошибка при получении ID студента: %v", err)
+		return 0, err
+	}
+
+	return studentId, nil
+}
+
+// ----------------------Информация о студентах----------------------
 // InfStudentByGroup возвращает студентов по ID группы.
 func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	log.Printf("Получение студентов по группе ID=%d", GroupId)
@@ -137,93 +151,18 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	return students, nil
 }
 
-// InfIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
-func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
-	const query = `
-	SELECT s.Id
-	FROM students s
-	JOIN einf_groups g ON s.GroupId = g.Id
-	WHERE s.FullName = ? AND g.Course = ? AND g.Speciality = ? AND g.Groudates = ? AND g.GroupNum = ?
-	`
-
-	db.Init()
-
-	var studentId int
-	err := db.DB.QueryRow(query, StudentName, Course, Speciality, Groduates, Number).Scan(&studentId)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("студент не найден по указанным данным")
-		}
-		log.Printf("Ошибка при получении ID студента: %v", err)
-		return 0, err
-	}
-
-	return studentId, nil
-}
-
-// InfStudentByID возвращает данные студента по его ID.
-func InfStudentByID(studentID int) (models.Student, error) {
-	log.Println("Получение информации о студенте по ID")
-
+// InfStdByGroup возвращает список всех студентов с их GroupId.
+func InfStdByGroup() ([]models.Student, error) {
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,
             s.enterprise, s.workstartdate, s.jobtitle
         FROM students s
-        JOIN einf_groups g ON s.GroupId = g.Id
-        WHERE s.id = ?`
+        JOIN einf_groups g ON s.GroupId = g.Id`
 
 	db.Init()
 
-	var (
-		student       models.Student
-		enterprise    sql.NullString
-		workStartDate sql.NullString
-		jobTitle      sql.NullString
-	)
-
-	err := db.DB.QueryRow(query, studentID).Scan(
-		&student.ID,
-		&student.FullName,
-		&student.GroupId,
-		&enterprise,
-		&workStartDate,
-		&jobTitle,
-	)
-	if err != nil {
-		log.Printf("Ошибка при получении студента: %v", err)
-		return models.Student{}, err
-	}
-
-	student.Enterprise = nil
-	if enterprise.Valid {
-		student.Enterprise = &enterprise.String
-	}
-	student.WorkStartDate = nil
-	if workStartDate.Valid {
-		student.WorkStartDate = &workStartDate.String
-	}
-	student.JobTitle = nil
-	if jobTitle.Valid {
-		student.JobTitle = &jobTitle.String
-	}
-
-	return student, nil
-}
-
-// GetStudentByGroup возвращает студентов по GroupId.
-func GetStudentByGroup(groupId int) ([]models.Student, error) {
-	const query = `
-        SELECT 
-            s.id, s.FullName, s.GroupId,
-            s.enterprise, s.workstartdate, s.jobtitle
-        FROM students s
-        JOIN einf_groups g ON s.GroupId = g.Id
-        WHERE s.GroupId = ?`
-
-	db.Init()
-
-	rows, err := db.DB.Query(query, groupId)
+	rows, err := db.DB.Query(query)
 	if err != nil {
 		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
 	}

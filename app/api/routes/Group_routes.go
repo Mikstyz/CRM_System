@@ -1,8 +1,8 @@
 package routes
 
 import (
-	repo "CRM_System/internal/db/repository"
-	"CRM_System/internal/models"
+	repo "CRM_System/app/storage/db/repository"
+	"CRM_System/app/storage/models"
 	"fmt"
 )
 
@@ -82,6 +82,7 @@ func Delete_GroupById(GroupId int) (bool, error) {
 	return result, nil
 }
 
+// ----------------------Дублирование группы----------------------
 func DublicateGroupAllData(GroupId int) (models.InFGroupAndSubject, error) {
 	Group, err := repo.InfGroupById(GroupId)
 	if err != nil {

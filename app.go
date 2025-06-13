@@ -1,10 +1,11 @@
 package main
 
 import (
-	dtos "CRM_System/internal/DTOs"
-	models "CRM_System/internal/models"
-	routes "CRM_System/internal/routes"
-	"CRM_System/internal/utils"
+	dtos "CRM_System/app/api/DTOs"
+	routes "CRM_System/app/api/routes"
+	"CRM_System/app/storage/models"
+	"CRM_System/app/utils"
+
 	"context"
 	"fmt"
 )

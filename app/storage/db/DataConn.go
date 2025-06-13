@@ -18,7 +18,7 @@ var DB *sql.DB
 func Init() {
 	cwd, _ := os.Getwd()
 
-	dbPath := filepath.Join(cwd, "Data", "Sql", "stud.db")
+	dbPath := filepath.Join(cwd, "app", "Data", "Sql", "stud.db")
 
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Fatalf("База данных не существует по пути: %s", dbPath)
