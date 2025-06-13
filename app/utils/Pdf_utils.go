@@ -36,7 +36,7 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, error) {
 		return nil, Error
 	}
 
-	log.Print("[utils][pdf] - Получено пердметов группы %d", len(SubjectArray))
+	log.Printf("[utils][pdf] - Получено предметов группы %d", len(SubjectArray))
 
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
