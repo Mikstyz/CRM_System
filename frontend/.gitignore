@@ -9,6 +9,7 @@ lerna-debug.log*
 
 *package-lock.json
 package.json.md5
+tsconfig.tsbuildinfo
 wailsjs
 .idea
 node_modules
