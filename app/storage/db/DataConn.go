@@ -21,14 +21,14 @@ func Init() {
 	dbPath := filepath.Join(cwd, "app", "Data", "Sql", "stud.db")
 
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-		log.Fatalf("База данных не существует по пути: %s", dbPath)
+		log.Fatalf("[db][conn] - База данных не существует по пути: %s", dbPath)
 	}
 
 	// Открываем соединение с БД
 	var err error
 	DB, err = sql.Open("sqlite", dbPath)
 	if err != nil {
-		log.Fatalf("Ошибка при подключении к БД: %v", err)
+		log.Fatalf("[db][conn] - Ошибка при подключении к БД: %v", err)
 	}
 
 	// Проверяем, доступна ли база данных
@@ -39,11 +39,11 @@ func Init() {
 
 func PingDB() error {
 	if DB == nil {
-		return fmt.Errorf("База данных не инициализирована")
+		return fmt.Errorf("[db][conn] - База данных не инициализирована")
 	}
 
 	if err := DB.Ping(); err != nil {
-		return fmt.Errorf("не удается подключиться к базе данных: %v", err)
+		return fmt.Errorf("[db][conn] - не удается подключиться к базе данных: %v", err)
 	}
 
 	return nil

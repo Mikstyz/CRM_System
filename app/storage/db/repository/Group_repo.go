@@ -21,7 +21,7 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		log.Printf("Ошибка при получении групп: %v", err)
+		log.Printf("[db][Group] - Ошибка при получении групп: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -36,14 +36,14 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 			&group.Groudates,
 			&group.Number,
 		); err != nil {
-			log.Printf("Ошибка при сканировании группы: %v", err)
+			log.Printf("[db][Group] - Ошибка при сканировании группы: %v", err)
 			continue
 		}
 		groups = append(groups, group)
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Printf("Ошибка при чтении групп: %v", err)
+		log.Printf("[db][Group] - Ошибка при чтении групп: %v", err)
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		log.Printf("Ошибка при получении групп с предметами: %v", err)
+		log.Printf("[db][Group] - Ошибка при получении групп с предметами: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -94,7 +94,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 			&subjectName,
 			&semester,
 		); err != nil {
-			log.Printf("Ошибка при сканировании строки: %v", err)
+			log.Printf("[db][Group] - Ошибка при сканировании строки: %v", err)
 			continue
 		}
 
@@ -127,7 +127,7 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Printf("Ошибка при чтении строк: %v", err)
+		log.Printf("[db][Group] - Ошибка при чтении строк: %v", err)
 		return nil, err
 	}
 
@@ -155,7 +155,7 @@ func InfGroupById(GroupId int) (models.EinfGroup, error) {
 		&Group.Number,
 	)
 	if err != nil {
-		log.Printf("Ошибка при получении данных группы: %v", err)
+		log.Printf("[db][Group] - Ошибка при получении данных группы: %v", err)
 		return models.EinfGroup{}, err
 	}
 
@@ -178,7 +178,7 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 
 	rows, err := db.DB.Query(query, groupId)
 	if err != nil {
-		log.Printf("Ошибка при получении группы с предметами: %v", err)
+		log.Printf("[db][Group] - Ошибка при получении группы с предметами: %v", err)
 		return models.InFGroupAndSubject{}, err
 	}
 	defer rows.Close()
@@ -208,7 +208,7 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 			&subjectName,
 			&semester,
 		); err != nil {
-			log.Printf("Ошибка при сканировании строки: %v", err)
+			log.Printf("[db][Group] - Ошибка при сканировании строки: %v", err)
 			continue
 		}
 
@@ -242,12 +242,12 @@ func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Printf("Ошибка при чтении строк: %v", err)
+		log.Printf("[db][Group] - Ошибка при чтении строк: %v", err)
 		return models.InFGroupAndSubject{}, err
 	}
 
 	if !initialized {
-		return models.InFGroupAndSubject{}, fmt.Errorf("группа с ID %d не найдена", groupId)
+		return models.InFGroupAndSubject{}, fmt.Errorf("[db][Group] - группа с ID %d не найдена", groupId)
 	}
 
 	return result, nil
@@ -267,7 +267,7 @@ func MaxNumberByParams(course byte, groudates byte, speciality string) (int, err
 	var maxGroupNum int
 	err := db.DB.QueryRow(query, course, groudates, speciality).Scan(&maxGroupNum)
 	if err != nil {
-		return 0, fmt.Errorf("не получилось получить максимальный GroupNum: %w", err)
+		return 0, fmt.Errorf("[db][Group] - не получилось получить максимальный GroupNum: %w", err)
 	}
 
 	return maxGroupNum, nil
@@ -285,10 +285,10 @@ func GetGroupIDByParams(course byte, groudates byte, speciality string, groupNum
 	err := db.DB.QueryRow(query, speciality, groupNum, course, groudates).Scan(&groupID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, fmt.Errorf("группа с указанными параметрами не найдена")
+			return 0, fmt.Errorf("[db][Group] - группа с указанными параметрами не найдена")
 		}
-		log.Printf("Ошибка при получении ID группы: %v", err)
-		return 0, fmt.Errorf("ошибка при получении ID группы: %w", err)
+		log.Printf("[db][Group] - Ошибка при получении ID группы: %v", err)
+		return 0, fmt.Errorf("[db][Group] - ошибка при получении ID группы: %w", err)
 	}
 
 	return groupID, nil
@@ -307,7 +307,7 @@ func CrtGrp(course byte, groudates byte, speciality string, groupNum int) (int, 
 	var groupId int
 	err := db.DB.QueryRow(query, course, groudates, speciality, groupNum).Scan(&groupId)
 	if err != nil {
-		log.Printf("Ошибка при создании группы: %v", err)
+		log.Printf("[db][Group] - Ошибка при создании группы: %v", err)
 		return 0, err
 	}
 
@@ -331,7 +331,7 @@ func UpdateGrp(groupId int, newCourse byte, newGroudates byte, newSpeciality str
 		return false, nil
 	}
 	if err != nil {
-		log.Printf("Ошибка при обновлении группы: %v", err)
+		log.Printf("[db][Group] - Ошибка при обновлении группы: %v", err)
 		return false, err
 	}
 
@@ -342,7 +342,7 @@ func UpdateGrp(groupId int, newCourse byte, newGroudates byte, newSpeciality str
 func DelGrp(GroupId int) (bool, error) {
 	const query = `DELETE FROM einf_groups WHERE Id = ?`
 
-	log.Printf("Удаляем группу: GroupId=%v", GroupId)
+	log.Printf("[db][Group] - Удаляем группу: GroupId=%v", GroupId)
 
 	db.Init()
 
@@ -354,12 +354,12 @@ func DelGrp(GroupId int) (bool, error) {
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		log.Printf("Ошибка при получении количества удалённых строк: %v", err)
+		log.Printf("[db][Group] - Ошибка при получении количества удалённых строк: %v", err)
 		return false, err
 	}
 
 	if rowsAffected == 0 {
-		log.Println("Группа не найдена")
+		log.Println("[db][Group] - Группа не найдена")
 		return false, nil
 	}
 

@@ -13,7 +13,7 @@ import (
 // ----------------------information--------------------------
 // InfDisciplinesByGroup возвращает список всех предметов для группы по её ID.
 func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
-	log.Println("Получение предметов группы")
+	log.Println("[db][Disciplines] - Получение предметов группы")
 	const query = `SELECT subject_name FROM group_subject WHERE group_id = ? AND semester = ?`
 
 	db.Init()
@@ -23,7 +23,7 @@ func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
 
 	rows, err := db.DB.QueryContext(ctx, query, groupId, semester)
 	if err != nil {
-		log.Printf("Ошибка при получении предметов группы: %v", err)
+		log.Printf("[db][Disciplines] - Ошибка при получении предметов группы: %v", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -32,18 +32,18 @@ func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
 	for rows.Next() {
 		var subjectName string
 		if err := rows.Scan(&subjectName); err != nil {
-			log.Printf("Ошибка при сканировании предметов группы: %v", err)
+			log.Printf("[db][Disciplines] - Ошибка при сканировании предметов группы: %v", err)
 			return nil, err
 		}
 		disciplines = append(disciplines, subjectName)
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Printf("Ошибка при чтении предметов группы: %v", err)
+		log.Printf("[db][Disciplines] - Ошибка при чтении предметов группы: %v", err)
 		return nil, err
 	}
 
-	log.Printf("Получено предметов: %d", len(disciplines))
+	log.Printf("[db][Disciplines] - Получено предметов: %d", len(disciplines))
 	return disciplines, nil
 }
 

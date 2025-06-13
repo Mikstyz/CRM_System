@@ -218,7 +218,7 @@ func (a *App) DuplicateGroupAllData(dto dtos.DublicateGroupDTO) models.AppDunlOu
 // ----------------------------------- Inf_SubjectByGroupId -----------------------------------
 // Inf_SubjectByGroupId получает список предметов для группы по ID
 func (a *App) InfSubjectByGroupID(dto dtos.InfSubjectDTO) models.AppInf_Subject {
-	subjects, err := routes.Inf_SubjectByGroupId(dto.GroupId, dto.Semester)
+	subjects, err := routes.Inf_DisciplinesByGroupId(dto.GroupId, dto.Semester)
 	if err != nil {
 		return models.AppInf_Subject{Code: 500, Error: err.Error()}
 	}
@@ -244,7 +244,7 @@ func (a *App) InfDisciplinesByGroupData(dto dtos.InfDisciplinesByGroupDataDTO) m
 // ----------------------------------- Add_SubjectByGroupId -----------------------------------
 // Add_SubjectByGroupId добавляет предмет для группы
 func (a *App) AddSubjectByGroupID(dto dtos.AddSubjectDTO) models.AppOutSubject {
-	id, err := routes.Add_SubjectByGroupId(dto.GroupId, dto.NewSubject, dto.Semester)
+	id, err := routes.Add_DisciplinesByGroupId(dto.GroupId, dto.NewSubject, dto.Semester)
 	if err != nil {
 		return models.AppOutSubject{Code: 500, Error: err.Error()}
 	}
@@ -260,7 +260,7 @@ func (a *App) AddSubjectByGroupID(dto dtos.AddSubjectDTO) models.AppOutSubject {
 // ----------------------------------- Update_SubjectById -----------------------------------
 // Update_SubjectById обновляет предмет по ID
 func (a *App) UpdateSubjectByID(dto dtos.UpdateSubjectDTO) models.AppOutSubject {
-	status, err := routes.Update_SubjectById(dto.SubjectId, dto.NewSubject)
+	status, err := routes.Update_DisciplinesById(dto.SubjectId, dto.NewSubject)
 	if err != nil || !status {
 		errorMsg := "не удалось обновить предмет"
 		if err != nil {
@@ -278,7 +278,7 @@ func (a *App) UpdateSubjectByID(dto dtos.UpdateSubjectDTO) models.AppOutSubject 
 // ----------------------------------- Delete_SubjectById -----------------------------------
 // Delete_SubjectById удаляет предмет по ID
 func (a *App) DeleteSubjectByID(dto dtos.DeleteSubjectDTO) models.AppRemove {
-	_, err := routes.Delete_SubjectById(dto.SubjectId)
+	_, err := routes.Delete_DisciplinesById(dto.SubjectId)
 	if err != nil {
 		return models.AppRemove{Code: 500, Error: err.Error()}
 	}
@@ -288,7 +288,7 @@ func (a *App) DeleteSubjectByID(dto dtos.DeleteSubjectDTO) models.AppRemove {
 // ----------------------------------- Delete_AllSubjectByGroupId -----------------------------------
 // Delete_AllSubjectByGroupId удаляет все предметы для группы
 func (a *App) DeleteAllSubjectsByGroupID(dto dtos.DeleteAllSubjectByGroupDTO) models.AppRemove {
-	_, err := routes.Delete_AllSubjectByGroupId(dto.GroupId)
+	_, err := routes.Delete_AllDisciplinesByGroupId(dto.GroupId)
 	if err != nil {
 		return models.AppRemove{Code: 500, Error: err.Error()}
 	}

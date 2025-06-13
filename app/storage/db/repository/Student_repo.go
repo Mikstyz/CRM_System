@@ -14,7 +14,7 @@ import (
 // ----------------------Информация о студенте----------------------
 // InfStudentByID возвращает данные студента по его ID.
 func InfStudentByID(studentID int) (models.Student, error) {
-	log.Println("Получение информации о студенте по ID")
+	log.Println("[db][Student] - Получение информации о студенте по ID")
 
 	const query = `
         SELECT 
@@ -42,7 +42,7 @@ func InfStudentByID(studentID int) (models.Student, error) {
 		&jobTitle,
 	)
 	if err != nil {
-		log.Printf("Ошибка при получении студента: %v", err)
+		log.Printf("[db][Student] - Ошибка при получении студента: %v", err)
 		return models.Student{}, err
 	}
 
@@ -77,9 +77,9 @@ func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Grod
 	err := db.DB.QueryRow(query, StudentName, Course, Speciality, Groduates, Number).Scan(&studentId)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return 0, fmt.Errorf("студент не найден по указанным данным")
+			return 0, fmt.Errorf("[db][Student] - студент не найден по указанным данным")
 		}
-		log.Printf("Ошибка при получении ID студента: %v", err)
+		log.Printf("[db][Student] - Ошибка при получении ID студента: %v", err)
 		return 0, err
 	}
 
@@ -89,7 +89,7 @@ func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Grod
 // ----------------------Информация о студентах----------------------
 // InfStudentByGroup возвращает студентов по ID группы.
 func InfStudentByGroup(GroupId int) ([]models.Student, error) {
-	log.Printf("Получение студентов по группе ID=%d", GroupId)
+	log.Printf("[db][Student] - Получение студентов по группе ID=%d", GroupId)
 
 	const query = `
         SELECT 
@@ -103,7 +103,7 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 
 	rows, err := db.DB.Query(query, GroupId)
 	if err != nil {
-		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
+		return []models.Student{}, fmt.Errorf("[db][Student] - не удалось получить студентов: %v", err)
 	}
 	defer rows.Close()
 
@@ -125,7 +125,7 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 			&jobTitle,
 		)
 		if err != nil {
-			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
+			return []models.Student{}, fmt.Errorf("[db][Student] - ошибка при чтении строки: %v", err)
 		}
 
 		s.Enterprise = nil
@@ -145,7 +145,7 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
+		return []models.Student{}, fmt.Errorf("[db][Student] - ошибка после чтения строк: %v", err)
 	}
 
 	return students, nil
@@ -164,7 +164,7 @@ func InfStdByGroup() ([]models.Student, error) {
 
 	rows, err := db.DB.Query(query)
 	if err != nil {
-		return []models.Student{}, fmt.Errorf("не удалось получить студентов: %v", err)
+		return []models.Student{}, fmt.Errorf("[db][Student] - не удалось получить студентов: %v", err)
 	}
 	defer rows.Close()
 
@@ -186,7 +186,7 @@ func InfStdByGroup() ([]models.Student, error) {
 			&jobTitle,
 		)
 		if err != nil {
-			return []models.Student{}, fmt.Errorf("ошибка при чтении строки: %v", err)
+			return []models.Student{}, fmt.Errorf("[db][Student] - ошибка при чтении строки: %v", err)
 		}
 
 		s.Enterprise = nil
@@ -206,7 +206,7 @@ func InfStdByGroup() ([]models.Student, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return []models.Student{}, fmt.Errorf("ошибка после чтения строк: %v", err)
+		return []models.Student{}, fmt.Errorf("[db][Student] - ошибка после чтения строк: %v", err)
 	}
 
 	return students, nil
@@ -215,7 +215,7 @@ func InfStdByGroup() ([]models.Student, error) {
 // ----------------------Manager--------------------------
 // CrtStd создаёт нового студента с пустыми полями трудоустройства.
 func CrtStd(fullName string, groupId int, enterprise string, workstartdate string, jobtitle string) (int, error) {
-	log.Println("Создаю нового студента...")
+	log.Println("[db][Student] - Создаю нового студента...")
 
 	const insertStudentQuery = `
 		INSERT INTO students (FullName, GroupId, enterprise, workstartdate, jobtitle)
@@ -227,17 +227,17 @@ func CrtStd(fullName string, groupId int, enterprise string, workstartdate strin
 	var studentId int
 	err := db.DB.QueryRow(insertStudentQuery, fullName, groupId, enterprise, workstartdate, jobtitle).Scan(&studentId)
 	if err != nil {
-		log.Printf("Ошибка при создании студента: %v", err)
-		return 0, fmt.Errorf("не удалось вставить студента: %v", err)
+		log.Printf("[db][Student] - Ошибка при создании студента: %v", err)
+		return 0, fmt.Errorf("[db][Student] - не удалось вставить студента: %v", err)
 	}
 
-	log.Printf("Студент с ID=%d успешно создан", studentId)
+	log.Printf("[db][Student] - Студент с ID=%d успешно создан", studentId)
 	return studentId, nil
 }
 
 // UpdateStd обновляет данные студента, включая поля трудоустройства.
 func UpdateStd(studId int, newFullName string, newGroupId int, newEnterprise string, newWorkStartDate string, newJobTitle string) (bool, error) {
-	log.Printf("Обновляю данные студента с ID=%d...", studId)
+	log.Printf("[db][Student] - Обновляю данные студента с ID=%d...", studId)
 
 	const updateQuery = `
 		UPDATE students 
@@ -250,21 +250,21 @@ func UpdateStd(studId int, newFullName string, newGroupId int, newEnterprise str
 	var updatedId int
 	err := db.DB.QueryRow(updateQuery, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle, studId).Scan(&updatedId)
 	if err == sql.ErrNoRows {
-		log.Printf("Студент с ID=%d не найден", studId)
+		log.Printf("[db][Student] - Студент с ID=%d не найден", studId)
 		return false, nil
 	}
 	if err != nil {
-		log.Printf("Ошибка при обновлении студента: %v", err)
+		log.Printf("[db][Student] - Ошибка при обновлении студента: %v", err)
 		return false, fmt.Errorf("не удалось обновить данные студента: %v", err)
 	}
 
-	log.Printf("Данные студента с ID=%d успешно обновлены", studId)
+	log.Printf("[db][Student] - Данные студента с ID=%d успешно обновлены", studId)
 	return true, nil
 }
 
 // DelStd удаляет студента по ID.
 func DelStd(studId int) (bool, error) {
-	log.Printf("Удаляю студента с ID=%d...", studId)
+	log.Printf("[db][Student] - Удаляю студента с ID=%d...", studId)
 
 	const query = `DELETE FROM students WHERE id = ? RETURNING id`
 
@@ -273,14 +273,14 @@ func DelStd(studId int) (bool, error) {
 	var deletedId int
 	err := db.DB.QueryRow(query, studId).Scan(&deletedId)
 	if err == sql.ErrNoRows {
-		log.Printf("Студент с ID=%d не найден", studId)
+		log.Printf("[db][Student] - Студент с ID=%d не найден", studId)
 		return false, nil
 	}
 	if err != nil {
-		log.Printf("Ошибка при удалении студента: %v", err)
-		return false, fmt.Errorf("не удалось удалить студента: %v", err)
+		log.Printf("[db][Student] - Ошибка при удалении студента: %v", err)
+		return false, fmt.Errorf("[db][Student] - не удалось удалить студента: %v", err)
 	}
 
-	log.Printf("Студент с ID=%d успешно удалён", studId)
+	log.Printf("[db][Student] - Студент с ID=%d успешно удалён", studId)
 	return true, nil
 }
