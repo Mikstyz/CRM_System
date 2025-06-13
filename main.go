@@ -12,10 +12,8 @@ import (
 var assets embed.FS
 
 func main() {
-	// Create an instance of the app structure
 	app := NewApp()
 
-	// Create application with options
 	err := wails.Run(&options.App{
 		Title:  "CRM_System",
 		Width:  1024,
@@ -23,8 +21,8 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
+		Debug:     options.Debug{OpenInspectorOnStartup: true},
+		OnStartup: app.startup,
 		Bind: []interface{}{
 			app,
 		},
