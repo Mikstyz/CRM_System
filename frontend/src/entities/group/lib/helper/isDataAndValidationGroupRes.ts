@@ -19,8 +19,8 @@ export const convResDataInGroups = (
             groupNumber: group.Number,
           },
           disciplines: {
-            "1": group.Subject.firstSemester,
-            "2": group.Subject.secondSemester,
+            "1": group.Subject.OneSemester,
+            "2": group.Subject.TwoSemester,
           },
         };
       }
@@ -37,8 +37,8 @@ function isValidResGroupData(group: InFGroupAndSubject) {
     group.Groduates &&
     group.Number &&
     group.Subject &&
-    group.Subject.firstSemester &&
-    group.Subject.secondSemester &&
+    group.Subject.OneSemester &&
+    group.Subject.TwoSemester &&
     (group.Course == 1 ||
       group.Course == 2 ||
       group.Course == 3 ||

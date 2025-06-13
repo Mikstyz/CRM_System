@@ -193,8 +193,8 @@ export const duplicateGroupThunks = createAsyncThunk<
           groupNumber: resGroup.Number,
         },
         disciplines: {
-          "1": resGroup.Subject.firstSemester,
-          "2": resGroup.Subject.secondSemester,
+          "1": resGroup.Subject.OneSemester,
+          "2": resGroup.Subject.TwoSemester,
         },
       };
     } else {

@@ -70,9 +70,9 @@ export const createStudentThunks = createAsyncThunk<
       const res = await CreateStudent({
         FullName: student.fullName,
         GroupId: groupId,
-        // Enterprise: student.company,
-        // WorkStartDate: student.startDateWork,
-        // JobTitle: student.position,
+        Enterprise: student.company ?? "",
+        WorkStartDate: student.startDateWork ?? "",
+        JobTitle: student.position ?? "",
       });
       if (res.code === 200 && res.Id) {
         return {
@@ -115,9 +115,9 @@ export const updateStudentThunks = createAsyncThunk<
         StudId: student.id,
         NewFullName: student.fullName,
         NewGroupId: groupId,
-        // NewEnterprise: student.company,
-        // NewWorkStartDate: student.startDateWork,
-        // NewJobTitle: student.position,
+        NewEnterprise: student.company ?? "",
+        NewWorkStartDate: student.startDateWork ?? "",
+        NewJobTitle: student.position ?? "",
       });
       if (res.code === 200 && res.Id) {
         return {
@@ -189,11 +189,11 @@ export const saveOrUpdateStudentThunks = createAsyncThunk<
 });
 
 /* -------- PDF generation (save first) -------- */
-type GeneratePdfArgs = {
+interface GeneratePdfArgs {
   group: Group;
   student: Student;
   semester: Semester;
-};
+}
 export const generatePdfThunks = createAsyncThunk<
   void,
   GeneratePdfArgs,
@@ -207,13 +207,14 @@ export const generatePdfThunks = createAsyncThunk<
         student,
         semester,
       });
-      const { dateNameGroup } = group;
       const res = await GenerateFilledPDF({
         StudentName: student.fullName,
-        Course: Number(dateNameGroup.course),
-        Speciality: dateNameGroup.specialty,
-        Groduates: Number(dateNameGroup.graduates),
-        Number: dateNameGroup.groupNumber,
+        GroupId: Number(group.id),
+        Semester: Number(semester),
+        // Course: Number(dateNameGroup.course),
+        // Speciality: dateNameGroup.specialty,
+        // Groduates: Number(dateNameGroup.graduates),
+        // Number: dateNameGroup.groupNumber,
         Enterprise: student.company || "",
         WorkStartDate: student.startDateWork || "",
         JobTitle: student.position || "",
