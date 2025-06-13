@@ -19,6 +19,7 @@
     "axios": "^1.8.1",
     "classnames": "^2.5.1",
     "file-saver": "^2.0.5",
+    "framer-motion": "^12.18.1",
     "lodash.debounce": "^4.0.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -30,7 +31,8 @@
     "redux-persist": "^6.0.0",
     "tailwindcss": "^4.0.9",
     "use-debounce": "^10.0.4",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.26.3",
