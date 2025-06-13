@@ -14,7 +14,7 @@ export function Pagination({ page, pages, onChange }: Props) {
   };
 
   return (
-    <nav className="flex items-center gap-2 select-none">
+    <nav className="flex items-center justify-center gap-2 select-none">
       <button
         onClick={() => go(page - 1)}
         className={clsx("px-2", page === 1 && "opacity-40 cursor-default")}
