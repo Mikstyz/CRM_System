@@ -8,7 +8,7 @@ import (
 
 // ----------------------information--------------------------
 func Inf_DisciplinesByGroupId(groupId int, Semester byte) ([]string, error) {
-	result, err := repo.InfDisciplinesByGroup(groupId, Semester)
+	result, err := repo.FetchDisciplinesByGroup(groupId, Semester)
 
 	if err != nil {
 		fmt.Printf("[Routes][Disciplines] - Ошибка при получении предметов группы с ID %d: %v\n", groupId, err)
@@ -20,7 +20,7 @@ func Inf_DisciplinesByGroupId(groupId int, Semester byte) ([]string, error) {
 }
 
 func Inf_DisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (models.DisciplinesBySemester, error) {
-	result, err := repo.InfDisciplinesByGroupData(Speciality, GroupNum, Course, Groudates)
+	result, err := repo.FetchDisciplinesByGroupData(Speciality, GroupNum, Course, Groudates)
 
 	if err != nil {
 		fmt.Printf("[Routes][Disciplines] - Ошибка при получении предметов %v", err)

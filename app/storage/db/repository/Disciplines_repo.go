@@ -11,8 +11,8 @@ import (
 )
 
 // ----------------------information--------------------------
-// InfDisciplinesByGroup возвращает список всех предметов для группы по её ID.
-func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
+// FetchDisciplinesByGroup возвращает список всех предметов для группы по её ID.
+func FetchDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
 	log.Println("[db][Disciplines] - Получение предметов группы")
 	const query = `SELECT subject_name FROM group_subject WHERE group_id = ? AND semester = ?`
 
@@ -47,8 +47,8 @@ func InfDisciplinesByGroup(groupId int, semester byte) ([]string, error) {
 	return disciplines, nil
 }
 
-// InfDisciplinesByGroupData возвращает дисциплины для двух семестров по данным группы.
-func InfDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (models.DisciplinesBySemester, error) {
+// FetchDisciplinesByGroupData возвращает дисциплины для двух семестров по данным группы.
+func FetchDisciplinesByGroupData(Speciality string, GroupNum int, Course int, Groudates int) (models.DisciplinesBySemester, error) {
 	log.Printf("Получение предметов для группы: Speciality=%s, GroupNum=%d, Course=%d, Groudates=%d", Speciality, GroupNum, Course, Groudates)
 
 	const query = `

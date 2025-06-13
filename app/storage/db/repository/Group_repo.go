@@ -10,8 +10,8 @@ import (
 )
 
 // --------------------------Информаия о всех группах--------------------------
-// InfAllGrp возвращает список всех групп.
-func InfAllGrp() ([]models.EinfGroup, error) {
+// FetchAllGrp возвращает список всех групп.
+func FetchAllGrp() ([]models.EinfGroup, error) {
 	const query = `
 		SELECT Id, Course, Speciality, Groudates, GroupNum
 		FROM einf_groups
@@ -50,7 +50,7 @@ func InfAllGrp() ([]models.EinfGroup, error) {
 	return groups, nil
 }
 
-// InfAllGrpWithSubjects возвращает список всех групп и их предметов.
+// FetchAllGrpWithSubjects возвращает список всех групп и их предметов.
 func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 	const query = `
 		SELECT 
@@ -140,8 +140,8 @@ func InfAllGrpWithSubjects() ([]models.InFGroupAndSubject, error) {
 }
 
 // --------------------------Информация про группу--------------------------
-// InfGroupById возвращает данные группы по её ID.
-func InfGroupById(GroupId int) (models.EinfGroup, error) {
+// FetchGroupById возвращает данные группы по её ID.
+func FetchGroupById(GroupId int) (models.EinfGroup, error) {
 	const query = `SELECT Id, Course, Speciality, Groudates, GroupNum FROM einf_groups WHERE Id = ?`
 
 	db.Init()
@@ -162,8 +162,8 @@ func InfGroupById(GroupId int) (models.EinfGroup, error) {
 	return Group, nil
 }
 
-// InfGrpWithSubjectsById возвращает инфу о группе и ее предметы.
-func InfGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
+// FetchGrpWithSubjectsById возвращает инфу о группе и ее предметы.
+func FetchGrpWithSubjectsById(groupId int) (models.InFGroupAndSubject, error) {
 	const query = `
         SELECT 
             g.Id, g.Course, g.Speciality, g.Groudates, g.GroupNum,

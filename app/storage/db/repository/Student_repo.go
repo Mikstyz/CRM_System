@@ -12,8 +12,8 @@ import (
 )
 
 // ----------------------Информация о студенте----------------------
-// InfStudentByID возвращает данные студента по его ID.
-func InfStudentByID(studentID int) (models.Student, error) {
+// FetchStudentByID возвращает данные студента по его ID.
+func FetchStudentByID(studentID int) (models.Student, error) {
 	log.Println("[db][Student] - Получение информации о студенте по ID")
 
 	const query = `
@@ -62,8 +62,8 @@ func InfStudentByID(studentID int) (models.Student, error) {
 	return student, nil
 }
 
-// InfIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
-func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
+// FetchIdByNameByGroup возвращает ID студента по имени и параметрам группы через GroupId.
+func FetchIdByNameByGroup(StudentName string, Course byte, Speciality string, Groduates byte, Number int) (int, error) {
 	const query = `
 	SELECT s.Id
 	FROM students s
@@ -87,8 +87,8 @@ func InfIdByNameByGroup(StudentName string, Course byte, Speciality string, Grod
 }
 
 // ----------------------Информация о студентах----------------------
-// InfStudentByGroup возвращает студентов по ID группы.
-func InfStudentByGroup(GroupId int) ([]models.Student, error) {
+// FetchStudentByGroup возвращает студентов по ID группы.
+func FetchStudentByGroup(GroupId int) ([]models.Student, error) {
 	log.Printf("[db][Student] - Получение студентов по группе ID=%d", GroupId)
 
 	const query = `
@@ -151,8 +151,8 @@ func InfStudentByGroup(GroupId int) ([]models.Student, error) {
 	return students, nil
 }
 
-// InfStdByGroup возвращает список всех студентов с их GroupId.
-func InfStdByGroup() ([]models.Student, error) {
+// FetchStdByGroup возвращает список всех студентов с их GroupId.
+func FetchStdByGroup() ([]models.Student, error) {
 	const query = `
         SELECT 
             s.id, s.FullName, s.GroupId,

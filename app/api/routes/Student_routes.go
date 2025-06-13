@@ -8,7 +8,7 @@ import (
 
 // ----------------------information--------------------------
 func Inf_AllStudent() ([]models.Student, error) {
-	result, err := repo.InfStdByGroup()
+	result, err := repo.FetchStdByGroup()
 
 	if err != nil {
 		fmt.Printf("[Routes][Student] - Ошибка при получении информации о студентах: %v\n", err)
@@ -20,7 +20,7 @@ func Inf_AllStudent() ([]models.Student, error) {
 }
 
 func Inf_StudentByID(studentID int) (models.Student, error) {
-	result, err := repo.InfStudentByID(studentID)
+	result, err := repo.FetchStudentByID(studentID)
 
 	if err != nil {
 		fmt.Printf("[Routes][Student] - Ошибка при получении информации о студенте с ID %d: %v\n", studentID, err)
@@ -32,7 +32,7 @@ func Inf_StudentByID(studentID int) (models.Student, error) {
 }
 
 func Inf_StudentByGroup(groupId int) ([]models.Student, error) {
-	result, err := repo.InfStudentByGroup(groupId)
+	result, err := repo.FetchStudentByGroup(groupId)
 
 	if err != nil {
 		fmt.Println("[Routes][Student] - Ошибка при получении студентов группы")

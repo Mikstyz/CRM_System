@@ -8,7 +8,7 @@ import (
 
 // ----------------------information--------------------------
 func Inf_AllGroup() ([]models.EinfGroup, error) {
-	result, err := repo.InfAllGrp()
+	result, err := repo.FetchAllGrp()
 
 	if err != nil {
 		fmt.Printf("[Routes][Group] - Ошибка при получении всех групп: %v\n", err)
@@ -84,7 +84,7 @@ func Delete_GroupById(GroupId int) (bool, error) {
 
 // ----------------------Дублирование группы----------------------
 func DublicateGroupAllData(GroupId int) (models.InFGroupAndSubject, error) {
-	Group, err := repo.InfGroupById(GroupId)
+	Group, err := repo.FetchGroupById(GroupId)
 	if err != nil {
 		return models.InFGroupAndSubject{}, err
 	}
@@ -104,7 +104,7 @@ func DublicateGroupAllData(GroupId int) (models.InFGroupAndSubject, error) {
 		return models.InFGroupAndSubject{}, err
 	}
 
-	Result, err := repo.InfGrpWithSubjectsById(newGroupIds)
+	Result, err := repo.FetchGrpWithSubjectsById(newGroupIds)
 	if err != nil {
 		return models.InFGroupAndSubject{}, err
 	}
