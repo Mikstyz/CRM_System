@@ -1,9 +1,9 @@
-import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
 import { useEffect, useState } from "react";
 import { clearErrors as clearGroups } from "@/entities/group/store";
 import { blankClearErrors } from "@/entities/blank/store";
 
-export function ErrorToast() {
+export function PopUpMessages() {
   const dispatch = useAppDispatch();
   const grpErr = useAppSelector((s) => s.groups.error);
   const blankErr = useAppSelector((s) => s.blank.error);
