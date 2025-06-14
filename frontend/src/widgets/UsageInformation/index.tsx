@@ -17,12 +17,9 @@ export function UsageInformation({ className }: UsageInformationProps) {
         <h2 className="text-lg font-semibold">Инструкция</h2>
       </header>
 
-      <ol className="list-decimal list-inside space-y-2 text-sm leading-relaxed flex-1 overflow-auto">
-        <li>Выберите курс и специальность.</li>
-        <li>Укажите число выпускников.</li>
-        <li>Номер группы вводится цифровым спиннером.</li>
-        <li>Нажмите «Добавить» для сохранения.</li>
-      </ol>
+      <p className="list-decimal list-inside space-y-2 text-sm leading-relaxed flex-1 overflow-auto">
+        Это CRM позволяет создвать...
+      </p>
     </aside>
   );
 }
