@@ -69,9 +69,7 @@ export function FilterGroup({ groupsLength, className }: FilterGroupProps) {
 
   return (
     <div className={className ?? ""}>
-      <aside
-        className={"border p-4 rounded-lg mb-4 w-full max-w-xl"}
-      >
+      <aside className={"border p-4 rounded-lg mb-4 w-full max-w-xl"}>
         <div className="flex justify-between mb-1">
           <h2 className="font-semibold mb-2">Фильтрация/Добавление групп</h2>
           {(getValues("course") ||
