@@ -2,6 +2,7 @@ import { blankReducer, sliceActions } from "./slice.ts";
 
 export const {
   clearErrors: blankClearErrors,
+  clearMessage: blankClearMessage,
   openBlank,
   closeBlank,
   setStudent,

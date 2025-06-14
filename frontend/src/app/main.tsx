@@ -6,7 +6,7 @@ import "@/app/styles/normolaz.css";
 import { store } from "@/app/store";
 import { PagesListGroup } from "@/pages/PagesListGroup";
 import { ConfirmProvider } from "@/shared/ui/ConfirmDialog";
-import { ErrorToast } from "@/shared/ui/ErrorToast";
+import { PopUpMessages } from "src/widgets/PopUpMessages";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <PagesListGroup />
       </ConfirmProvider>
       {/* Собщение о действиях */}
-      <ErrorToast />
+      <PopUpMessages />
     </Provider>
   </React.StrictMode>,
 );

@@ -54,12 +54,19 @@ export function ModalWrapper({ isOpen, onClose, children }: ModalWrapperProps) {
     if (!isOpen) return;
 
     const onEsc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const appRoot = document.getElementById("root");
+
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onEsc);
+    appRoot?.setAttribute("inert", "");
+
 
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onEsc);
+      appRoot?.removeAttribute("inert");
+      previouslyFocused?.focus();
     };
   }, [isOpen, onClose]);
 

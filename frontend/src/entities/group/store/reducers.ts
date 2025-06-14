@@ -8,4 +8,7 @@ export const groupsReducer = {
   setError: (state: GroupsState, { payload }: PayloadAction<string>) => {
     state.error = payload;
   },
+  clearMessage: (state: GroupsState) => {
+    state.loading.message = undefined;
+  },
 };

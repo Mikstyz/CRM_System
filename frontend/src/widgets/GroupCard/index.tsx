@@ -21,7 +21,7 @@ export function GroupCard({ group }: Props) {
   const [err, setErr] = useState<string | null>(null);
 
   return (
-    <section className="border-2 rounded-xl p-4">
+    <div className="border-2 rounded-xl p-4">
       <header className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">
           Группа:
@@ -76,6 +76,6 @@ export function GroupCard({ group }: Props) {
           />
         </div>
       )}
-    </section>
+    </div>
   );
 }

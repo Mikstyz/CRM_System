@@ -24,4 +24,7 @@ export const blankReducers = {
   clearErrors(state: BlankState) {
     state.error = undefined;
   },
+  clearMessage(state: BlankState) {
+    state.loading.message = undefined;
+  },
 };

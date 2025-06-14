@@ -30,7 +30,10 @@ export function PagesListGroup() {
       </header>
 
       <main className="p-4 flex flex-col gap-4">
-        <FilterGroup groupsLength={groups.length} />
+        <section className="flex flex-row gap-6">
+          <FilterGroup groupsLength={groups.length} />
+          {/*<UsageInformation />*/}
+        </section>
 
         <ListGroup groups={groups} />
       </main>
