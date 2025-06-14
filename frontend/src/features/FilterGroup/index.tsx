@@ -16,7 +16,11 @@ import { RootState } from "@/app/store";
 import { clearErrors } from "@/entities/group/store";
 import { Course, Graduates } from "@/entities/group/types";
 
-export function FilterGroup({ groupsLength }: { groupsLength: number }) {
+interface FilterGroupProps {
+  groupsLength: number;
+  className?: string;
+}
+export function FilterGroup({ groupsLength, className }: FilterGroupProps) {
   const dispatch = useAppDispatch();
   const lastSent = useAppSelector((s: RootState) => s.groupFilters);
   const { error } = useAppSelector((s: RootState) => s.groups);
@@ -65,7 +69,9 @@ export function FilterGroup({ groupsLength }: { groupsLength: number }) {
 
   return (
     <>
-      <aside className="border p-4 rounded-lg mb-4 w-full max-w-xl">
+      <aside
+        className={"border p-4 rounded-lg mb-4 w-full max-w-xl " + className}
+      >
         <div className="flex justify-between mb-1">
           <h2 className="font-semibold mb-2">Фильтрация/Добавление групп</h2>
           {(getValues("course") ||

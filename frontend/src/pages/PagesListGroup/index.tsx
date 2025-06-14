@@ -11,6 +11,7 @@ import { closeBlank } from "@/entities/blank/store";
 import { ModalErrorBoundary } from "@/widgets/ModalErrorBoundary";
 import { ListGroup } from "@/features/ListGroup";
 import { Group } from "@/entities/group/types";
+import { UsageInformation } from "@/widgets/UsageInformation";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
@@ -30,7 +31,10 @@ export function PagesListGroup() {
       </header>
 
       <main className="p-4 flex flex-col gap-4">
-        <FilterGroup groupsLength={groups.length} />
+        <section className="flex flex-row gap-6">
+          <FilterGroup className="basis-2/3" groupsLength={groups.length} />
+          <UsageInformation className="basis-1/3" />
+        </section>
 
         <ListGroup groups={groups} />
       </main>
