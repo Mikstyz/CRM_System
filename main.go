@@ -1,9 +1,11 @@
 package main
 
 import (
-	routes "CRM_System/app/api/routes"
 	"embed"
-	"log"
+
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	//"github.com/wailsapp/wails/v2"
 	//"github.com/wailsapp/wails/v2/pkg/options"
 	//"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -13,33 +15,33 @@ import (
 var assets embed.FS
 
 func main() {
-	// app := NewApp()
+	app := NewApp()
 
-	// err := wails.Run(&options.App{
-	// 	Title:  "CRM_System",
-	// 	Width:  1024,
-	// 	Height: 768,
-	// 	AssetServer: &assetserver.Options{
-	// 		Assets: assets,
-	// 	},
-	// 	Debug:     options.Debug{OpenInspectorOnStartup: true},
-	// 	OnStartup: app.startup,
-	// 	Bind: []interface{}{
-	// 		app,
-	// 	},
-	// })
-
-	// if err != nil {
-	// 	println("Error:", err.Error())
-	// }
-
-	student, err := routes.Inf_StudentByGroup(81)
+	err := wails.Run(&options.App{
+		Title:  "CRM_System",
+		Width:  1024,
+		Height: 768,
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		Debug:     options.Debug{OpenInspectorOnStartup: true},
+		OnStartup: app.startup,
+		Bind: []interface{}{
+			app,
+		},
+	})
 
 	if err != nil {
-		log.Printf(err.Error())
+		println("Error:", err.Error())
 	}
 
-	print(student)
+	// student, err := routes.Inf_StudentByGroup(81)
+
+	// if err != nil {
+	// 	log.Printf(err.Error())
+	// }
+
+	// print(student)
 
 }
 
