@@ -11,7 +11,6 @@ import { closeBlank } from "@/entities/blank/store";
 import { ModalErrorBoundary } from "@/widgets/ModalErrorBoundary";
 import { ListGroup } from "@/features/ListGroup";
 import { Group } from "@/entities/group/types";
-import { UsageInformation } from "@/widgets/UsageInformation";
 
 export function PagesListGroup() {
   const dispatch = useAppDispatch();
