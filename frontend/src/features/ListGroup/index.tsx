@@ -20,7 +20,7 @@ export function ListGroup({ groups }: ListGroupProps) {
   }, [groups, page]);
 
   return (
-    <>
+    <section className="flex flex-col gap-4">
       {paginated.length > 0 &&
         paginated.map((group: Group) => (
           <GroupCard key={group.id} group={group} />
@@ -32,6 +32,6 @@ export function ListGroup({ groups }: ListGroupProps) {
           onChange={setPage}
         />
       </div>
-    </>
+    </section>
   );
 }
