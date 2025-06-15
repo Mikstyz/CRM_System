@@ -1,4 +1,3 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Student } from "@/entities/student/types";
 import { Id } from "@/shared/types";
 import {
@@ -11,6 +10,7 @@ import {
 import { Group } from "@/entities/group/types";
 import { saveAs } from "file-saver";
 import { Semester } from "@/entities/discipline/types";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 interface ThunkConfig {
   rejectValue: string;
@@ -176,16 +176,10 @@ export const saveOrUpdateStudentThunks = createAsyncThunk<
 >("blank/saveOrUpdate", async ({ student, groupId }, { dispatch }) => {
   if (student.id === 0) {
     /* новый -> create */
-    const created = await dispatch(
-      createStudentThunks({ student, groupId }),
-    ).unwrap();
-    return created;
+    return await dispatch(createStudentThunks({ student, groupId })).unwrap();
   }
   /* существующий -> update */
-  const updated = await dispatch(
-    updateStudentThunks({ student, groupId }),
-  ).unwrap();
-  return updated;
+  return await dispatch(updateStudentThunks({ student, groupId })).unwrap();
 });
 
 /* -------- PDF generation (save first) -------- */

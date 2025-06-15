@@ -7,8 +7,9 @@ import {
   saveOrUpdateStudentThunks,
 } from "@/entities/blank/store/thunks.ts";
 import {
+  Control,
+  Controller,
   FieldErrors,
-  SubmitHandler,
   UseFormGetValues,
   UseFormHandleSubmit,
   UseFormRegister,
@@ -17,6 +18,8 @@ import {
 } from "react-hook-form";
 import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
 import { Group } from "@/entities/group/types";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 interface FormCreatBlankProps {
   group: Group;
@@ -27,6 +30,7 @@ interface FormCreatBlankProps {
   setError: UseFormSetError<FormValuesBlank>;
   register: UseFormRegister<FormValuesBlank>;
   handleSubmit: UseFormHandleSubmit<FormValuesBlank>;
+  control: Control<FormValuesBlank>;
 }
 
 export function FormCreatBlank({
@@ -38,33 +42,14 @@ export function FormCreatBlank({
   errors,
   register,
   handleSubmit,
+  control,
 }: FormCreatBlankProps) {
   const dispatch = useAppDispatch();
 
-  /* ---------- 3. обработчик ---------- */
-  const onSubmit: SubmitHandler<FormValuesBlank> = (data) => {
-    if (!selectStudent?.id) {
-      alert("Выберите студента!");
-      return;
-    }
-
-    console.log({
-      groupId: group?.id,
-      selectStudentId: selectStudent?.id,
-      studentName: data.studentName,
-      semester: data.semester,
-      company: data.company ?? null,
-      startDate: data.startDate,
-      position: data.position,
-    });
-    alert("Строка добавлена!");
-  };
-
   const onSave = async (values: FormValuesBlank) => {
     if (!group) return;
-    /* формируем объект */
     const student: Student = {
-      id: selectStudent?.id ?? 0, // 0 → create
+      id: selectStudent?.id ?? 0,
       fullName: values.studentName,
       company: values.company,
       startDateWork: values.startDate,
@@ -76,10 +61,10 @@ export function FormCreatBlank({
 
   const onDownload = async (values: FormValuesBlank) => {
     if (!group) return;
-    await onSave(values); // save OR update
+    await onSave(values);
     const latest = selectStudent
       ? { ...selectStudent, ...values }
-      : { id: 0, ...values }; // fallback (не должно случиться)
+      : { id: 0, ...values };
     await dispatch(
       generatePdfThunks({
         group,
@@ -90,7 +75,7 @@ export function FormCreatBlank({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 w-full">
+    <div className="pr-3 space-y-4 w-full">
       <div>
         <GraduatesToggle
           title="Семестр:"
@@ -116,11 +101,23 @@ export function FormCreatBlank({
 
       <label className="block max-w-sm">
         <span className="font-semibold">Дата начала</span>
-        <input
-          type="date"
-          {...register("startDate")}
-          className="border rounded p-1 w-full"
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Controller
+            control={control}
+            name="startDate"
+            render={({ field }) => (
+              <DatePicker
+                onChange={(date) => {
+                  const formatted = date ? date.format("YYYY-MM-DD") : "";
+                  field.onChange(formatted);
+                }}
+                slotProps={{
+                  textField: { className: "border rounded p-1 w-full" },
+                }}
+              />
+            )}
+          />
+        </LocalizationProvider>
         {errors.startDate && (
           <span className="text-red-500 text-xs">
             {errors.startDate.message}
@@ -135,16 +132,18 @@ export function FormCreatBlank({
           {...register("position")}
           className="border rounded p-1 w-full"
         />
-        {errors.position && (
-          <span className="text-red-500 text-xs">
-            {errors.position.message}
-          </span>
-        )}
+        <div>
+          {errors.position && (
+            <span className="text-red-500 text-xs ">
+              {errors.position.message}
+            </span>
+          )}
+        </div>
       </label>
 
       <div className="flex gap-4 pt-2">
         <button
-          type="submit"
+          type="button"
           className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded"
           onClick={handleSubmit(onSave)}
         >
@@ -158,6 +157,6 @@ export function FormCreatBlank({
           Скачать бланк
         </button>
       </div>
-    </form>
+    </div>
   );
 }

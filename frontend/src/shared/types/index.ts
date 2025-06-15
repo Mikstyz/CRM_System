@@ -1,1 +1,1 @@
-export type Id = number | undefined;
+export type Id = number;

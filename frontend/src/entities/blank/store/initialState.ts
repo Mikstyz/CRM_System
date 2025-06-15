@@ -5,7 +5,7 @@ import { Semester } from "@/entities/discipline/types";
 
 export interface BlankState {
   isOpen: boolean;
-  groupId: Id;
+  groupId?: Id;
   semester: Semester;
   selectStudent?: Student;
   studentsData: Student[];

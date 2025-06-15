@@ -61,7 +61,6 @@ export function ModalWrapper({ isOpen, onClose, children }: ModalWrapperProps) {
     window.addEventListener("keydown", onEsc);
     appRoot?.setAttribute("inert", "");
 
-
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onEsc);

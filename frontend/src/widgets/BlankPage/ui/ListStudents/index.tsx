@@ -1,4 +1,4 @@
-import { setStudent } from "@/entities/blank/store";
+import { deleteStudentThunks, setStudent } from "@/entities/blank/store";
 import { Student } from "@/entities/student/types";
 import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
 import { FieldErrors, UseFormSetValue } from "react-hook-form";
@@ -38,24 +38,29 @@ export function ListStudents({
   };
 
   const [query, setQuery] = useState("");
+  const [allStudents, setAllStudents] = useState<Student[]>(studentsData);
   const [filteredData, setFilteredData] = useState<Student[]>(studentsData);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    setAllStudents(studentsData);
+  }, [studentsData]);
+
   // Фильтруем результаты при изменении запроса
   useEffect(() => {
     if (!query) {
-      setFilteredData(studentsData);
+      setFilteredData(allStudents);
     } else {
       const lowerQuery = query.toLowerCase();
       setFilteredData(
-        studentsData.filter((item) =>
+        allStudents.filter((item) =>
           item.fullName.toLowerCase().includes(lowerQuery),
         ),
       );
     }
-  }, [query, studentsData]);
+  }, [query, allStudents]);
 
   // Обработчик выбора элемента
   const handleSelect = useCallback(
@@ -64,6 +69,14 @@ export function ListStudents({
       onSelect?.(student);
     },
     [onSelect],
+  );
+
+  const handleDelete = useCallback(
+    (id: number) => {
+      setAllStudents((prev) => prev.filter((s) => s.id !== id));
+      dispatch(deleteStudentThunks(id));
+    },
+    [dispatch],
   );
 
   // Обработчик ввода в поисковое поле
@@ -141,6 +154,7 @@ export function ListStudents({
                 key={student.id}
                 student={student}
                 handleSelect={handleSelect}
+                onDelete={handleDelete}
               />
             ))}
           </div>
