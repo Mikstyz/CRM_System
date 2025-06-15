@@ -23,19 +23,19 @@ export function PagesListGroup() {
 
   return (
     <>
-      <div className='room_main_PagesListGroup'>
-      <header className="p-4 flex gap-2 items-center">
-        <h1 className="text-xl font-bold">Управление группами</h1>
-      </header>
+      <div className="room_main_PagesListGroup">
+        <header className="p-4 flex gap-2 items-center">
+          <h1 className="text-xl font-bold">Управление группами</h1>
+        </header>
 
-      <main className="p-4 flex flex-col gap-4">
-        <section className="flex flex-row gap-6">
-          <FilterGroup groupsLength={groups.length} />
-          {/*<UsageInformation />*/}
-        </section>
+        <main className="p-4 flex flex-col gap-4">
+          <section className="flex flex-row gap-6">
+            <FilterGroup groupsLength={groups.length} />
+            {/*<UsageInformation />*/}
+          </section>
 
-        <ListGroup groups={groups} />
-      </main>
+          <ListGroup groups={groups} />
+        </main>
       </div>
 
       <ModalErrorBoundary>
