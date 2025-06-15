@@ -242,20 +242,24 @@ func UpdateStd(studId int, newFullName string, newGroupId int, newEnterprise str
 	const updateQuery = `
 		UPDATE students 
 		SET FullName = ?, GroupId = ?, enterprise = ?, workstartdate = ?, jobtitle = ?
-		WHERE id = ?
-		RETURNING id`
+		WHERE id = ?`
 
 	db.Init()
 
-	var updatedId int
-	err := db.DB.QueryRow(updateQuery, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle, studId).Scan(&updatedId)
-	if err == sql.ErrNoRows {
-		log.Printf("[db][Student] - Студент с ID=%d не найден", studId)
-		return false, nil
-	}
+	res, err := db.DB.Exec(updateQuery, newFullName, newGroupId, newEnterprise, newWorkStartDate, newJobTitle, studId)
 	if err != nil {
 		log.Printf("[db][Student] - Ошибка при обновлении студента: %v", err)
 		return false, fmt.Errorf("не удалось обновить данные студента: %v", err)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("[db][Student] - Ошибка получения количества изменённых строк: %v", err)
+		return false, fmt.Errorf("ошибка получения количества строк: %v", err)
+	}
+	if rowsAffected == 0 {
+		log.Printf("[db][Student] - Студент с ID=%d не найден", studId)
+		return false, fmt.Errorf("student with ID=%d not found", studId)
 	}
 
 	log.Printf("[db][Student] - Данные студента с ID=%d успешно обновлены", studId)

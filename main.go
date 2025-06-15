@@ -33,15 +33,15 @@ func main() {
 
 	if err != nil {
 		println("Error:", err.Error())
+
 	}
 
-	// student, err := routes.Inf_StudentByGroup(81)
+	// status, err := routes.Update_StudentById(1, "asd", 1, "asd", "11.11.11", "asd")
 
 	// if err != nil {
-	// 	log.Printf(err.Error())
+	// 	println("Error:", err.Error())
 	// }
-
-	// print(student)
+	// print(status)
 
 }
 
@@ -64,15 +64,6 @@ func main() {
 // 	db.Init()
 
 // 	//Test.Test_GenerateFilledPDF()
-
-// 	dataPdf := models.GeneratePDF{
-// 		StudentName:   "Иван Иванов",
-// 		Enterprise:    "ООО Ромашка",
-// 		WorkStartDate: "2025-04-27",
-// 		JobTitle:      "Программист",
-// 		GroupId:       49,
-// 		Semester:      1,
-// 	}
 
 // 	pdf, err := utils.GenerateFiledPDF(dataPdf)
 
