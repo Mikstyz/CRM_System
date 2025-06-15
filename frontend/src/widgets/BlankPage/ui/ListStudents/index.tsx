@@ -8,17 +8,23 @@ import {
   ListItemButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useAppDispatch } from "@/shared/lib/hooks/redux.ts";
+import { useAppDispatch, useAppSelector } from "@/shared/lib/hooks/redux.ts";
 import { useEffect, useMemo, useState } from "react";
 import styles from "./index.module.css";
 import { handleDelete } from "@/widgets/BlankPage/ui/ListStudents/lib/handles/deleteStudent.ts";
 import { handleGetStudent } from "@/widgets/BlankPage/ui/ListStudents/lib/handles/getStudent.ts";
 import { useGetStudents } from "@/widgets/BlankPage/ui/ListStudents/lib/hooks/useGetStudents.ts";
+import { selectBlank } from "@/entities/blank/store/selectors.ts";
+import { useFormContext } from "react-hook-form";
+import { FormValuesBlank } from "@/widgets/BlankPage/model/schema";
 
 const PER_PAGE = 7;
 
 export function ListStudents() {
   const dispatch = useAppDispatch();
+  const { getValues } = useFormContext<FormValuesBlank>();
+  const { group } = useAppSelector(selectBlank);
+  if (!group) return null;
 
   const [students] = useGetStudents();
 
@@ -54,7 +60,14 @@ export function ListStudents() {
           >
             <ListItemButton
               className={styles.itemButton}
-              onClick={() => handleGetStudent(s.id)}
+              onClick={() =>
+                handleGetStudent({
+                  dispatch,
+                  student: s,
+                  group: group,
+                  semester: getValues("semester"),
+                })
+              }
             >
               <Typography className={styles.itemText}>{s.fullName}</Typography>
             </ListItemButton>
