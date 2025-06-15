@@ -1,19 +1,9 @@
-import { Semester } from "@/entities/discipline/types";
 import { z } from "zod";
 
-// Updated preprocessing function with proper typing
-const semesterEnum = ["1", "2"] as const;
-const toSemesterOrUndef = (v: unknown): Semester | undefined => {
-  if (typeof v !== "string") return undefined;
-  return semesterEnum.includes(v as Semester) ? (v as Semester) : undefined;
-};
-
 export const blankSchema = z.object({
-  semester: z
-    .custom<Semester | undefined>(toSemesterOrUndef, {
-      message: "Invalid semester",
-    })
-    .optional(),
+  semester: z.enum(["1", "2"], {
+    errorMap: () => ({ message: "Допустимо только '1' или '2'" }),
+  }),
   studentName: z.string().min(1, "Обязательное поле"),
   company: z.string().optional(),
   startDate: z.string().optional(),

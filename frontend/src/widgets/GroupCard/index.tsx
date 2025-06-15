@@ -46,7 +46,7 @@ export function GroupCard({ group }: Props) {
             headerDuplicateGroup({ dispatch, groupId: group.id })
           }
           onOpenBlank={() => {
-            dispatch(openBlank(group.id));
+            dispatch(openBlank(group));
           }}
           isExpanded={isExpanded}
         />

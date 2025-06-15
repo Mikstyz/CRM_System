@@ -1,0 +1,10 @@
+.container {
+  height: 100%;
+  min-width: 0;
+}
+
+@media (width >= 42rem) {
+  .container {
+    width: 40em;
+  }
+}

@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+
+  .list {
+    margin-top: 2px;
+    padding: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .pagination {
+    margin-top: 2px;
+  }
+}
+
+.itemButton {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding-left: 8px;
+}
+
+.itemText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secondaryAction {
+  flex-shrink: 0;
+}
