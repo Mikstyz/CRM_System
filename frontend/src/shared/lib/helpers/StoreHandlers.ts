@@ -19,7 +19,7 @@ export const handleRejected = <S extends BaseState>(
 ): void => {
   state.loading = {
     status: "failed",
-    message: "Произошла ошибка",
+    message: "",
   };
   state.error = action.payload || "Произошла ошибка";
 };

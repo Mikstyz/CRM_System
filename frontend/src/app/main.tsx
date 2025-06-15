@@ -6,7 +6,8 @@ import "@/app/styles/normolaz.css";
 import { store } from "@/app/store";
 import { PagesListGroup } from "@/pages/PagesListGroup";
 import { ConfirmProvider } from "@/shared/ui/ConfirmDialog";
-import { PopUpMessages } from "src/widgets/PopUpMessages";
+import { WithToastify } from "@/app/providers/with-toastify.tsx";
+import { ToastListener } from "@/widgets/ToastListener";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -15,8 +16,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ConfirmProvider>
         <PagesListGroup />
       </ConfirmProvider>
-      {/* Собщение о действиях */}
-      <PopUpMessages />
+      {/* Слушатель ошибок/сообщений */}
+      <ToastListener />
+
+      {/* Контейнер уведомлений */}
+      <WithToastify />
     </Provider>
   </React.StrictMode>,
 );

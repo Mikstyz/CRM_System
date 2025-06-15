@@ -91,7 +91,7 @@ export const blankExtraReducers = (
     .addCase(generatePdfThunks.fulfilled, (state) => {
       state.loading = {
         status: "succeeded",
-        message: "Успешно сгенерирован",
+        message: "",
       };
     })
     .addCase(generatePdfThunks.rejected, handleRejected<BlankState>);
