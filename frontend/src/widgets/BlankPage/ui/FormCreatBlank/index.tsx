@@ -87,8 +87,11 @@ export function FormCreatBlank() {
           render={({ field, fieldState }) => (
             <DatePicker
               label="Дата начала работы"
+              openTo="month"
+              views={['day', 'month', 'year']}
               value={field.value ? dayjs(field.value) : null}
-              onChange={(d) => field.onChange(d?.format("YYYY-MM-DD"))}
+              onChange={(d) => field.onChange(d?.format('YYYY-MM-DD') ?? '')}
+              format="DD.MM.YYYY"
               slotProps={{
                 textField: {
                   size: "small",
