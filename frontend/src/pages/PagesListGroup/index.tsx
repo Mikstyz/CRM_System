@@ -23,6 +23,7 @@ export function PagesListGroup() {
 
   return (
     <>
+      <div className='room_main_PagesListGroup'>
       <header className="p-4 flex gap-2 items-center">
         <h1 className="text-xl font-bold">Управление группами</h1>
       </header>
@@ -35,6 +36,7 @@ export function PagesListGroup() {
 
         <ListGroup groups={groups} />
       </main>
+      </div>
 
       <ModalErrorBoundary>
         <ModalWrapper isOpen={isOpen} onClose={() => dispatch(closeBlank())}>

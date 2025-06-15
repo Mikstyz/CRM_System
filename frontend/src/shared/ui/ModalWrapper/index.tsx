@@ -55,7 +55,7 @@ export function ModalWrapper({ isOpen, onClose, children }: ModalWrapperProps) {
 
     const onEsc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const appRoot = document.getElementById("root");
+    const appRoot = document.querySelector(".room_main_PagesListGroup");
 
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onEsc);
