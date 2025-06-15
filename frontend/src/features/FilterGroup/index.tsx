@@ -88,9 +88,9 @@ export function FilterGroup({ groupsLength, className }: FilterGroupProps) {
 
         <form className="flex flex-wrap gap-2">
           {/* Курс */}
-          <GraduatesToggle
+          <GraduatesToggle<Course>
             title="Курс"
-            variant={["1", "2", "3", "4"]}
+            variant={["1", "2", "3", "4"] as const}
             onChange={(num) => {
               setValue("course", num as Course);
               setError("course", {});
@@ -111,14 +111,14 @@ export function FilterGroup({ groupsLength, className }: FilterGroupProps) {
           />
 
           {/* Выпускники */}
-          <GraduatesToggle
+          <GraduatesToggle<Graduates>
             title="Выпускники (9/11)"
-            variant={["9", "11"]}
+            variant={["9", "11"] as const}
             onChange={(num) => {
               setValue("graduates", num);
               setError("graduates", {});
             }}
-            value={getValues("graduates")}
+            value={getValues("graduates") as Graduates}
             error={errors.graduates?.message}
           />
 

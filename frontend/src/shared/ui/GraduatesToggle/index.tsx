@@ -1,23 +1,23 @@
 import clsx from "classnames";
 
-interface Props {
+interface Props<T> {
   title: string;
   error?: string;
-  onChange: (value: string | undefined) => void;
-  value?: string | unknown;
-  variant: string[];
+  onChange: (value: T | undefined) => void;
+  value?: T;
+  variant: readonly T[];
   className?: string;
 }
 
-export function GraduatesToggle({
+export function GraduatesToggle<T extends string>({
   variant,
   title,
   onChange,
   value,
   error,
   className,
-}: Props) {
-  const handleClick = (num: string) => {
+}: Props<T>) {
+  const handleClick = (num: T) => {
     onChange(value === num ? undefined : num);
   };
 
