@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const letterRegex = /^[\p{L}]+$/u;
+
 /* helper unchanged */
 const toNumOrUndef = (v: unknown) => {
   const n = Number(v);
@@ -12,9 +14,14 @@ export const filterSchema = z.object({
     .string()
     .trim()
     .transform((s) => (s === "" ? undefined : s.toUpperCase()))
-    .refine((v) => v === undefined || v.length >= 2, {
-      message: "Минимум 2 символа",
-    })
+    .refine(
+      (v) => v === undefined || letterRegex.test(v),
+      { message: "Только буквы, без пробелов, цифр и спец. символов" },
+    )
+    .refine(
+      (v) => v === undefined || v.length >= 2,
+      { message: "Минимум 2 символа" },
+    )
     .optional(),
   graduates: z.preprocess(
     (v) => (v === "" ? undefined : v),
