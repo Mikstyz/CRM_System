@@ -1,17 +1,19 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Id } from "@/shared/types";
-import {
-  blankInitialState,
-  BlankState,
-} from "@/entities/blank/store/initialState.ts";
+import { BlankState } from "@/entities/blank/store/initialState.ts";
+import { Group } from "@/entities/group/types";
 
 export const blankReducers = {
-  openBlank(state: BlankState, { payload }: PayloadAction<Id>) {
+  openBlank(state: BlankState, { payload }: PayloadAction<Group>) {
     state.isOpen = true;
-    state.groupId = payload;
+    state.group = payload;
   },
   closeBlank(state: BlankState) {
-    Object.assign(state, blankInitialState);
+    state.isOpen = false;
+    state.group = undefined;
+    state.selectStudent = undefined;
+    state.error = undefined;
+    state.studentsData = [];
   },
   setStudent(
     state: BlankState,

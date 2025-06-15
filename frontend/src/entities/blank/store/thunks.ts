@@ -54,7 +54,7 @@ export const getAllStudentGroupThunks = createAsyncThunk<
 
 // CreateStudent
 type CreateStudentThunksParams = {
-  student: Student;
+  student: Omit<Student, "id">;
   groupId: Id;
 };
 type CreateStudentThunksResponse = Student;
@@ -64,7 +64,10 @@ export const createStudentThunks = createAsyncThunk<
   ThunkConfig
 >(
   "userFiles/createStudent",
-  async ({ student, groupId }, { rejectWithValue }) => {
+  async (
+    { student, groupId }: CreateStudentThunksParams,
+    { rejectWithValue },
+  ) => {
     try {
       if (!groupId) return rejectWithValue("Не указан ID группы");
       const res = await CreateStudent({
@@ -168,19 +171,28 @@ export const deleteStudentThunks = createAsyncThunk<
 });
 
 /* -------- unified save OR update -------- */
-type SaveStudentArgs = { groupId: Id; student: Student };
+type SaveStudentArgs = {
+  groupId: Id;
+  student: Omit<Student, "id"> & { id?: Id };
+};
 export const saveOrUpdateStudentThunks = createAsyncThunk<
   Student,
   SaveStudentArgs,
   ThunkConfig
->("blank/saveOrUpdate", async ({ student, groupId }, { dispatch }) => {
-  if (student.id === 0) {
-    /* новый -> create */
-    return await dispatch(createStudentThunks({ student, groupId })).unwrap();
-  }
-  /* существующий -> update */
-  return await dispatch(updateStudentThunks({ student, groupId })).unwrap();
-});
+>(
+  "blank/saveOrUpdate",
+  async ({ student, groupId }: SaveStudentArgs, { dispatch }) => {
+    if (student.id === undefined) {
+      return await dispatch(createStudentThunks({ student, groupId })).unwrap();
+    }
+    return await dispatch(
+      updateStudentThunks({ student, groupId } as {
+        student: Student;
+        groupId: Id;
+      }),
+    ).unwrap();
+  },
+);
 
 /* -------- PDF generation (save first) -------- */
 interface GeneratePdfArgs {

@@ -1,11 +1,11 @@
-import { Id } from "@/shared/types";
 import { Student } from "@/entities/student/types";
 import { Loading } from "@/shared/types/store.type.ts";
 import { Semester } from "@/entities/discipline/types";
+import { Group } from "@/entities/group/types";
 
 export interface BlankState {
   isOpen: boolean;
-  groupId?: Id;
+  group: Group | undefined;
   semester: Semester;
   selectStudent?: Student;
   studentsData: Student[];
@@ -15,7 +15,7 @@ export interface BlankState {
 
 export const blankInitialState: BlankState = {
   isOpen: false,
-  groupId: undefined,
+  group: undefined,
   semester: "1",
   selectStudent: undefined,
   studentsData: [],
