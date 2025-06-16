@@ -1,5 +1,5 @@
 import { PanelGroupCard } from "@/features/PanelGroupCard";
-import { EditableTitle } from "@/shared/ui/EditableTitle";
+import { EditableTitle } from "src/shared/ui/EditableTitle";
 import { useState } from "react";
 import { SemesterDisciplines } from "@/features/SemesterDisciplines";
 import { useAppDispatch } from "@/shared/lib/hooks/redux";
@@ -24,15 +24,13 @@ export function GroupCard({ group }: Props) {
     <div className="border-2 rounded-xl p-4">
       <header className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">
-          Группа:
+          Группа:{" "}
           <EditableTitle
-            key={group.name}
-            initialValue={group.name}
+            value={group.name}
             onSave={async (value) => {
               const ok = await handleTitleGroupSave({ dispatch, group, value });
               setErr(ok ? null : "Неверный формат имени");
             }}
-            className="ml-1 w-min"
             error={err || undefined}
           />
         </h2>

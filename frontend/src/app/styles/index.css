@@ -28,3 +28,19 @@
   --color-table-row-hover: #f9fafb;
   --color-table-border: #e5e7eb;
 }
+
+@layer components {
+  .editable-hover {
+    @apply cursor-pointer relative;
+  }
+
+  .editable-hover::after {
+    content: "";
+    @apply absolute -bottom-0.5 left-0 h-0.5 w-0
+    bg-current transition-all duration-300;
+  }
+
+  .group:hover .editable-hover::after {
+    @apply w-full;
+  }
+}
