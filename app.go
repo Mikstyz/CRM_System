@@ -36,7 +36,7 @@ func (a *App) Greet(name string) string {
 func (a *App) InfAllStudent(dto dtos.Inf_AllStudent) models.AppInf_AllStudent {
 	students, err := routes.Inf_AllStudent()
 	if err != nil {
-		return models.AppInf_AllStudent{Code: 500, Error: err.Error()}
+		return models.AppInf_AllStudent{Code: 500, Students: nil}
 	}
 	return models.AppInf_AllStudent{Code: 200, Students: students}
 }
@@ -45,7 +45,7 @@ func (a *App) InfAllStudent(dto dtos.Inf_AllStudent) models.AppInf_AllStudent {
 func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID {
 	student, err := routes.Inf_StudentByID(dto.StudentID)
 	if err != nil {
-		return models.AppInf_StudentByID{Code: 500, Error: err.Error()}
+		return models.AppInf_StudentByID{Code: 500, Students: nil}
 	}
 	return models.AppInf_StudentByID{Code: 200, Student: student}
 }
@@ -54,7 +54,7 @@ func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID
 func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_StudentByGroup {
 	students, err := routes.Inf_StudentByGroup(dto.GroupId)
 	if err != nil {
-		return models.AppInf_StudentByGroup{Code: 500, Error: err.Error()}
+		return models.AppInf_StudentByGroup{Code: 500, Students: nil}
 	}
 	return models.AppInf_StudentByGroup{Code: 200, Students: students}
 }
@@ -298,9 +298,9 @@ func (a *App) DeleteAllSubjectsByGroupID(dto dtos.DeleteAllSubjectByGroupDTO) mo
 // ----------------- PDF ----------------------
 // ----------------------------------- GenerateFilledPDF -----------------------------------
 func (a *App) GenerateFilledPDF(dockDATA models.GeneratePDF) models.AppPdfDock {
-	file, err := utils.GenerateFiledPDF(dockDATA)
+	file, path, err := utils.GenerateFiledPDF(dockDATA)
 	if err != nil {
 		return models.AppPdfDock{Code: 500, Error: err.Error()}
 	}
-	return models.AppPdfDock{Code: 200, File: file}
+	return models.AppPdfDock{Code: 200, File: file, Path: path}
 }
