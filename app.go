@@ -45,7 +45,7 @@ func (a *App) InfAllStudent(dto dtos.Inf_AllStudent) models.AppInf_AllStudent {
 func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID {
 	student, err := routes.Inf_StudentByID(dto.StudentID)
 	if err != nil {
-		return models.AppInf_StudentByID{Code: 500, Students: nil}
+		return models.AppInf_StudentByID{Code: 500, Student: models.Student{}}
 	}
 	return models.AppInf_StudentByID{Code: 200, Student: student}
 }

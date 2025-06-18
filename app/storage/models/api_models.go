@@ -128,4 +128,7 @@ type AppPdfDock struct {
 	Code  int    `json:"code"`
 	File  []byte `json:"File,omitempty"`
 	Error string `json:"error,omitempty"`
+
+	//Папка
+	Path string
 }

@@ -33,7 +33,7 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
 
 	if Error != nil {
 		log.Fatal("[utils][pdf] - Ошибка при получении предметов группы")
-		return nil, nil, Error
+		return nil, "", Error
 	}
 
 	log.Printf("[utils][pdf] - Получено предметов группы %d", len(SubjectArray))
@@ -50,7 +50,7 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
 	// Проверяем, что шрифт существует
 	fontPath := filepath.Join(FontDir, "DejaVuSans.ttf")
 	if _, err := os.Stat(fontPath); os.IsNotExist(err) {
-		return nil, nil, fmt.Errorf("[utils][pdf] - шрифт не найден по пути: %s", fontPath)
+		return nil, "", fmt.Errorf("[utils][pdf] - шрифт не найден по пути: %s", fontPath)
 	}
 
 	// Устанавливаем шрифт
@@ -108,40 +108,38 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
 	err := pdf.Output(&buf)
 	if err != nil {
 		log.Printf("[utils][pdf] - Ошибка при формировании документа: %v", err)
-		return nil, nil, err
+		return nil, "", err
 	}
 
 	fileName := fmt.Sprintf("[utils][pdf] - Бланк работодателя для студента %s.PDF", Data.StudentName)
-	path, err = SavePDFToFile(buf.Bytes(), fileName)
+	path, err := SavePDFToFile(buf.Bytes(), fileName)
 	if err != nil {
 		fmt.Printf("[utils][pdf] - Ошибка при сохранении файла: %v", err)
+		return nil, "", err
 	}
 
 	return buf.Bytes(), path, nil
+
 }
 
 func SavePDFToFile(pdfBytes []byte, fileName string) (string, error) {
-	wd, err := os.Getwd()
+	execPath, err := os.Executable()
 	if err != nil {
-		log.Printf("Не удалось получить рабочую директорию: %v", err)
-		return nil, err
+		log.Printf("[utils][pdf] - Не удалось получить путь к исполняемому файлу: %v", err)
+		return "", err
 	}
 
-	savePath := filepath.Join(wd, "Data", "Pdf_Document", fileName)
+	baseDir := filepath.Dir(execPath)
+	savePath := filepath.Join(baseDir, "Data", "Pdf_Document", fileName)
 
-	dir := filepath.Dir(savePath)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err := os.MkdirAll(dir, 0755)
-		if err != nil {
-			log.Printf("[utils][pdf] - Не удалось создать директорию %s: %v", dir, err)
-			return err, mil
-		}
+	if err := os.MkdirAll(filepath.Dir(savePath), 0755); err != nil {
+		log.Printf("[utils][pdf] - Не удалось создать директорию %s: %v", filepath.Dir(savePath), err)
+		return "", err
 	}
 
-	err = os.WriteFile(savePath, pdfBytes, 0644)
-	if err != nil {
+	if err := os.WriteFile(savePath, pdfBytes, 0644); err != nil {
 		log.Printf("[utils][pdf] - Ошибка при сохранении PDF: %v", err)
-		return err, nil
+		return "", err
 	}
 
 	log.Printf("[utils][pdf] - PDF успешно сохранён как %s", savePath)
