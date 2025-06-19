@@ -209,11 +209,6 @@ export const generatePdfThunks = createAsyncThunk<
   "blank/generatePdf",
   async ({ group, student, semester }, { rejectWithValue }) => {
     try {
-      console.log("generatePdf", {
-        group,
-        student,
-        semester,
-      });
       const res = await GenerateFilledPDF({
         StudentName: student.fullName,
         GroupId: Number(group.id),

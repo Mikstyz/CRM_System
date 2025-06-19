@@ -13,7 +13,6 @@ export const useGetStudents = () => {
 
   useEffect(() => {
     const value = watch("studentName");
-    console.log('watch("studentName")', value);
     if (value !== "" && typeof value === "string") {
       setQuery(value);
     } else {
