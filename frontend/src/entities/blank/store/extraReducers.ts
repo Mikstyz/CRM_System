@@ -35,7 +35,7 @@ export const blankExtraReducers = (
     .addCase(createStudentThunks.fulfilled, (state, action) => {
       state.loading = {
         status: "succeeded",
-        message: "Успешно добавлен",
+        message: "",
       };
       state.studentsData.push(action.payload);
     })
@@ -62,7 +62,7 @@ export const blankExtraReducers = (
     .addCase(deleteStudentThunks.fulfilled, (state, action) => {
       state.loading = {
         status: "succeeded",
-        message: "Успешно удален",
+        message: "",
       };
       state.studentsData = state.studentsData.filter(
         (student) => student.id !== action.payload,
@@ -75,7 +75,7 @@ export const blankExtraReducers = (
     .addCase(saveOrUpdateStudentThunks.fulfilled, (state, { payload }) => {
       state.loading = {
         status: "succeeded",
-        message: "Успешно сохранино",
+        message: "",
       };
       /* заменяем или добавляем */
       const idx = state.studentsData.findIndex((s) => s.id === payload.id);

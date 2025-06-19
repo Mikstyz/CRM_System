@@ -8,9 +8,10 @@ import {
   UpdateStudentByID,
 } from "@wails/go/main/App";
 import { Group } from "@/entities/group/types";
-import { saveAs } from "file-saver";
 import { Semester } from "@/entities/discipline/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+import { BrowserOpenURL } from "@wails/runtime";
 
 interface ThunkConfig {
   rejectValue: string;
@@ -217,10 +218,6 @@ export const generatePdfThunks = createAsyncThunk<
         StudentName: student.fullName,
         GroupId: Number(group.id),
         Semester: Number(semester),
-        // Course: Number(dateNameGroup.course),
-        // Speciality: dateNameGroup.specialty,
-        // Groduates: Number(dateNameGroup.graduates),
-        // Number: dateNameGroup.groupNumber,
         Enterprise: student.company || "",
         WorkStartDate: student.startDateWork || "",
         JobTitle: student.position || "",
@@ -229,11 +226,11 @@ export const generatePdfThunks = createAsyncThunk<
       if (res.code !== 200 || !res.File) {
         throw new Error(res.error || "Ошибка генерации PDF");
       }
-
-      const blob = new Blob([Uint8Array.from(res.File)], {
-        type: "application/pdf",
-      });
-      saveAs(blob, `${group.name}_${student.fullName}.pdf`);
+      if (res.Path) {
+        toast.success("Успешно сгенерирован: нажать, чтобы открыть", {
+          onClick: () => BrowserOpenURL(`file://${res.Path}`),
+        });
+      }
     } catch (e) {
       return rejectWithValue((e as Error).message);
     }
