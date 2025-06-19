@@ -12,7 +12,4 @@ type GeneratePDF struct {
 	Enterprise    string
 	WorkStartDate string
 	JobTitle      string
-
-	//Папка
-	Path string
 }
