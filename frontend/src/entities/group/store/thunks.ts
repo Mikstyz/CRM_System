@@ -37,7 +37,6 @@ export const getGroupsThunks = createAsyncThunk<
     const res = await AppInfGroupAndSubject({
       Switch: true,
     });
-    console.log("res AppInFGroupAndSubject", res);
     const groupsAll = res.groupsAndSubject;
     if (res.code === 200 && Array.isArray(groupsAll)) {
       return convResDataInGroups(groupsAll);
@@ -70,7 +69,6 @@ export const createGroupsThunks = createAsyncThunk<
       speciality: dateNameGroup.specialty,
       group_num: dateNameGroup.groupNumber,
     });
-    console.log("res createGroups", res);
     const Group = res?.Group;
     if (res.code === 200 && Group?.Id) {
       return {
@@ -181,7 +179,6 @@ export const duplicateGroupThunks = createAsyncThunk<
     if (!groupId) return rejectWithValue("Нет ID группы");
     const res = await DuplicateGroupAllData({ GroupId: groupId });
     const resGroup = res.GrpAndSUbj;
-    console.log("resGroup", resGroup);
     if (res?.code === 200 && resGroup?.Id) {
       return {
         id: resGroup.Id,
@@ -241,7 +238,6 @@ export const addDisciplinesThunks = createAsyncThunk<
         new_subject: newTitle,
         Semester: Number(semester),
       });
-      console.log("AddSubjectByGroupID", res);
       if (res?.code === 200 && res?.id) {
         return {
           groupId,

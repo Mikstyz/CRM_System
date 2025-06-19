@@ -28,10 +28,6 @@ export function ListStudents() {
 
   const [students] = useGetStudents();
 
-  useEffect(() => {
-    console.log(students);
-  }, [students]);
-
   const [page, setPage] = useState(1);
 
   useEffect(() => setPage(1), [students]);

@@ -28,10 +28,6 @@ export function parseDateNameGroup(name: string): ParseResult {
       },
     };
   }
-  console.log("match", match);
-  console.log("name", name);
-
-  // TODO Добвыть обработку ошибок: - неизменять, если ошибка, - показавать ошибки.
 
   const errors: string[] = [];
   // 1. курс

@@ -25,7 +25,6 @@ export const convResDataInGroups = (
         };
       }
     }).filter((group) => group !== undefined) as Group[]) || undefined;
-  console.log(convGroups);
   return convGroups || [];
 };
 
