@@ -13,6 +13,8 @@ import {
   saveOrUpdateStudentThunks,
 } from "@/entities/blank/store";
 import dayjs from "dayjs";
+import "dayjs/locale/ru";
+import { ruRU } from "@mui/x-date-pickers/locales";
 
 export function FormCreatBlank() {
   const dispatch = useAppDispatch();
@@ -80,15 +82,20 @@ export function FormCreatBlank() {
         )}
       />
 
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider
+        dateAdapter={AdapterDayjs}
+        adapterLocale="ru"
+        localeText={
+          ruRU.components.MuiLocalizationProvider.defaultProps.localeText
+        }
+      >
         <Controller
           name="startDate"
           control={control}
           render={({ field, fieldState }) => (
             <DatePicker
               label="Дата начала работы"
-              openTo="month"
-              views={["day", "month", "year"]}
+              views={["year", "month", "day"]}
               value={field.value ? dayjs(field.value) : null}
               onChange={(d) => field.onChange(d?.format("YYYY-MM-DD") ?? "")}
               format="DD.MM.YYYY"
