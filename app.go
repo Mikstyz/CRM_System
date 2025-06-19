@@ -54,9 +54,16 @@ func (a *App) InfStudentByID(dto dtos.Inf_StudentByID) models.AppInf_StudentByID
 func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_StudentByGroup {
 	students, err := routes.Inf_StudentByGroup(dto.GroupId)
 	if err != nil {
-		return models.AppInf_StudentByGroup{Code: 500, Students: nil}
+		return models.AppInf_StudentByGroup{
+			Code:     500,
+			Students: []models.Student{},
+		}
 	}
-	return models.AppInf_StudentByGroup{Code: 200, Students: students}
+
+	return models.AppInf_StudentByGroup{
+		Code:     200,
+		Students: students,
+	}
 }
 
 // ----------------------------------- Create_Student -----------------------------------
