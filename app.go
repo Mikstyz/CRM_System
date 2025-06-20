@@ -63,11 +63,11 @@ func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_Stude
 
 	if (students == nil) || (len(students) == 0) {
 
-		a := models.Student{}
+		//a := models.Student{}
 
 		arrA := []models.Student{}
 
-		arrA = append(arrA, a)
+		//arrA = append(arrA, a)
 
 		return models.AppInf_StudentByGroup{
 			Code:     200,
