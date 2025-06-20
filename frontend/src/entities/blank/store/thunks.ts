@@ -31,18 +31,21 @@ export const getAllStudentGroupThunks = createAsyncThunk<
       GroupId: groupId,
     });
     const studentsAll = res.Student;
-    if (res.code === 200 && Array.isArray(studentsAll)) {
-      return studentsAll.map((s) => {
-        return {
-          id: s.id,
-          fullName: s.full_name,
-          company: s.Enterprise,
-          startDateWork: s.WorkStartDate,
-          position: s.JobTitle,
-        };
-      });
+    if (res.code === 200) {
+      if (Array.isArray(studentsAll)) {
+        return studentsAll.map((s) => {
+          return {
+            id: s.id,
+            fullName: s.full_name,
+            company: s.Enterprise,
+            startDateWork: s.WorkStartDate,
+            position: s.JobTitle,
+          };
+        });
+      }
+      return [];
     } else {
-      console.error("Ошибка при получении студентов", res?.error);
+      console.error("Ошибка при получении студентов", res);
       return rejectWithValue("Ошибка при получении студентов");
     }
   } catch (error) {
