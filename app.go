@@ -61,6 +61,13 @@ func (a *App) InfStudentByGroup(dto dtos.Inf_StudentByGroup) models.AppInf_Stude
 		}
 	}
 
+	if (students == nil) || (len(students) == 0) {
+		return models.AppInf_StudentByGroup{
+			Code:     200,
+			Students: make([]models.Student, 0),
+		}
+	}
+
 	return models.AppInf_StudentByGroup{
 		Code:     200,
 		Students: students,
