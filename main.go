@@ -20,7 +20,14 @@ var assets embed.FS
 //go:embed app/Data/Sql/stud.db
 var embeddedDB embed.FS
 
+//go:embed app\Data\Fonts\DejaVuSans.ttf
+var embeddedFiles embed.FS
+
 func main() {
+	if err := ensureFontsFromTemplate(); err != nil {
+		log.Fatalf("[main] Не удалось подготовить шрифт: %v", err)
+	}
+
 	if err := ensureDBFromTemplate(); err != nil {
 		log.Fatalf("[main] Не удалось подготовить БД: %v", err)
 	}
@@ -70,4 +77,31 @@ func ensureDBFromTemplate() error {
 
 	// Записать файл
 	return os.WriteFile(targetPath, data, 0644)
+}
+
+func ensureFontsFromTemplate() error {
+	exePath, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	exeDir := filepath.Dir(exePath)
+
+	const embedFontPath = "app/Data/Fonts/DejaVuSans.ttf"
+
+	targetFontPath := filepath.Join(exeDir, "Data", "Fonts", "DejaVuSans.ttf")
+
+	if _, err := os.Stat(targetFontPath); err == nil {
+		return nil
+	}
+
+	if err := os.MkdirAll(filepath.Dir(targetFontPath), os.ModePerm); err != nil {
+		return err
+	}
+
+	data, err := embeddedFiles.ReadFile(embedFontPath)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(targetFontPath, data, 0644)
 }

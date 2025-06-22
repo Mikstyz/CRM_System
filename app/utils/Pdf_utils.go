@@ -16,12 +16,15 @@ import (
 var FontDir string
 
 func init() {
-	wd, err := os.Getwd()
+	exePath, err := os.Executable()
 	if err != nil {
 		log.Fatalf("[utils][pdf] - Не удалось определить рабочую директорию: %v", err)
 	}
 
-	FontDir = filepath.Join(wd)
+	exeDir := filepath.Dir(exePath)
+
+	FontDir = filepath.Join(exeDir, "Data", "Fonts")
+
 	log.Printf("[utils][pdf] - Рабочая директория для шрифтов: %s", FontDir)
 }
 
