@@ -17,19 +17,16 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-//go:embed app/Data/Sql/stud.db
-var embeddedDB embed.FS
-
-//go:embed app/Data/Fonts/DejaVuSans.ttf
+//go:embed app/Data/Sql/stud.db app/Data/Fonts/DejaVuSans.ttf
 var embeddedFiles embed.FS
 
 func main() {
-	if err := ensureFontsFromTemplate(); err != nil {
-		log.Fatalf("[main] Не удалось подготовить шрифт: %v", err)
+	if err := ensureDBFromTemplate(); err != nil {
+		log.Fatalf("Ошибка подготовки БД: %v", err)
 	}
 
-	if err := ensureDBFromTemplate(); err != nil {
-		log.Fatalf("[main] Не удалось подготовить БД: %v", err)
+	if err := ensureFontsFromTemplate(); err != nil {
+		log.Fatalf("Ошибка подготовки шрифтов: %v", err)
 	}
 
 	app := NewApp()
@@ -70,12 +67,11 @@ func ensureDBFromTemplate() error {
 		return err
 	}
 
-	data, err := embeddedDB.ReadFile("app/Data/Sql/stud.db")
+	data, err := embeddedFiles.ReadFile("app/Data/Sql/stud.db")
 	if err != nil {
 		return err
 	}
 
-	// Записать файл
 	return os.WriteFile(targetPath, data, 0644)
 }
 

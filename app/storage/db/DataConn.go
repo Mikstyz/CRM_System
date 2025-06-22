@@ -16,24 +16,27 @@ var DB *sql.DB
 //const dbPath string = "E:\\code\\GIthub\\Education\\CRM_System\\app\\Data\\Sql\\stud.db"
 
 func Init() {
-	cwd, _ := os.Getwd()
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatalf("[db][conn] - Не удалось получить путь к exe: %v", err)
+	}
 
-	dbPath := filepath.Join(cwd, "Data", "Sql", "stud.db")
+	exeDir := filepath.Dir(exePath) // Вот это папка с exe
+
+	dbPath := filepath.Join(exeDir, "Data", "Sql", "stud.db")
 
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Fatalf("[db][conn] - База данных не существует по пути: %s", dbPath)
 	}
 
-	// Открываем соединение с БД
-	var err error
-	DB, err = sql.Open("sqlite", dbPath)
-	if err != nil {
-		log.Fatalf("[db][conn] - Ошибка при подключении к БД: %v", err)
+	var errOpen error
+	DB, errOpen = sql.Open("sqlite", dbPath)
+	if errOpen != nil {
+		log.Fatalf("[db][conn] - Ошибка при подключении к БД: %v", errOpen)
 	}
 
-	// Проверяем, доступна ли база данных
-	if err = DB.Ping(); err != nil {
-		log.Fatalf("[db-DataConn.go] PathDb: %s\nБД не отвечает: %v", dbPath, err.Error())
+	if errPing := DB.Ping(); errPing != nil {
+		log.Fatalf("[db][conn] - БД не отвечает: %v", errPing)
 	}
 }
 
