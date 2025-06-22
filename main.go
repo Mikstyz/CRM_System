@@ -2,6 +2,9 @@ package main
 
 import (
 	"embed"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -14,7 +17,14 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed app/Data/Sql/stud.db
+var embeddedDB embed.FS
+
 func main() {
+	if err := ensureDBFromTemplate(); err != nil {
+		log.Fatalf("[main] Не удалось подготовить БД: %v", err)
+	}
+
 	app := NewApp()
 
 	err := wails.Run(&options.App{
@@ -33,78 +43,31 @@ func main() {
 
 	if err != nil {
 		println("Error:", err.Error())
-
 	}
-
-	// status, err := routes.Update_StudentById(1, "asd", 1, "asd", "11.11.11", "asd")
-
-	// if err != nil {
-	// 	println("Error:", err.Error())
-	// }
-	// print(status)
-
 }
 
-// import (
+func ensureDBFromTemplate() error {
+	exePath, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	exeDir := filepath.Dir(exePath)
 
-// 	//test "CRM_System/Backend/internal/utils"
+	targetPath := filepath.Join(exeDir, "Data", "Sql", "stud.db")
 
-// 	"CRM_System/internal/db"
-// 	models "CRM_System/internal/models"
-// 	"CRM_System/internal/utils"
-// 	"fmt"
-// 	"log"
+	if _, err := os.Stat(targetPath); err == nil {
+		return nil
+	}
 
-// 	_ "modernc.org/sqlite"
-// )
+	if err := os.MkdirAll(filepath.Dir(targetPath), os.ModePerm); err != nil {
+		return err
+	}
 
-// func main() {
-// 	fmt.Println("Ну типо запуск")
+	data, err := embeddedDB.ReadFile("app/Data/Sql/stud.db")
+	if err != nil {
+		return err
+	}
 
-// 	db.Init()
-
-// 	//Test.Test_GenerateFilledPDF()
-
-// 	pdf, err := utils.GenerateFiledPDF(dataPdf)
-
-// 	if err != nil {
-// 		log.Print("Ошибка при генерации документа")
-// 	}
-
-// 	if len(pdf) == 0 {
-// 		log.Print("Документ пуст")
-// 	}
-
-// 	utils.SavePDFToFile(pdf, "pdf")
-// 	//FastTestInf_AllGroupAndSubject()
-
-// }
-
-// func FastTestInf_AllGroupAndSubject() {
-// 	data, err := routes.Inf_AllGroupAndSubject()
-// 	if err != nil {
-// 		fmt.Println("Ошибка при получении данных:", err)
-// 		return
-// 	}
-
-// 	for _, group := range data {
-// 		fmt.Println("Группа:")
-// 		fmt.Printf(" ID: %d\n", group.Id)
-// 		fmt.Printf(" Курс: %d\n", group.Course)
-// 		fmt.Printf(" Специальность: %s\n", group.Spesiality)
-// 		fmt.Printf(" Годы обучения: %d\n", group.Groduates)
-// 		fmt.Printf(" Номер группы: %d\n", group.Number)
-
-// 		fmt.Println(" Предметы 1 семестра:")
-// 		for _, subj := range group.Subject.FirstSemester {
-// 			fmt.Printf("  ID: %d, Название: %s\n", subj.Id, subj.Title)
-// 		}
-
-// 		fmt.Println(" Предметы 2 семестра:")
-// 		for _, subj := range group.Subject.SecondSemester {
-// 			fmt.Printf("  ID: %d, Название: %s\n", subj.Id, subj.Title)
-// 		}
-
-// 		fmt.Println("---------------------------------")
-// 	}
-// }
+	// Записать файл
+	return os.WriteFile(targetPath, data, 0644)
+}
