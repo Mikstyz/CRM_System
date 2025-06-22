@@ -20,7 +20,7 @@ var assets embed.FS
 //go:embed app/Data/Sql/stud.db
 var embeddedDB embed.FS
 
-//go:embed app\Data\Fonts\DejaVuSans.ttf
+//go:embed app/Data/Fonts/DejaVuSans.ttf
 var embeddedFiles embed.FS
 
 func main() {
