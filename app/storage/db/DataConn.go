@@ -1,11 +1,11 @@
 package db
 
 import (
+	"CRM_System/app/paths"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	_ "modernc.org/sqlite"
 )
@@ -16,14 +16,7 @@ var DB *sql.DB
 //const dbPath string = "E:\\code\\GIthub\\Education\\CRM_System\\app\\Data\\Sql\\stud.db"
 
 func Init() {
-	exePath, err := os.Executable()
-	if err != nil {
-		log.Fatalf("[db][conn] - Не удалось получить путь к exe: %v", err)
-	}
-
-	exeDir := filepath.Dir(exePath) // Вот это папка с exe
-
-	dbPath := filepath.Join(exeDir, "Data", "Sql", "stud.db")
+	dbPath := paths.GetDBPath()
 
 	if _, err := os.Stat(dbPath); os.IsNotExist(err) {
 		log.Fatalf("[db][conn] - База данных не существует по пути: %s", dbPath)

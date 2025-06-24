@@ -2,6 +2,7 @@ package utils
 
 import (
 	"CRM_System/app/api/routes"
+	"CRM_System/app/paths"
 	"CRM_System/app/storage/models"
 	"bytes"
 	"fmt"
@@ -12,23 +13,9 @@ import (
 	"github.com/jung-kurt/gofpdf"
 )
 
-// Генерация PDF
-var FontDir string
-
-func init() {
-	exePath, err := os.Executable()
-	if err != nil {
-		log.Fatalf("[utils][pdf] - Не удалось определить рабочую директорию: %v", err)
-	}
-
-	exeDir := filepath.Dir(exePath)
-
-	FontDir = filepath.Join(exeDir, "Data", "Fonts")
-
-	log.Printf("[utils][pdf] - Рабочая директория для шрифтов: %s", FontDir)
-}
-
 func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
+	FontDir := paths.GetFontDir()
+
 	log.Println("[utils][pdf] - Формирование PDF документа")
 
 	log.Println("[utils][pdf] - Получение предметов группы")
@@ -51,7 +38,7 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
 	pdf.AddUTF8Font("DejaVu", "", "DejaVuSans.ttf")
 
 	// Проверяем, что шрифт существует
-	fontPath := filepath.Join(FontDir, "DejaVuSans.ttf")
+	fontPath := paths.GetFontDir()
 	if _, err := os.Stat(fontPath); os.IsNotExist(err) {
 		return nil, "", fmt.Errorf("[utils][pdf] - шрифт не найден по пути: %s", fontPath)
 	}
@@ -114,7 +101,7 @@ func GenerateFiledPDF(Data models.GeneratePDF) ([]byte, string, error) {
 		return nil, "", err
 	}
 
-	fileName := fmt.Sprintf("[utils][pdf] - Бланк работодателя для студента %s.PDF", Data.StudentName)
+	fileName := fmt.Sprintf("Бланк работодателя для студента %s.PDF", Data.StudentName)
 	path, err := SavePDFToFile(buf.Bytes(), fileName)
 	if err != nil {
 		fmt.Printf("[utils][pdf] - Ошибка при сохранении файла: %v", err)
@@ -133,7 +120,7 @@ func SavePDFToFile(pdfBytes []byte, fileName string) (string, error) {
 	}
 
 	baseDir := filepath.Dir(execPath)
-	savePath := filepath.Join(baseDir, "Data", "Pdf_Document", fileName)
+	savePath := filepath.Join(baseDir, "Data", "Document", fileName)
 
 	if err := os.MkdirAll(filepath.Dir(savePath), 0755); err != nil {
 		log.Printf("[utils][pdf] - Не удалось создать директорию %s: %v", filepath.Dir(savePath), err)

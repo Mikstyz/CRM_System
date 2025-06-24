@@ -1,6 +1,7 @@
 package main
 
 import (
+	"CRM_System/app/paths"
 	"embed"
 	"log"
 	"os"
@@ -9,9 +10,6 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	//"github.com/wailsapp/wails/v2"
-	//"github.com/wailsapp/wails/v2/pkg/options"
-	//"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
 //go:embed all:frontend/dist
@@ -21,6 +19,11 @@ var assets embed.FS
 var embeddedFiles embed.FS
 
 func main() {
+
+	if err := paths.InitPaths(); err != nil {
+		log.Fatalf("Ошибка получения путей")
+	}
+
 	if err := ensureDBFromTemplate(); err != nil {
 		log.Fatalf("Ошибка подготовки БД: %v", err)
 	}
@@ -51,13 +54,7 @@ func main() {
 }
 
 func ensureDBFromTemplate() error {
-	exePath, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	exeDir := filepath.Dir(exePath)
-
-	targetPath := filepath.Join(exeDir, "Data", "Sql", "stud.db")
+	targetPath := paths.GetEmbedTarget()
 
 	if _, err := os.Stat(targetPath); err == nil {
 		return nil
@@ -67,6 +64,7 @@ func ensureDBFromTemplate() error {
 		return err
 	}
 
+	// Путь внутри embed должен совпадать с путём в //go:embed
 	data, err := embeddedFiles.ReadFile("app/Data/Sql/stud.db")
 	if err != nil {
 		return err
@@ -76,15 +74,10 @@ func ensureDBFromTemplate() error {
 }
 
 func ensureFontsFromTemplate() error {
-	exePath, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	exeDir := filepath.Dir(exePath)
-
+	// Тоже путь как в //go:embed
 	const embedFontPath = "app/Data/Fonts/DejaVuSans.ttf"
 
-	targetFontPath := filepath.Join(exeDir, "Data", "Fonts", "DejaVuSans.ttf")
+	targetFontPath := paths.GetEmbedFontPath()
 
 	if _, err := os.Stat(targetFontPath); err == nil {
 		return nil
